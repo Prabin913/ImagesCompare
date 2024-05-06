@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LogonVestSetup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogonVestSetupDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SG_ButtonFly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Encryption\encryption.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SplashWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LogonVestSetup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogonVestSetupDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SG_ButtonFly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Encryption\encryption.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SplashWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="LogonVestSetup.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\LogonVestSetup.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\x64\Release\LogonVest.exe" />
+    <None Include="..\x64\Release\lv.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\LogonVestSetup.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\install.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\01_default\install.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\04_disabled\install.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\02_hover\install.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\03_pressed\install.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\04_disabled\reboot.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\03_pressed\reboot.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\01_default\reboot.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\02_hover\reboot.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\03_pressed\uninstall.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\02_hover\uninstall.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\04_disabled\uninstall.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\01_default\uninstall.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\x64\Release\Wizdome.lib.lib" />
+  </ItemGroup>
+</Project>

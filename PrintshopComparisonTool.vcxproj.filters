@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="PrintshopComparisonTool.cpp" />
+    <ClCompile Include="PrintshopComparisonToolDlg.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="SG_ButtonFly.cpp" />
+    <ClCompile Include="SplashWnd.cpp" />
+    <ClCompile Include="imagecompare\Imagination.cpp">
+      <Filter>imagecompare</Filter>
+    </ClCompile>
+    <ClCompile Include="imagecompare\Intervals.cpp">
+      <Filter>imagecompare</Filter>
+    </ClCompile>
+    <ClCompile Include="imagecompare\KMeans.cpp">
+      <Filter>imagecompare</Filter>
+    </ClCompile>
+    <ClCompile Include="imagecompare\MatManip.cpp">
+      <Filter>imagecompare</Filter>
+    </ClCompile>
+    <ClCompile Include="imagecompare\VzImgCmp.cpp">
+      <Filter>imagecompare</Filter>
+    </ClCompile>
+    <ClCompile Include="mupdf\pdf.cpp">
+      <Filter>mupdf</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PrintshopComparisonTool.h" />
+    <ClInclude Include="PrintshopComparisonToolDlg.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="SG_ButtonFly.h" />
+    <ClInclude Include="SplashWnd.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="imagecompare\Imagination.hpp">
+      <Filter>imagecompare</Filter>
+    </ClInclude>
+    <ClInclude Include="imagecompare\Intervals.hpp">
+      <Filter>imagecompare</Filter>
+    </ClInclude>
+    <ClInclude Include="imagecompare\KMeans.hpp">
+      <Filter>imagecompare</Filter>
+    </ClInclude>
+    <ClInclude Include="imagecompare\MatManip.hpp">
+      <Filter>imagecompare</Filter>
+    </ClInclude>
+    <ClInclude Include="imagecompare\vz.hpp">
+      <Filter>imagecompare</Filter>
+    </ClInclude>
+    <ClInclude Include="imagecompare\VzImgCmp.hpp">
+      <Filter>imagecompare</Filter>
+    </ClInclude>
+    <ClInclude Include="imagecompare\vzTypes.hpp">
+      <Filter>imagecompare</Filter>
+    </ClInclude>
+    <ClInclude Include="mupdf\pdf.hpp">
+      <Filter>mupdf</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PrintshopComparisonTool.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\PrintshopComparisonTool.ico" />
+    <Image Include="res\Splsh24.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\PrintshopComparisonTool.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="imagecompare">
+      <UniqueIdentifier>{364bfe7c-97d2-40d5-8f63-244223be994e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mupdf">
+      <UniqueIdentifier>{634a8e62-cf83-49c1-8b30-8ec8dadd7903}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
