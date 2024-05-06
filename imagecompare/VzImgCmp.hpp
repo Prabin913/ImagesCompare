@@ -153,6 +153,9 @@ namespace vz
 
 		protected:
 
+			// This is called by @ref diff_images() to align the two compared images
+			virtual void align_images(cv::Mat& a, cv::Mat& b);
+
 			/// This is called by @ref compare() to compute @ref differences.
 			virtual ImgCmp & diff_images();
 
@@ -176,6 +179,9 @@ namespace vz
 
 			/// The target image which is compared against the original, but resized to match @ref master_resized.
 			vz::Imagination candy_resized;
+
+			// The target image which is compared against the original, but aligned in position, rotation and scale to match master
+			vz::Imagination candy_aligned;
 
 			/** Scale to apply when resizing images.  Default is 0.25, meaning resized image will be 1/4 the size of the original.
 			 * If you change this value, you @em must call @ref set_master_image() again to ensure that @ref master_resized has

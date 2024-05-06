@@ -239,7 +239,7 @@ CString SelectFileFromDialog(int type)
 	if (type == 1)
 		FilterSpec = { (wchar_t*)L"PDF Files(*.pdf)\0*.pdf\0All Files(*.*)\0*.*\0" };
 	else
-		FilterSpec = { (wchar_t*)L"JPEG Files(*.png)\0*.png\0All Files(*.*)\0*.*\0" };
+		FilterSpec = { (wchar_t*)L"PNG Files(*.png)\0*.png\0All Files(*.*)\0*.*\0" };
 	wchar_t* Title{ (wchar_t*)L"Open...." };
 	wchar_t szFileName[MAX_PATH];
 	wchar_t szFileTitle[MAX_PATH];
@@ -363,15 +363,15 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	image_compare.resized_image_scale = 0.5;
 	image_compare.min_contour_area = 20.0;
 
-	//	image_compare.set_flag	(vz::ImgCmp::Flags::kDiffColour				);
-	image_compare.set_flag(vz::ImgCmp::Flags::kDiffGreyscale);
+	image_compare.set_flag	(vz::ImgCmp::Flags::kDiffColour				);
+	//image_compare.set_flag(vz::ImgCmp::Flags::kDiffGreyscale);
 	image_compare.set_flag(vz::ImgCmp::Flags::kThresholdTriangle);
 	//	image_compare.set_flag	(vz::ImgCmp::Flags::kDiffOriginalSize		);
 	image_compare.set_flag(vz::ImgCmp::Flags::kDiffResized);
 	image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateAddRedBorder);
 	image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateAddGreenBorder);
-	//	image_compare.set_flag	(vz::ImgCmp::Flags::kAnnotateOverColour		);
-	image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateOverGrey);
+	image_compare.set_flag	(vz::ImgCmp::Flags::kAnnotateOverColour		);
+	//image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateOverGrey);
 	image_compare.set_flag(vz::ImgCmp::Flags::kDrawContour);
 	image_compare.set_flag(vz::ImgCmp::Flags::kDrawRectangle);
 
@@ -381,11 +381,12 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	cv::Mat tmp = get_image(orgFilePath);
 	cv::Size orgSize = tmp.size();
 	image_compare.set_master_image(tmp);
-	cv::Mat master_image = vz::resize(tmp, width);
 
 	std::string scabFilePath(ConvertWideCharToMultiByte(m_scanPath));
+	
+	cv::Mat comparison_image = get_image(scabFilePath);
 	//resize scan image resolution to original image resolution.
-	cv::Mat comparison_image = vz::resize(get_image(scabFilePath), orgSize.width, orgSize.height);
+	//comparison_image = vz::resize(comparison_image, orgSize.width, orgSize.height);
 	//cv::Mat comparison_image = get_image(scabFilePath);
 	image_compare.compare(comparison_image);
 
