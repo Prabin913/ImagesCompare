@@ -1,8 +1,9 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
 /.vs
-bin
-3rdparty
-Printsho.04CD545D
+/Printsho.04CD545D/x64/Debug/microsoft/STL
+/bin
+/Printsho.04CD545D/x64
+/Debug
+/temp/Debug
