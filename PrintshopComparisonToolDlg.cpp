@@ -394,10 +394,15 @@ void PrintshopComparisonToolDlg::CompareImage() {
 
 	cv::Mat annotation_image = image_compare.annotate();
 	annotation_image = vz::resize(annotation_image, width);
+	CString annotate_path("annotation.png");
+	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
 	/*cv::namedWindow("vz::ImgCmp - annotation image", cv::WINDOW_KEEPRATIO + cv::WINDOW_GUI_EXPANDED);
 	cv::resizeWindow("vz::ImgCmp - annotation image", annotation_image.cols, annotation_image.rows);
 	cv::imshow("vz::ImgCmp - annotation image", annotation_image);*/
 
+	DrawImage(GetDlgItem(IDC_PIC_DIFF), annotate_path);
+
+#if 0
 	CRect rcDiff;
 	GetDlgItem(IDC_PIC_DIFF)->GetWindowRect(&rcDiff);
 
@@ -437,6 +442,7 @@ void PrintshopComparisonToolDlg::CompareImage() {
 		cvImgTmp.data, &bitInfo, DIB_RGB_COLORS, SRCCOPY);
 
 	ReleaseDC(pDC);
+#endif
 }
 
 void PrintshopComparisonToolDlg::OnStnClickedPicOrig()
