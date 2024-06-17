@@ -506,6 +506,9 @@ vz::ImgCmp & vz::ImgCmp::diff_images()
 }
 
 void vz::ImgCmp::threshold_and_opening(int threshold, int filter_size) {
+	if (differences.empty())
+		return;
+
 	cv::Mat gray_differences;
 	cv::cvtColor(differences, gray_differences, cv::COLOR_BGR2GRAY);
 	write_dbg("difference_gray", gray_differences);
@@ -556,6 +559,9 @@ vz::ImgCmp & vz::ImgCmp::get_contours()
 
 cv::Mat vz::ImgCmp::annotate()
 {
+	if (differences.empty())
+		return cv::Mat();
+
 	annotated_candy = candy_aligned.get().clone();
 
 	if (differences_contours.empty() && flags & Flags::kAnnotateAddGreenBorder)

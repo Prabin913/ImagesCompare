@@ -474,9 +474,12 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 
 		image_compare.threshold_and_opening(thr, filt_s);
 		cv::Mat annotation_image = image_compare.annotate();
-		cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
-		m_diffPath = annotate_path;
-		DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
+
+		if (not annotation_image.empty()) {
+			cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
+			m_diffPath = annotate_path;
+			DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
+		}
 
 		UpdateData(FALSE);
 	}
