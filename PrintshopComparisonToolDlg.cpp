@@ -376,8 +376,6 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	image_compare.set_flag(vz::ImgCmp::Flags::kDrawContour);
 	image_compare.set_flag(vz::ImgCmp::Flags::kDrawRectangle);
 
-	const int width = 900;
-
 	std::string orgFilePath(ConvertWideCharToMultiByte(m_origPath));
 	cv::Mat tmp = get_image(orgFilePath);
 	cv::Size orgSize = tmp.size();
@@ -386,12 +384,7 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	std::string scabFilePath(ConvertWideCharToMultiByte(m_scanPath));
 	
 	cv::Mat comparison_image = get_image(scabFilePath);
-	//resize scan image resolution to original image resolution.
-	//comparison_image = vz::resize(comparison_image, orgSize.width, orgSize.height);
-	//cv::Mat comparison_image = get_image(scabFilePath);
 	image_compare.compare(comparison_image);
-
-	comparison_image = vz::resize(comparison_image, width);
 
 	cv::Mat annotation_image = image_compare.annotate();
 	CString annotate_path("annotation.png");
@@ -402,50 +395,6 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	m_diffPath = annotate_path;
 	DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
 
-	/*cv::namedWindow("vz::ImgCmp - annotation image", cv::WINDOW_KEEPRATIO + cv::WINDOW_GUI_EXPANDED);
-	cv::resizeWindow("vz::ImgCmp - annotation image", annotation_image.cols, annotation_image.rows);
-	cv::imshow("vz::ImgCmp - annotation image", annotation_image);*/
-#if 0
-	CRect rcDiff;
-	GetDlgItem(IDC_PIC_DIFF)->GetWindowRect(&rcDiff);
-
-	CDC *pDC = GetDlgItem(IDC_PIC_DIFF)->GetDC();
-	HDC hDCDst = pDC->GetSafeHdc();
-
-	cv::Size winSize(rcDiff.Width(), rcDiff.Height());
-	cvImgTmp = cv::Mat(winSize, CV_8UC3);
-	if (annotation_image.size() != winSize)
-	{
-		cv::resize(annotation_image, cvImgTmp, winSize);
-	}
-	else
-	{
-		cvImgTmp = annotation_image.clone();
-	}
-	cv::flip(cvImgTmp, cvImgTmp, 0);
-
-	// Initialize the BITMAPINFO structure
-	bitInfo.bmiHeader.biBitCount = 24;
-	bitInfo.bmiHeader.biWidth = winSize.width;
-	bitInfo.bmiHeader.biHeight = winSize.height;
-	bitInfo.bmiHeader.biPlanes = 1;
-	bitInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bitInfo.bmiHeader.biCompression = BI_RGB;
-	bitInfo.bmiHeader.biClrImportant = 0;
-	bitInfo.bmiHeader.biClrUsed = 0;
-	bitInfo.bmiHeader.biSizeImage = 0;
-	bitInfo.bmiHeader.biXPelsPerMeter = 0;
-	bitInfo.bmiHeader.biYPelsPerMeter = 0;
-
-	// Add header and OPENCV image's data to the HDC
-	StretchDIBits(hDCDst, 0, 0,
-		winSize.width, winSize.height, 0, 0,
-		winSize.width, winSize.height,
-		cvImgTmp.data, &bitInfo, DIB_RGB_COLORS, SRCCOPY);
-
-
-	ReleaseDC(pDC);
-#endif
 	UpdateWindow();
 }
 

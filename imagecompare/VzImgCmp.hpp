@@ -7,6 +7,15 @@
 #include <opencv2/opencv.hpp>
 #include <Imagination.hpp>
 
+// method of interpolation
+// used in resizing and warping functions
+#define INTERP_METHOD cv::INTER_AREA
+
+// limit of image size width
+// in image analysis engine
+// images bigger than this will
+// be scaled down, keeping the aspect ratio
+#define PROCESSING_WITH_LIMIT 1500.f
 
 /// CCR's @p Vz (image manipulation) namespace.
 namespace vz
@@ -262,5 +271,15 @@ namespace vz
 			 * which has additional logic to ensure conflicting features aren't set.
 			 */
 			Flags flags;
+
+			// the feature detector used for rough alignment procedure
+			cv::Ptr<cv::FeatureDetector> detector = cv::ORB::create(2000, 1.2, 8, 91, 0, 2, cv::ORB::ScoreType::HARRIS_SCORE, 91, 10);
+			// the feature matcher used to match features detected by @ref detector
+			cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMINGLUT);
+			// the keypoints of the features detected for the current master image
+			std::vector<cv::KeyPoint> keypoints_master;
+			// the descriptors of the features detected for the current master image
+			cv::Mat descriptors_master;
+			
 	};
 }

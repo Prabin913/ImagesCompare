@@ -5,6 +5,7 @@
 #include <VzImgCmp.hpp>
 #include <fstream>
 
+// debug log file for the image processing engine
 std::ofstream log_file;
 
 
@@ -14,7 +15,6 @@ vz::ImgCmp::ImgCmp()
 
 	return;
 }
-
 
 vz::ImgCmp::ImgCmp(cv::Mat master)
 {
@@ -221,9 +221,9 @@ vz::VStr vz::ImgCmp::debug_save()
 }
 
 
-#define DEBUG 0
+#define DEBUG 1
 
-void display_dbg(std::string win_name, cv::Mat img)
+static void display_dbg(std::string win_name, cv::Mat img)
 {
 #if DEBUG
 	cv::Mat resized;
@@ -232,7 +232,7 @@ void display_dbg(std::string win_name, cv::Mat img)
 #endif
 }
 
-void write_dbg(std::string filename, cv::Mat img)
+static void write_dbg(std::string filename, cv::Mat img)
 {
 #if DEBUG
 	std::string path = "../" + filename + ".png";
@@ -242,21 +242,14 @@ void write_dbg(std::string filename, cv::Mat img)
 	return;
 }
 
-cv::Ptr<cv::FeatureDetector> detector = cv::ORB::create(2000, 1.2, 8, 91, 0, 2, cv::ORB::ScoreType::HARRIS_SCORE, 91, 10);
-cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE_HAMMINGLUT);
-std::vector<cv::KeyPoint> keypoints_master;
-cv::Mat descriptors_master;
-float processing_width_limit = 1500;
-#define INTERP_METHOD cv::INTER_AREA
-
-cv::Mat scale_input_img(cv::Mat img)
+static cv::Mat scale_input_img(cv::Mat img)
 {
 	cv::Mat resized;
 	// if the image doesn't exceed limit, return as is
-	if (img.size().width < processing_width_limit)
+	if (img.size().width < PROCESSING_WITH_LIMIT)
 		return img;
 
-	float aspect_ratio = processing_width_limit / img.size().width;
+	float aspect_ratio = PROCESSING_WITH_LIMIT / img.size().width;
 	cv::resize(img, resized,
 		{ int(img.size().width * aspect_ratio), int(img.size().height * aspect_ratio) }, 0, 0, INTERP_METHOD);
 	return resized;
@@ -288,27 +281,20 @@ vz::ImgCmp & vz::ImgCmp::set_master_image(cv::Mat img)
 	cv::Mat tmp = vz::resize(img, resized_image_scale);
 	master_resized.set_original(tmp);
 
-	// Compute image features used later for image alignment
-	// We need to only do it once for master image
+
 	auto type = vz::Imagination::EMatType::kOriginalImage;
 	if (flags & Flags::kDiffGreyscale)
 	{
 		type = vz::Imagination::EMatType::kO2BlurGreyscale;
 	}
+
+	// Compute image features used later for image alignment
+	// We need to only do it once for master image
 	cv::Mat master;
 	if (flags & Flags::kDiffResized)
 		master = master_resized.get(type);
 	else
 		master = master_original.get(type);
-
-	auto m_s = master.size();
-	cv::Mat detection_mask = cv::Mat(m_s, CV_8UC1);
-	detection_mask.setTo(255);
-	int m_ratio = 7;
-	cv::rectangle(detection_mask, cv::Point{ m_s.width / m_ratio, m_s.height / m_ratio },
-		cv::Point{ m_s.width * (m_ratio - 1) / m_ratio, m_s.height * (m_ratio - 1) / m_ratio },
-		cv::Scalar{ 0 }, cv::FILLED);
-	write_dbg("detection_mask", detection_mask);
 
 	cv::Mat master_small = scale_input_img(master);
 	auto start = std::chrono::steady_clock().now();
@@ -354,7 +340,7 @@ size_t vz::ImgCmp::compare(cv::Mat img)
 }
 
 // add a row to affine matrix so we can multiply them
-cv::Mat_<float> expand_dim(cv::Mat_<float> mat) {
+static cv::Mat_<float> expand_dim(cv::Mat_<float> mat) {
 	// initialize with zeros
 	cv::Mat_<float> ret(3,3);
 	ret.setTo(0);
@@ -370,7 +356,7 @@ cv::Mat_<float> expand_dim(cv::Mat_<float> mat) {
 }
 
 // we want to apply A transformation before B
-cv::Mat_<float> combine_affine_transforms(cv::Mat_<float> A, cv::Mat_<float> B)
+static cv::Mat_<float> combine_affine_transforms(cv::Mat_<float> A, cv::Mat_<float> B)
 {
 	cv::Mat_<float> ret(2, 3);
 	A = expand_dim(A);
@@ -389,15 +375,6 @@ void vz::ImgCmp::align_images(cv::Mat& master, cv::Mat& candy)
 	std::vector<cv::KeyPoint> keypoints_candy;
 	cv::Mat descriptors_candy;
 
-	auto c_s = candy.size();
-	int m_ratio = 7;
-	cv::Mat candy_detection_mask = cv::Mat(c_s, CV_8UC1);
-	candy_detection_mask.setTo(255);
-	cv::rectangle(candy_detection_mask, cv::Point{ c_s.width / m_ratio, c_s.height / m_ratio },
-		cv::Point{ c_s.width * (m_ratio - 1) / m_ratio, c_s.height * (m_ratio - 1) / m_ratio },
-		cv::Scalar{ 0 }, cv::FILLED);
-	write_dbg("candy_detection_mask", candy_detection_mask);
-
 	auto start = std::chrono::steady_clock().now();
 	detector->detectAndCompute(master, cv::Mat(), keypoints_candy, descriptors_candy);
 	log_file << "Candy detection took: " << std::chrono::duration{ std::chrono::steady_clock().now() - start }.count() << std::endl;
@@ -408,24 +385,8 @@ void vz::ImgCmp::align_images(cv::Mat& master, cv::Mat& candy)
 	write_dbg("master_keypoints", m_keypoints);
 	write_dbg("candy_keypoints", c_keypoints);
 	
-	start = std::chrono::steady_clock().now();
-#if 0
-	std::vector<std::vector<cv::DMatch>> matches;
-
-	matcher->knnMatch(descriptors_master, descriptors_candy, matches, 2);
-	log_file << "Matching took: " << std::chrono::duration{ std::chrono::steady_clock().now() - start }.count() << std::endl;
-
-	const float ratio_thresh = 0.3f;
-	std::vector<cv::DMatch> good_matches;
-	for (size_t i = 0; i < matches.size(); i++)
-	{
-		if (matches[i][0].distance < ratio_thresh * matches[i][1].distance)
-			good_matches.push_back(matches[i][0]);
-	}
-#else
 	std::vector<cv::DMatch> good_matches;
 	matcher->match(descriptors_master, descriptors_candy, good_matches);
-#endif
 
 	// localize the object
 	std::vector<cv::Point2f> obj;
@@ -491,9 +452,6 @@ void vz::ImgCmp::align_images(cv::Mat& master, cv::Mat& candy)
 	log_file << "findTransformECC: " << std::chrono::duration{ std::chrono::steady_clock().now() - start }.count() << std::endl;
 
 	auto warp_combined = combine_affine_transforms(rough_warp_matrix, fine_warp_matrix);
-	// Apply scale to the translation elements so we can use it on big image
-	//warp_combined(0, 2) *= alignment_scale;
-	//warp_combined(1, 2) *= alignment_scale;
 
 	cv::Mat candy_warped_big;
 	// appy both transformations using matrix multiplication
@@ -527,7 +485,6 @@ vz::ImgCmp & vz::ImgCmp::diff_images()
 
 	log_file.open("../log.txt", 'w');
 
-
 	img1 = scale_input_img(img1);
 	img2 = scale_input_img(img2);
 
@@ -549,12 +506,7 @@ vz::ImgCmp & vz::ImgCmp::diff_images()
 	cv::threshold(gray_differences, differences_threshold, 100, 255, cv::THRESH_BINARY);
 	write_dbg("difference_thresh", differences_threshold);
 
-	//cv::Mat element = cv::getStructuringElement(cv::MorphShapes::MORPH_RECT, cv::Size(2, 2));
-	//cv::erode(differences_threshold, differences_threshold, element);
-	//write_dbg("difference_thresh_morph", differences_threshold);
-
 	log_file.close();
-
 
 	return *this;
 }
@@ -580,9 +532,6 @@ vz::ImgCmp & vz::ImgCmp::get_contours()
 
 	return *this;
 }
-
-
-
 
 
 cv::Mat vz::ImgCmp::annotate()
