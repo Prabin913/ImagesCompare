@@ -62,5 +62,5 @@ private:
 	CBrush m_brBack, m_brBack2, m_brBack3;
 	CBrush m_tx;
 
-	CString m_origPath, m_scanPath;
+	CString m_origPath, m_scanPath, m_diffPath;
 };

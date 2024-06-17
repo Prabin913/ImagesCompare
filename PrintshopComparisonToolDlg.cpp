@@ -166,6 +166,7 @@ void PrintshopComparisonToolDlg::OnPaint()
 
 		DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
 		DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
+		DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
 	}
 }
 
@@ -366,8 +367,8 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	image_compare.set_flag	(vz::ImgCmp::Flags::kDiffColour				);
 	//image_compare.set_flag(vz::ImgCmp::Flags::kDiffGreyscale);
 	image_compare.set_flag(vz::ImgCmp::Flags::kThresholdTriangle);
-	//	image_compare.set_flag	(vz::ImgCmp::Flags::kDiffOriginalSize		);
-	image_compare.set_flag(vz::ImgCmp::Flags::kDiffResized);
+	image_compare.set_flag	(vz::ImgCmp::Flags::kDiffOriginalSize		);
+	//image_compare.set_flag(vz::ImgCmp::Flags::kDiffResized);
 	image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateAddRedBorder);
 	image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateAddGreenBorder);
 	image_compare.set_flag	(vz::ImgCmp::Flags::kAnnotateOverColour		);
@@ -393,15 +394,16 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	comparison_image = vz::resize(comparison_image, width);
 
 	cv::Mat annotation_image = image_compare.annotate();
-	annotation_image = vz::resize(annotation_image, width);
 	CString annotate_path("annotation.png");
 	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
+	
+	// save path to temporary annotation image
+	// so it can be drawn correctly in PrintshopComparisonToolDlg::OnPaint
+	m_diffPath = annotate_path;
+
 	/*cv::namedWindow("vz::ImgCmp - annotation image", cv::WINDOW_KEEPRATIO + cv::WINDOW_GUI_EXPANDED);
 	cv::resizeWindow("vz::ImgCmp - annotation image", annotation_image.cols, annotation_image.rows);
 	cv::imshow("vz::ImgCmp - annotation image", annotation_image);*/
-
-	DrawImage(GetDlgItem(IDC_PIC_DIFF), annotate_path);
-
 #if 0
 	CRect rcDiff;
 	GetDlgItem(IDC_PIC_DIFF)->GetWindowRect(&rcDiff);
@@ -410,7 +412,7 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	HDC hDCDst = pDC->GetSafeHdc();
 
 	cv::Size winSize(rcDiff.Width(), rcDiff.Height());
-	cv::Mat cvImgTmp(winSize, CV_8UC3);
+	cvImgTmp = cv::Mat(winSize, CV_8UC3);
 	if (annotation_image.size() != winSize)
 	{
 		cv::resize(annotation_image, cvImgTmp, winSize);
@@ -422,7 +424,6 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	cv::flip(cvImgTmp, cvImgTmp, 0);
 
 	// Initialize the BITMAPINFO structure
-	BITMAPINFO bitInfo;
 	bitInfo.bmiHeader.biBitCount = 24;
 	bitInfo.bmiHeader.biWidth = winSize.width;
 	bitInfo.bmiHeader.biHeight = winSize.height;
@@ -441,8 +442,10 @@ void PrintshopComparisonToolDlg::CompareImage() {
 		winSize.width, winSize.height,
 		cvImgTmp.data, &bitInfo, DIB_RGB_COLORS, SRCCOPY);
 
+
 	ReleaseDC(pDC);
 #endif
+	UpdateWindow();
 }
 
 void PrintshopComparisonToolDlg::OnStnClickedPicOrig()
@@ -483,6 +486,7 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		return;
 	}
 
+	UpdateWindow();
 
 	CDialog::OnLButtonDown(nFlags, point);
 }
