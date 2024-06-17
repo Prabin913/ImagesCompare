@@ -63,4 +63,10 @@ private:
 	CBrush m_tx;
 
 	CString m_origPath, m_scanPath, m_diffPath;
+public:
+	CSliderCtrl threshold_slider;
+	CSliderCtrl filter_size_slider;
+	CString thr_slider_echo;
+	CString filt_slider_echo;
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

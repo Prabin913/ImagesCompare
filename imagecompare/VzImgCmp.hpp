@@ -148,7 +148,7 @@ namespace vz
 			 * @see @ref differences_threshold
 			 * @see @ref differences_contours
 			 */
-			virtual size_t compare(cv::Mat img);
+			virtual size_t compare(cv::Mat img, int threshold, int filter_size);
 
 			/** Annotate the most recently compared image.  You must call @ref compare() prior to this method.  The annotated
 			 * image will also be stored in @ref annotated_candy.
@@ -159,6 +159,9 @@ namespace vz
 			 * @see @ref annotated_candy
 			 */
 			virtual cv::Mat annotate();
+			
+			virtual void threshold_and_opening(int threshold, int filter_size);
+
 
 		protected:
 
@@ -167,6 +170,7 @@ namespace vz
 
 			/// This is called by @ref compare() to compute @ref differences.
 			virtual ImgCmp & diff_images();
+
 
 			/// This is called by @ref compare() to get the @ref differences_contours.
 			virtual ImgCmp & get_contours();

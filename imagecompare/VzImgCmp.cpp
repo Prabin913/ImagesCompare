@@ -221,7 +221,7 @@ vz::VStr vz::ImgCmp::debug_save()
 }
 
 
-#define DEBUG 1
+#define DEBUG 0
 
 static void display_dbg(std::string win_name, cv::Mat img)
 {
@@ -305,7 +305,7 @@ vz::ImgCmp & vz::ImgCmp::set_master_image(cv::Mat img)
 }
 
 
-size_t vz::ImgCmp::compare(cv::Mat img)
+size_t vz::ImgCmp::compare(cv::Mat img, int threshold, int filter_size)
 {
 	verify_flags();
 	candy_original			.clear();
@@ -334,7 +334,8 @@ size_t vz::ImgCmp::compare(cv::Mat img)
 	candy_resized = vz::resize(img, resized_image_scale);
 
 	diff_images();
-	get_contours();
+	threshold_and_opening(threshold, filter_size);
+
 
 	return differences_contours.size();
 }
@@ -499,21 +500,37 @@ vz::ImgCmp & vz::ImgCmp::diff_images()
 	log_file << "Difference took: " << std::chrono::duration{ std::chrono::steady_clock().now() - start }.count() << std::endl;
 	write_dbg("difference", differences);
 
-	cv::Mat gray_differences;
-	cv::cvtColor(differences, gray_differences, cv::COLOR_BGR2GRAY);
-	write_dbg("difference_gray", gray_differences);
-
-	cv::threshold(gray_differences, differences_threshold, 100, 255, cv::THRESH_BINARY);
-	write_dbg("difference_thresh", differences_threshold);
-
 	log_file.close();
 
 	return *this;
 }
 
+void vz::ImgCmp::threshold_and_opening(int threshold, int filter_size) {
+	cv::Mat gray_differences;
+	cv::cvtColor(differences, gray_differences, cv::COLOR_BGR2GRAY);
+	write_dbg("difference_gray", gray_differences);
+
+	cv::threshold(gray_differences, differences_threshold, threshold, 255, cv::THRESH_BINARY);
+	write_dbg("difference_thresh", differences_threshold);
+
+	// morphology filtering, opening,
+	// only when filter size was specified
+	if (filter_size > 0)
+	{
+		cv::Mat filtered;
+		auto elem = cv::getStructuringElement(cv::MORPH_RECT, cv::Size{ filter_size, filter_size });
+		cv::morphologyEx(differences_threshold, filtered, cv::MorphTypes::MORPH_OPEN, elem);
+		differences_threshold = filtered;
+	}
+
+	get_contours();
+}
+
 
 vz::ImgCmp & vz::ImgCmp::get_contours()
 {
+	// disabled contour filtering by size
+#if 0
 	differences_contours.clear();
 
 	for (const auto & contour : vz::find_contours(differences_threshold))
@@ -529,6 +546,9 @@ vz::ImgCmp & vz::ImgCmp::get_contours()
 //			std::cout << "-> skipping difference because the area only measures " << area << std::endl;
 		}
 	}
+# else 
+	differences_contours = vz::find_contours(differences_threshold);
+#endif
 
 	return *this;
 }
@@ -537,18 +557,6 @@ vz::ImgCmp & vz::ImgCmp::get_contours()
 cv::Mat vz::ImgCmp::annotate()
 {
 	annotated_candy = candy_aligned.get().clone();
-
-	if (flags & Flags::kAnnotateOverGrey)
-	{
-		cv::Mat mat1;
-		cv::Mat mat2;
-		cv::cvtColor(annotated_candy, mat1, cv::COLOR_BGR2GRAY);
-		cv::cvtColor(mat1, mat2, cv::COLOR_GRAY2BGR);
-
-		// copy only the masked differences over from the colour image into mat2
-		annotated_candy.copyTo(mat2, differences_threshold);
-		annotated_candy = mat2;
-	}
 
 	if (differences_contours.empty() && flags & Flags::kAnnotateAddGreenBorder)
 	{

@@ -32,6 +32,8 @@ double g_fDPIRate = 1.0;
 
 PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent)
+	, thr_slider_echo(_T(""))
+	, filt_slider_echo(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -40,6 +42,10 @@ PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_SLIDER1, threshold_slider);
+	DDX_Control(pDX, IDC_SLIDER2, filter_size_slider);
+	DDX_Text(pDX, IDC_STATIC_THR, thr_slider_echo);
+	DDX_Text(pDX, IDC_STATIC_FILT_SIZE, filt_slider_echo);
 }
 
 BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
@@ -55,6 +61,8 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_STN_CLICKED(IDC_PIC_ORIG, &PrintshopComparisonToolDlg::OnStnClickedPicOrig)
 	ON_STN_CLICKED(IDC_PIC_SCAN, &PrintshopComparisonToolDlg::OnStnClickedPicScan)
 	ON_WM_LBUTTONDOWN()
+	ON_WM_VSCROLL()
+	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
 
 // PrintshopComparisonToolDlg class implementation
@@ -131,7 +139,15 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
+	// initialize sliders
+	threshold_slider.SetRange(0, 256, TRUE);
+	threshold_slider.SetPos(100);
+	thr_slider_echo.Format(_T("%d"), threshold_slider.GetPos());
 
+	filter_size_slider.SetRange(0, 10, TRUE);
+	filter_size_slider.SetPos(3);
+	filt_slider_echo.Format(_T("%d"), filter_size_slider.GetPos());
+	UpdateData(FALSE);
 
 	SetTimer(1000, 500, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -357,8 +373,10 @@ cv::Mat get_image(const std::string & filename)
 	return mat;
 }
 
+static vz::ImgCmp image_compare;
+static CString annotate_path("annotation.png");
+
 void PrintshopComparisonToolDlg::CompareImage() {
-	vz::ImgCmp image_compare;
 
 	image_compare.dilate_and_erode = 3;
 	image_compare.resized_image_scale = 0.5;
@@ -384,10 +402,11 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	std::string scabFilePath(ConvertWideCharToMultiByte(m_scanPath));
 	
 	cv::Mat comparison_image = get_image(scabFilePath);
-	image_compare.compare(comparison_image);
+	image_compare.compare(comparison_image,
+		threshold_slider.GetPos(),
+		filter_size_slider.GetPos());
 
 	cv::Mat annotation_image = image_compare.annotate();
-	CString annotate_path("annotation.png");
 	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
 	
 	// save path to temporary annotation image
@@ -439,4 +458,30 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	UpdateWindow();
 
 	CDialog::OnLButtonDown(nFlags, point);
+}
+
+void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	if (pScrollBar == (CScrollBar*)&threshold_slider or
+		pScrollBar == (CScrollBar*)&filter_size_slider)
+	{
+		// update threshold and rerun the difference
+		int thr = threshold_slider.GetPos();
+		int filt_s = filter_size_slider.GetPos();
+
+		thr_slider_echo.Format(_T("%d"), thr);
+		filt_slider_echo.Format(_T("%d"), filt_s);
+
+		image_compare.threshold_and_opening(thr, filt_s);
+		cv::Mat annotation_image = image_compare.annotate();
+		cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
+		m_diffPath = annotate_path;
+		DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
+
+		UpdateData(FALSE);
+	}
+	else
+	{
+		CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+	}
 }
