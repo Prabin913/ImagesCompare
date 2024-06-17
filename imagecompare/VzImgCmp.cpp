@@ -247,6 +247,7 @@ cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::Descr
 std::vector<cv::KeyPoint> keypoints_master;
 cv::Mat descriptors_master;
 float processing_width_limit = 1500;
+#define INTERP_METHOD cv::INTER_AREA
 
 cv::Mat scale_input_img(cv::Mat img)
 {
@@ -257,7 +258,7 @@ cv::Mat scale_input_img(cv::Mat img)
 
 	float aspect_ratio = processing_width_limit / img.size().width;
 	cv::resize(img, resized,
-		{ int(img.size().width * aspect_ratio), int(img.size().height * aspect_ratio) });
+		{ int(img.size().width * aspect_ratio), int(img.size().height * aspect_ratio) }, 0, 0, INTERP_METHOD);
 	return resized;
 }
 
@@ -480,7 +481,7 @@ void vz::ImgCmp::align_images(cv::Mat& master, cv::Mat& candy)
 	cv::Scalar white{ 255,255,255 };
 	cv::cvtColor(candy, candy_gray, cv::COLOR_BGR2GRAY);
 	cv::warpAffine(candy_gray, candy_warped, rough_warp_matrix, master.size(),
-		cv::INTER_LINEAR, cv::BORDER_CONSTANT, white);
+		INTERP_METHOD, cv::BORDER_CONSTANT, white);
 
 	cv::cvtColor(master, master_gray, cv::COLOR_BGR2GRAY);
 
@@ -497,7 +498,7 @@ void vz::ImgCmp::align_images(cv::Mat& master, cv::Mat& candy)
 	cv::Mat candy_warped_big;
 	// appy both transformations using matrix multiplication
 	cv::warpAffine(candy, candy_warped_big, warp_combined, master.size(),
-		cv::INTER_LINEAR, cv::BORDER_CONSTANT, white);
+		INTERP_METHOD, cv::BORDER_CONSTANT, white);
 
 	candy = candy_warped_big;
 }
