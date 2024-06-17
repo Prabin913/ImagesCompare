@@ -400,6 +400,7 @@ void PrintshopComparisonToolDlg::CompareImage() {
 	// save path to temporary annotation image
 	// so it can be drawn correctly in PrintshopComparisonToolDlg::OnPaint
 	m_diffPath = annotate_path;
+	DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
 
 	/*cv::namedWindow("vz::ImgCmp - annotation image", cv::WINDOW_KEEPRATIO + cv::WINDOW_GUI_EXPANDED);
 	cv::resizeWindow("vz::ImgCmp - annotation image", annotation_image.cols, annotation_image.rows);
