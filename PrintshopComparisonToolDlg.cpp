@@ -376,7 +376,8 @@ cv::Mat get_image(const std::string & filename)
 static vz::ImgCmp image_compare;
 static CString annotate_path("annotation.png");
 
-void PrintshopComparisonToolDlg::CompareImage() {
+void PrintshopComparisonToolDlg::CompareImage() 
+{
 
 	image_compare.dilate_and_erode = 3;
 	image_compare.resized_image_scale = 0.5;
@@ -434,9 +435,15 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	CRect rc;
 	GetDlgItem(IDC_PIC_ORIG)->GetWindowRect(&rc);
 	ScreenToClient(&rc);
-	if (rc.PtInRect(point)) {
+	if (rc.PtInRect(point)) 
+	{
+		WriteLogFile(L"Using clicked PDF area");
+		
 		CString pdfPath = SelectFileFromDialog(1);
-		if (ConvertPDF2IMG(pdfPath)) {
+		WriteLogFile(L"Selected pdf file: '%s'",pdfPath.GetString());
+		if (ConvertPDF2IMG(pdfPath)) 
+		{
+			
 			DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
 		}
 		//m_origPath = pdfPath;
@@ -446,11 +453,17 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 	GetDlgItem(IDC_PIC_SCAN)->GetWindowRect(&rc);
 	ScreenToClient(&rc);
-	if (rc.PtInRect(point)) {
+	if (rc.PtInRect(point)) 
+	{
+		WriteLogFile(L"Using clicked PNG area");
+
 		m_scanPath = SelectFileFromDialog(0);
-		if (!m_scanPath.IsEmpty()) {
+		if (!m_scanPath.IsEmpty()) 
+		{
 			DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
+			WriteLogFile(L"Starting to compare %s and %s",m_origPath.GetString(), m_scanPath.GetString());
 			CompareImage();
+			WriteLogFile(L"Compare completed");
 		}
 		return;
 	}
