@@ -366,8 +366,7 @@ cv::Mat get_image(const std::string & filename)
 	{
 		WriteLogFile(L"failed to read image %S",filename.c_str());
 	}
-
-	std::cout << mat.cols << "x" << mat.rows << std::endl;
+	WriteLogFile(L"%d x %d",mat.cols,mat.rows);
 
 	return mat;
 }
