@@ -573,6 +573,7 @@ copy $(ProjectDir)3rdparty\bin64\opencv_world4100d.dll $(OutputPath) </Command>
     <ClInclude Include="SG_ButtonFly.h" />
     <ClInclude Include="SplashWnd.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imagecompare\Imagination.cpp">
@@ -609,6 +610,7 @@ copy $(ProjectDir)3rdparty\bin64\opencv_world4100d.dll $(OutputPath) </Command>
     </ClCompile>
     <ClCompile Include="SG_ButtonFly.cpp" />
     <ClCompile Include="SplashWnd.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />

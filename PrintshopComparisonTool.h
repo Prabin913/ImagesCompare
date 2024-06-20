@@ -35,4 +35,3 @@ public:
 };
 
 extern CPrintshopComparisonToolApp theApp;
-int WriteLogFile(LPCWSTR lpText, ...);

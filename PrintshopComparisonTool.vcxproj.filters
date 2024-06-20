@@ -30,6 +30,7 @@
     <ClCompile Include="SplashWnd.cpp">
       <Filter>imaging</Filter>
     </ClCompile>
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrintshopComparisonTool.h" />
@@ -1063,6 +1064,7 @@
     <ClInclude Include="3rdparty\include\mupdf\pdf\xref.h">
       <Filter>imaging</Filter>
     </ClInclude>
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />

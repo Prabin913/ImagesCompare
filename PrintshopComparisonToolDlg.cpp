@@ -10,6 +10,7 @@
 #include "PrintshopComparisonToolDlg.h"
 #include "afxdialogex.h"
 #include "mupdf/pdf.hpp"
+#include "utils.h"
 
 #include <iostream>
 #include <sstream>
@@ -356,7 +357,7 @@ cv::Mat get_image(const std::string & filename)
 
 	if (filename.empty())
 	{
-		throw std::invalid_argument("cannot read mage from empty filename");
+		WriteLogFile(L"failed to empty file name %S", filename.c_str());
 	}
 
 	cv::Mat mat = cv::imread(filename, cv::IMREAD_COLOR);
@@ -365,7 +366,7 @@ cv::Mat get_image(const std::string & filename)
 		mat.cols < 10 ||
 		mat.rows < 10)
 	{
-		throw std::runtime_error("failed to read image " + filename);
+		WriteLogFile(L"failed to read image %S",filename.c_str());
 	}
 
 	std::cout << mat.cols << "x" << mat.rows << std::endl;
@@ -437,7 +438,7 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	ScreenToClient(&rc);
 	if (rc.PtInRect(point)) 
 	{
-		WriteLogFile(L"Using clicked PDF area");
+		WriteLogFile(L"User clicked PDF area");
 		
 		CString pdfPath = SelectFileFromDialog(1);
 		WriteLogFile(L"Selected pdf file: '%s'",pdfPath.GetString());
