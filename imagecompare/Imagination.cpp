@@ -5,6 +5,7 @@
 #include "Imagination.hpp"
 #include "Intervals.hpp"
 #include "MatManip.hpp"
+#include "..\utils.h"
 
 #define M_PI	3.141592f
 
@@ -174,7 +175,8 @@ vz::Imagination & vz::Imagination::set_original(const std::string & original_ima
 	if (img.empty())
 	{
 		/// @throw std::runtime_error if the image fails to load (file does not exist?)
-		throw std::runtime_error("failed to read \"" + original_image_filename + "\"");
+		WriteLogFile(L"failed to read %S", original_image_filename.c_str());
+
 	}
 
 	return set_original(img);
@@ -220,12 +222,12 @@ cv::Mat & vz::Imagination::get(const EMatType type)
 			case EMatType::kMax:
 			{
 				/// @throw std::out_of_range if the type is invalid
-				throw std::out_of_range("cannot get an image corresponding to type \"" + name + "\"");
+				WriteLogFile(L"cannot get an image corresponding to type %S",name.c_str());
 			}
 			case EMatType::kOriginalImage:
 			{
 				/// @throw std::logic_error if the original image has not been set
-				throw std::logic_error("original image has not been set");
+				WriteLogFile(L"original image has not been set");
 			}
 			case EMatType::kCannyEdgeDetection:
 			{
@@ -278,7 +280,7 @@ cv::Mat & vz::Imagination::get(const EMatType type)
 		if (!exists(name))
 		{
 			/// @throw std::logic_error if the specified image type failed to load
-			throw std::logic_error("failed to get or create image type \"" + name + "\"");
+			WriteLogFile(L"failed to get or create image type %S",name.c_str());
 		}
 	}
 
@@ -305,7 +307,7 @@ cv::Mat & vz::Imagination::get(const std::string & name)
 	}
 
 	/// @throw std::logic_error if the specified image type does not exist
-	throw std::logic_error("failed to get or create image type \"" + name + "\"");
+	WriteLogFile(L"Failed to get or create image type %S",name.c_str());
 }
 
 
@@ -706,7 +708,6 @@ cv::Mat vz::Imagination::create_mosaic(const bool show_labels)
 	return output;
 }
 
-
 cv::Mat vz::Imagination::create_threshold(const EThresholdType type)
 {
 	cv::Mat dst;
@@ -720,7 +721,9 @@ cv::Mat vz::Imagination::create_threshold(const EThresholdType type)
 		case EThresholdType::kMax:
 		{
 			/// @throw std::invalid_argument if the threshold type is invalid
-			throw std::invalid_argument("cannot create threshold with type \"" + to_string(type) + "\"");
+			WriteLogFile(L"cannot create threshold with type %S",to_string(type).c_str());
+			
+			//throw std::invalid_argument("cannot create threshold with type \"" + to_string(type) + "\"");
 		}
 
 		case EThresholdType::kOtsu:
@@ -757,7 +760,7 @@ cv::Mat vz::Imagination::create_threshold(const EThresholdType type)
 	if (dst.empty())
 	{
 		/// @throw std::logic_error if the threshold image wasn't created (internal error)
-		throw std::logic_error("failed to create threshold image with type \"" + to_string(type) + "\"");
+		WriteLogFile(L"failed to create threshold image with type %S",to_string(type).c_str());
 	}
 
 	return dst;
