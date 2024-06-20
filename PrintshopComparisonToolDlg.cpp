@@ -353,8 +353,8 @@ char *PrintshopComparisonToolDlg::ConvertWideCharToMultiByte(const CString &strW
 
 cv::Mat get_image(const std::string & filename)
 {
-	std::cout << "-> reading " << filename << ": ";
-
+	WriteLogFile(L"reading file: %S",filename.c_str());
+	
 	if (filename.empty())
 	{
 		WriteLogFile(L"failed to empty file name %S", filename.c_str());
