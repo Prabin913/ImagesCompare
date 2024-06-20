@@ -1,2 +1,4 @@
 . !text !filter !merge !diff
 * !text !filter !merge !diff
+3rdparty/bin64/* filter=lfs diff=lfs merge=lfs -text
+3rdparty/lib64/* filter=lfs diff=lfs merge=lfs -text
