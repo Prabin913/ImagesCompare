@@ -118,7 +118,7 @@
       <AdditionalDependencies>opencv_world4100.lib;libmupdf.lib;libthirdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>3rdparty/lib;C:\Users\elston_sa\Downloads\opencv4.10.0\opencv\build\x64\vc16\lib;C:\Users\elston_sa\Downloads\mupdf-1.24.3\platform\win32\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
