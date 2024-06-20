@@ -106,11 +106,19 @@ void OpenLogFile()
 
 #include <fstream>
 #include <locale>
+#include "resource.h"
 void DeleteLogFile()
 {
 	//DeleteFile(LOGFILENAME);
 }
 
+CDialog* m_globalDlg;
+#define IDC_STATUS                      2500
+
+void ShowStatus(LPCWSTR lpText)
+{
+	m_globalDlg->GetDlgItem(IDC_STATUS)->SetWindowTextW(lpText);
+}
 int WriteLogFile(LPCWSTR lpText, ...)
 {
 	std::wofstream ofs;
@@ -122,6 +130,7 @@ int WriteLogFile(LPCWSTR lpText, ...)
 	sMsg.FormatV(lpText, ptr);
 	va_end(ptr);
 	wprintf(L"%s\n", sMsg.GetString());
+	ShowStatus(sMsg.GetString());
 	try
 	{
 		ofs.open(LOGFILENAME, std::ios_base::app);

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include <string>
 #include <windows.h>
 #include <atlbase.h>
@@ -7,6 +8,8 @@
 
 
 extern const wchar_t* DATEFORMAT;
+extern CDialog* m_globalDlg;
+void ShowStatus(LPCWSTR lpText);
 
 extern wchar_t LOGFILENAME[1024];
 std::string wstring_to_string(const std::wstring& wstr);

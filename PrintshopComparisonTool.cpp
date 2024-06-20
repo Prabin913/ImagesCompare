@@ -7,6 +7,7 @@
 #include "resource.h"
 #include "PrintshopComparisonTool.h"
 #include "PrintshopComparisonToolDlg.h"
+#include "utils.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -111,7 +112,7 @@ BOOL CPrintshopComparisonToolApp::InitInstance()
 	m_pMainWnd = &dlg;
 	CWnd* pParentWnd = 0;
 	pParentWnd = CWnd::FromHandle(m_pMainWnd->GetSafeHwnd());
-
+	m_globalDlg = (CDialog *)&dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{

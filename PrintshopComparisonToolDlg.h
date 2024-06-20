@@ -66,4 +66,5 @@ public:
 	CString thr_slider_echo;
 	CString filt_slider_echo;
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	CStatic m_Status;
 };

@@ -44,6 +44,7 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER2, filter_size_slider);
 	DDX_Text(pDX, IDC_STATIC_THR, thr_slider_echo);
 	DDX_Text(pDX, IDC_STATIC_FILT_SIZE, filt_slider_echo);
+	DDX_Control(pDX, IDC_STATUS, m_Status);
 }
 
 BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
