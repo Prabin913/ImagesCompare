@@ -79,6 +79,12 @@ BOOL CPrintshopComparisonToolApp::InitInstance()
 		return FALSE;
 	}
 
+
+#ifdef _DEBUG
+	AllocConsole();
+	freopen("CONOUT$", "w", stdout);
+#endif
+
 	CWinApp::InitInstance();
 
 

@@ -10,9 +10,6 @@
 #define	TX_COLOR3		RGB(0, 0, 0)
 #define	TX_HOVER_COLOR	RGB(180, 151, 209)
 
-#ifdef LOG
-void lvWriteLogFile(LPCTSTR lpText, ...);
-#endif
 
 using PasswordCheckCallback = std::function<bool(const std::wstring&)>;
 

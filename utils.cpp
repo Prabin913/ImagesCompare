@@ -121,7 +121,7 @@ int WriteLogFile(LPCWSTR lpText, ...)
 	va_start(ptr, lpText);
 	sMsg.FormatV(lpText, ptr);
 	va_end(ptr);
-
+	wprintf(L"%s\n", sMsg.GetString());
 	try
 	{
 		ofs.open(LOGFILENAME, std::ios_base::app);

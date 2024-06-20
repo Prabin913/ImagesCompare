@@ -26,9 +26,6 @@ double g_fDPIRate = 1.0;
 // PrintshopComparisonToolDlg dialog
 #define DATETIME_BUFFER_SIZE 80
 #define BUFFER_SIZE 4096
-#ifdef LOG
-#define LOG_FILE_NAME L"PrintshopComparisonTool.log"
-#endif
 
 
 PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
