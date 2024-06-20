@@ -1,6 +1,9 @@
 #include <string>
+#include <windows.h>
+#include <atlbase.h>
+#include <atlstr.h>
+
 #pragma once
-extern CString strSection;
 
 
 extern const wchar_t* DATEFORMAT;

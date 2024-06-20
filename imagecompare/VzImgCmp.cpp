@@ -4,6 +4,7 @@
 
 #include <VzImgCmp.hpp>
 #include <fstream>
+#include "..\utils.h"
 
 // debug log file for the image processing engine
 std::ofstream log_file;
@@ -445,13 +446,13 @@ void vz::ImgCmp::align_images(cv::Mat& master, cv::Mat& candy)
 	cv::warpAffine(candy_gray, candy_warped, rough_warp_matrix, master.size(),
 		INTERP_METHOD, cv::BORDER_CONSTANT, white);
 
+
 	cv::cvtColor(master, master_gray, cv::COLOR_BGR2GRAY);
 
 	cv::Mat_<float> fine_warp_matrix;
 	start = std::chrono::steady_clock().now();
 	cv::findTransformECC(candy_warped, master_gray, fine_warp_matrix, cv::MOTION_AFFINE);
-	log_file << "findTransformECC: " << std::chrono::duration{ std::chrono::steady_clock().now() - start }.count() << std::endl;
-
+	WriteLogFile(L"findTransformEEC started");
 	auto warp_combined = combine_affine_transforms(rough_warp_matrix, fine_warp_matrix);
 
 	cv::Mat candy_warped_big;
