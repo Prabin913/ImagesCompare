@@ -430,43 +430,52 @@ void PrintshopComparisonToolDlg::OnStnClickedPicScan()
 
 void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	CRect rc;
-	GetDlgItem(IDC_PIC_ORIG)->GetWindowRect(&rc);
-	ScreenToClient(&rc);
-	if (rc.PtInRect(point)) 
+	try
 	{
-		WriteLogFile(L"User clicked PDF area");
-		
-		CString pdfPath = SelectFileFromDialog(1);
-		WriteLogFile(L"Selected pdf file: '%s'",pdfPath.GetString());
-		if (ConvertPDF2IMG(pdfPath)) 
+		CRect rc;
+		GetDlgItem(IDC_PIC_ORIG)->GetWindowRect(&rc);
+		ScreenToClient(&rc);
+		if (rc.PtInRect(point))
 		{
-			
-			DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
-		}
-		//m_origPath = pdfPath;
-		//DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
-		return;
-	}
+			WriteLogFile(L"User clicked PDF area");
 
-	GetDlgItem(IDC_PIC_SCAN)->GetWindowRect(&rc);
-	ScreenToClient(&rc);
-	if (rc.PtInRect(point)) 
+			CString pdfPath = SelectFileFromDialog(1);
+			WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());
+			if (ConvertPDF2IMG(pdfPath))
+			{
+
+				DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
+			}
+			//m_origPath = pdfPath;
+			//DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
+			return;
+		}
+
+		GetDlgItem(IDC_PIC_SCAN)->GetWindowRect(&rc);
+		ScreenToClient(&rc);
+		if (rc.PtInRect(point))
+		{
+			WriteLogFile(L"Using clicked PNG area");
+
+			m_scanPath = SelectFileFromDialog(0);
+			if (!m_scanPath.IsEmpty())
+			{
+				DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
+				WriteLogFile(L"Starting to compare %s and %s", m_origPath.GetString(), m_scanPath.GetString());
+				CompareImage();
+				WriteLogFile(L"Compare completed");
+			}
+			return;
+		}
+
+		UpdateWindow();
+	}
+	catch (const std::exception& e)
 	{
-		WriteLogFile(L"Using clicked PNG area");
-
-		m_scanPath = SelectFileFromDialog(0);
-		if (!m_scanPath.IsEmpty()) 
-		{
-			DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
-			WriteLogFile(L"Starting to compare %s and %s",m_origPath.GetString(), m_scanPath.GetString());
-			CompareImage();
-			WriteLogFile(L"Compare completed");
-		}
-		return;
+		// Log any unhandled exception that may occur during
+		// the image comparison.
+		WriteLogFile(L"%S: %S", typeid(e).name(), e.what());
 	}
-
-	UpdateWindow();
 
 	CDialog::OnLButtonDown(nFlags, point);
 }
