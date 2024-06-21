@@ -119,6 +119,25 @@ void ShowStatus(LPCWSTR lpText)
 {
 	m_globalDlg->GetDlgItem(IDC_STATUS)->SetWindowTextW(lpText);
 }
+
+std::wstring GetExecutablePath()
+{
+	wchar_t path[MAX_PATH] = { 0 };
+	GetModuleFileNameW(NULL, path, MAX_PATH);
+	std::wstring executablePath(path);
+
+	// Find the last backslash
+	size_t lastBackslashPos = executablePath.find_last_of(L"\\/");
+	if (lastBackslashPos != std::wstring::npos)
+	{
+		// Extract the directory path including the trailing backslash
+		return executablePath.substr(0, lastBackslashPos + 1);
+	}
+
+	// If not found, return the path as is
+	return executablePath;
+}
+
 int WriteLogFile(LPCWSTR lpText, ...)
 {
 	std::wofstream ofs;
@@ -133,7 +152,7 @@ int WriteLogFile(LPCWSTR lpText, ...)
 	ShowStatus(sMsg.GetString());
 	try
 	{
-		ofs.open(LOGFILENAME, std::ios_base::app);
+		ofs.open(GetExecutablePath()+LOGFILENAME, std::ios_base::app);
 		if (ofs.is_open())
 		{
 			ofs.imbue(std::locale("en_US.utf8")); // Set UTF-8 locale
