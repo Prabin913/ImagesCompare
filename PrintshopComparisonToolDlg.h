@@ -44,6 +44,8 @@ protected:
 private:
 	char *ConvertWideCharToMultiByte(const CString &strWideChar);
 	bool ConvertPDF2IMG(CString &pdfFilePath);
+	void SetTitle();
+
 	void DrawImage(CWnd *pRenderWnd, const CString &strImageFilePath);
 	void CompareImage();
 
