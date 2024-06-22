@@ -442,12 +442,11 @@ void vz::ImgCmp::align_images(cv::Mat& master, cv::Mat& candy)
 	cv::Mat candy_warped;
 	cv::Mat master_gray, candy_gray;
 	cv::Scalar white{ 255,255,255 };
-	cv::cvtColor(candy, candy_gray, cv::COLOR_BGR2GRAY);
+	candy_gray = vz::to_greyscale(candy);
 	cv::warpAffine(candy_gray, candy_warped, rough_warp_matrix, master.size(),
 		INTERP_METHOD, cv::BORDER_CONSTANT, white);
 
-
-	cv::cvtColor(master, master_gray, cv::COLOR_BGR2GRAY);
+	master_gray = vz::to_greyscale(master);
 
 	cv::Mat_<float> fine_warp_matrix;
 	start = std::chrono::steady_clock().now();
@@ -511,7 +510,7 @@ void vz::ImgCmp::threshold_and_opening(int threshold, int filter_size) {
 		return;
 
 	cv::Mat gray_differences;
-	cv::cvtColor(differences, gray_differences, cv::COLOR_BGR2GRAY);
+	gray_differences = to_greyscale(differences);
 	write_dbg("difference_gray", gray_differences);
 
 	cv::threshold(gray_differences, differences_threshold, threshold, 255, cv::THRESH_BINARY);
