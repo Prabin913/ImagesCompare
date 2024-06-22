@@ -147,11 +147,45 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	filter_size_slider.SetPos(3);
 	filt_slider_echo.Format(_T("%d"), filter_size_slider.GetPos());
 	UpdateData(FALSE);
-
+	SetTitle();
 	SetTimer(1000, 500, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+
+void PrintshopComparisonToolDlg::SetTitle()
+{
+	CString title;
+	CString PDF, PNG;
+	// Extract file name from m_origPath
+	LPCTSTR origPathFileName = PathFindFileName(m_origPath);
+	if (origPathFileName != nullptr)
+	{
+		PDF = origPathFileName;
+	}
+
+	// Extract file name from m_scanPath
+	LPCTSTR scanPathFileName = PathFindFileName(m_scanPath);
+	if (scanPathFileName != nullptr)
+	{
+		PNG = scanPathFileName;
+	}
+	if (PDF != L"" && PNG != L"")
+	{
+		title.Format(L"Printshop Master PDF selected :'%s' PNG selected:'%s'", PDF, PNG);
+	}
+	else
+	if (PDF != L"")
+	{
+		title.Format(L"Printshop Master PDF selected :'%s' PNG not selected yet", PDF);
+
+	}
+	else
+	{
+		title.Format(L"Printshop Master - ready to start");
+	}
+	SetWindowText(title);
+}
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
@@ -324,6 +358,7 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath) {
 	free(szSrcFilePath);
 
 	m_origPath = pdfFilePath + _T(".1.png");
+	SetTitle();
 
 	return true;
 }
@@ -462,6 +497,7 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 				DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
 				WriteLogFile(L"Starting to compare %s and %s", m_origPath.GetString(), m_scanPath.GetString());
+				SetTitle();
 				CompareImage();
 				WriteLogFile(L"Compare completed");
 			}
