@@ -115,7 +115,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opencv_world4100.lib;libmupdf.lib;libthirdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LeanLib.lib;opencv_world4100.lib;libmupdf.lib;libthirdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
@@ -176,7 +176,7 @@ copy $(ProjectDir)3rdparty\bin64\opencv_world4100.dll $(OutputPath) </Command>
       <SubSystem>Windows</SubSystem>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world4100d.lib;libmupdfd.lib;libthirdpartyd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LeanLib.lib;opencv_world4100d.lib;libmupdfd.lib;libthirdpartyd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -565,6 +565,7 @@ copy $(ProjectDir)3rdparty\bin64\opencv_world4100d.dll $(OutputPath) </Command>
     <ClInclude Include="imagecompare\VzImgCmp.hpp" />
     <ClInclude Include="imagecompare\vzTypes.hpp" />
     <ClInclude Include="mupdf\pdf.hpp" />
+    <ClInclude Include="PrintChecker.hpp" />
     <ClInclude Include="PrintshopComparisonTool.h" />
     <ClInclude Include="PrintshopComparisonToolDlg.h" />
     <ClInclude Include="framework.h" />
@@ -621,6 +622,9 @@ copy $(ProjectDir)3rdparty\bin64\opencv_world4100d.dll $(OutputPath) </Command>
   <ItemGroup>
     <Image Include="res\PrintshopComparisonTool.ico" />
     <Image Include="res\Splsh24.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="3rdparty\lib64\LeanLib.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

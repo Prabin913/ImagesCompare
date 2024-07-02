@@ -1065,6 +1065,7 @@
       <Filter>imaging</Filter>
     </ClInclude>
     <ClInclude Include="utils.h" />
+    <ClInclude Include="PrintChecker.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />
@@ -1088,5 +1089,8 @@
     <Filter Include="imaging">
       <UniqueIdentifier>{8024cc36-5518-4150-adc1-ce7cdebc3e27}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="3rdparty\lib64\LeanLib.lib" />
   </ItemGroup>
 </Project>

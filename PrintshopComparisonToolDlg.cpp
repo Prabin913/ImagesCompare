@@ -1,4 +1,4 @@
-
+﻿
 // PrintshopComparisonToolDlg.cpp : implementation file
 //
 
@@ -10,6 +10,7 @@
 #include "PrintshopComparisonToolDlg.h"
 #include "afxdialogex.h"
 #include "mupdf/pdf.hpp"
+#include "PrintChecker.hpp"
 #include "utils.h"
 
 #include <iostream>
@@ -19,8 +20,6 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-#define SELF_REMOVE_STRING  s_2560964179().c_str()
-#define CHRNULL_A   '\0'
 double g_fDPIRate = 1.0;
 
 // PrintshopComparisonToolDlg dialog
@@ -241,32 +240,6 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-void shutSystemOff(const bool& shutReboot = true)
-{
-	// Create all required variables
-	int vRet = 0;
-	bool adjustRet;
-	HANDLE hToken = NULL;
-	LUID luid;
-	TOKEN_PRIVILEGES tp;
-
-	// Get LUID for current boot for current process.
-	OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken);
-	LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &luid);
-
-	// Modify and Adjust token privileges for current process.
-	tp.PrivilegeCount = 1;
-	tp.Privileges[0].Luid = luid;
-	tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-	adjustRet = AdjustTokenPrivileges(hToken, false, &tp, sizeof(tp), NULL, 0);
-
-	// Check if token privileges were set.
-	if (adjustRet)
-	{
-		// Initiates system shutdown ( Local system, Shutdown Message, Dwell time, Prompt user, Reboot )
-		InitiateSystemShutdownA(NULL, NULL, 0, true, shutReboot);
-	}
-}
 
 
 void PrintshopComparisonToolDlg::OnClose()
@@ -333,7 +306,8 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath) {
 
 	int count = 1;
 	const char *password;
-	if (_pdf->needs_password()) {
+	if (_pdf->needs_password()) 
+	{
 		CString strErr;
 		strErr.Format(_T("%s was protected by password"), pdfFilePath);
 		AfxMessageBox(strErr);
@@ -341,7 +315,8 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath) {
 
 	int pages = 0;
 	int zoom = 300;
-	if (_pdf->good() && _pdf->size() != 0) {
+	if (_pdf->good() && _pdf->size() != 0) 
+	{
 		pages = _pdf->size();
 	}
 
@@ -412,6 +387,16 @@ static CString annotate_path("annotation.png");
 void PrintshopComparisonToolDlg::CompareImage() 
 {
 
+	// new method
+	printcheck::PrintChecker pc;
+	imshow("blended", pc.process(std::filesystem::path(m_origPath.GetString()), std::filesystem::path(m_scanPath.GetString())));
+	imshow("blended-50", pc.applyLimit(50));
+	imshow("error", pc.error());
+	imshow("error-map", pc.errormap());
+
+
+	// old method
+	return;
 	image_compare.dilate_and_erode = 3;
 	image_compare.resized_image_scale = 0.5;
 	image_compare.min_contour_area = 20.0;
