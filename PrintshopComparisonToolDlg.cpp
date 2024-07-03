@@ -388,15 +388,16 @@ void PrintshopComparisonToolDlg::CompareImage()
 {
 
 	// new method
-	/*
+	
 	printcheck::PrintChecker pc;
 	imshow("blended", pc.process(std::filesystem::path(m_origPath.GetString()), std::filesystem::path(m_scanPath.GetString())));
 	imshow("blended-50", pc.applyLimit(50));
 	imshow("error", pc.error());
 	imshow("error-map", pc.errormap());
-	*/
+	
 
 	// old method
+	return;
 	image_compare.dilate_and_erode = 3;
 	image_compare.resized_image_scale = 0.5;
 	image_compare.min_contour_area = 20.0;
