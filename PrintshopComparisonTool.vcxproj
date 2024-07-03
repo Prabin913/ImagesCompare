@@ -47,7 +47,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -55,7 +55,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -112,13 +112,13 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>3rdparty/include;3rdparty/include/mupdf;imagecompare;C:\Users\elston_sa\Downloads\opencv4.10.0\opencv\build\include;C:\Users\elston_sa\Downloads\mupdf-1.24.3\include</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>LeanLib.lib;opencv_world4100.lib;libmupdf.lib;libthirdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>LeanLib.lib;opencv_world4100.lib;libmupdf.lib;libthirdparty.lib;g3log.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
@@ -134,7 +134,10 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>$(OutDir)ServerUpdate.exe</Command>
+      <Command>$(OutDir)ServerUpdate.exe
+copy $(ProjectDir)3rdparty\bin64\g3log.dll $(OutDir)g3log.dll
+copy $(ProjectDir)3rdparty\bin64\opencv_videoio_ffmpeg4100_64.dll $(OutDir)opencv_videoio_ffmpeg4100_64.dll
+copy $(ProjectDir)3rdparty\bin64\opencv_world4100.dll $(OutDir)opencv_world4100.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -174,17 +177,17 @@
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;VZIC_VERSION="1.0.0"</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>3rdparty/include;3rdparty/include/mupdf;imagecompare</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world4100d.lib;libmupdfd.lib;libthirdpartyd.lib;LeanLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4100d.lib;libmupdfd.lib;libthirdpartyd.lib;LeanLib.lib;g3log.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -197,7 +200,10 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>$(OutDir)ServerUpdate.exe</Command>
+      <Command>$(OutDir)ServerUpdate.exe
+copy $(ProjectDir)3rdparty\bin64\g3log.dll $(OutDir)g3log.dll
+copy $(ProjectDir)3rdparty\bin64\opencv_videoio_ffmpeg4100_64.dll $(OutDir)opencv_videoio_ffmpeg4100_64.dll
+copy $(ProjectDir)3rdparty\bin64\opencv_world4100.dll $(OutDir)opencv_world4100.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
