@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrintshopComparisonTool", "PrintshopComparisonTool.vcxproj", "{04CD545D-D015-415B-9814-B926AC0C5ED2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerUpdate", "ServerUpdate\ServerUpdate.vcxproj", "{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{04CD545D-D015-415B-9814-B926AC0C5ED2}.Release|x64.Build.0 = Release|x64
 		{04CD545D-D015-415B-9814-B926AC0C5ED2}.Release|x86.ActiveCfg = Release|Win32
 		{04CD545D-D015-415B-9814-B926AC0C5ED2}.Release|x86.Build.0 = Release|Win32
+		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Debug|x64.ActiveCfg = Debug|x64
+		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Debug|x64.Build.0 = Debug|x64
+		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Debug|x86.ActiveCfg = Debug|Win32
+		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Debug|x86.Build.0 = Debug|Win32
+		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Release|x64.ActiveCfg = Release|x64
+		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Release|x64.Build.0 = Release|x64
+		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Release|x86.ActiveCfg = Release|Win32
+		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
