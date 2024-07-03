@@ -106,13 +106,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;VZIC_VERSION="1.0.0"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;VZIC_VERSION="1.0.0"</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>3rdparty/include;3rdparty/include/mupdf;imagecompare;C:\Users\elston_sa\Downloads\opencv4.10.0\opencv\build\include;C:\Users\elston_sa\Downloads\mupdf-1.24.3\include</AdditionalIncludeDirectories>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
