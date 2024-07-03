@@ -390,9 +390,15 @@ void PrintshopComparisonToolDlg::CompareImage()
 	// new method
 	
 	printcheck::PrintChecker pc;
-	cv::Mat result;
-	result = pc.process(std::filesystem::path(m_origPath.GetString()), std::filesystem::path(m_scanPath.GetString()));
-	pc.applyLimit(50);
+	std::filesystem::path p1;
+	std::filesystem::path p2;
+	p1=m_origPath.GetString();
+	p2=m_scanPath.GetString();
+	imshow("blended", pc.process(p1,p2));
+	imshow("blended-50", pc.applyLimit(50));
+	imshow("error", pc.error());
+	imshow("error-map", pc.errormap());
+
 	
 
 
