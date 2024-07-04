@@ -401,7 +401,7 @@ void PrintshopComparisonToolDlg::CompareImage()
 	std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
 	pc.process(orig_path, scan_path);
 
-	ShowResults(0);
+	ShowResults(threshold_slider.GetPos());
 	return;
 
 }
