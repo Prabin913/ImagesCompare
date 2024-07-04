@@ -394,11 +394,20 @@ void PrintshopComparisonToolDlg::CompareImage()
 	std::filesystem::path p2;
 	p1=m_origPath.GetString();
 	p2=m_scanPath.GetString();
-	imshow("blended", pc.process(p1,p2));
-	imshow("blended-50", pc.applyLimit(50));
-	imshow("error", pc.error());
-	imshow("error-map", pc.errormap());
+//	imshow("blended", pc.process(p1,p2));
+//	imshow("blended-50", pc.applyLimit(50));
+//	imshow("error", pc.error());
+//	imshow("error-map", pc.errormap());
 
+	cv::Mat annotation_image = pc.process(p1, p2);
+	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
+
+	// save path to temporary annotation image
+	// so it can be drawn correctly in PrintshopComparisonToolDlg::OnPaint
+	m_diffPath = annotate_path;
+	DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
+
+	UpdateWindow();
 	
 
 
