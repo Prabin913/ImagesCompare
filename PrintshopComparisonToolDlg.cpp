@@ -380,18 +380,12 @@ void PrintshopComparisonToolDlg::CompareImage()
 
 	// new method
 	
+	std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
+	std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
 	printcheck::PrintChecker pc;
-	std::filesystem::path p1;
-	std::filesystem::path p2;
-	p1=m_origPath.GetString();
-	p2=m_scanPath.GetString();
-//	imshow("blended", pc.process(p1,p2));
-//	imshow("blended-50", pc.applyLimit(50));
-//	imshow("error", pc.error());
-//	imshow("error-map", pc.errormap());
-
-	cv::Mat annotation_image = pc.process(p1, p2);
-	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
+	pc.process(orig_path, scan_path);
+	auto annotated = pc.applyLimit(0);
+	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotated);
 
 	// save path to temporary annotation image
 	// so it can be drawn correctly in PrintshopComparisonToolDlg::OnPaint
