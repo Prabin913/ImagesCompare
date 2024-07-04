@@ -36,21 +36,55 @@ std::wstring string_to_wstring(const std::string& str)
 	return wstr;
 }
 
+#include <atlstr.h>
+#include <strsafe.h>
+#include <Shellapi.h>
+
 void NotifyVersionInfo(CString title, CString text)
 {
+	// Ensure IDR_MAINFRAME is a valid icon resource ID
+	HICON hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
+	if (!hIcon)
+	{
+		// Handle the error, perhaps log it or show a message box
+		return;
+	}
+
 	NOTIFYICONDATA nid = {};
-	nid.cbSize = sizeof(nid);
+	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = AfxGetApp()->GetMainWnd()->GetSafeHwnd();
 	nid.uID = 1;
-	nid.uFlags = NIF_INFO | NIF_ICON | NIF_MESSAGE;
-	nid.hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)); // Ensure IDR_MAINFRAME is a valid icon resource ID
-	nid.uTimeout = 3000; // Display for 10 seconds
+	nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_INFO;
+	nid.uCallbackMessage = WM_USER + 1;
+	nid.hIcon = hIcon;
+	nid.dwInfoFlags = NIIF_INFO;
+
+	// Copy the title and text to the notification structure
 	StringCchCopy(nid.szInfoTitle, ARRAYSIZE(nid.szInfoTitle), title);
 	StringCchCopy(nid.szInfo, ARRAYSIZE(nid.szInfo), text);
-	Shell_NotifyIcon(NIM_ADD, &nid);
 
-	// Show the balloon notification
-	//Shell_NotifyIcon(NIM_MODIFY, &nid);
+	// Set the tooltip (title + text) for older systems
+	StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), title + _T("\n") + text);
+
+	// Add the icon and show the notification
+	if (!Shell_NotifyIcon(NIM_ADD, &nid))
+	{
+		// Handle the error, perhaps log it or show a message box
+		return;
+	}
+
+	// Set the version to use the new functionality
+	nid.uVersion = NOTIFYICON_VERSION_4;
+	Shell_NotifyIcon(NIM_SETVERSION, &nid);
+
+	// Sleep to ensure the notification is shown for the desired duration
+	Sleep(nid.uTimeout);
+
+	// Cleanup: remove the notification icon
+	Shell_NotifyIcon(NIM_DELETE, &nid);
+
+	// Destroy the icon handle after use
+	DestroyIcon(hIcon);
 }
 
 void ShowError(HRESULT errorCode)

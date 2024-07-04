@@ -27,6 +27,9 @@ double g_fDPIRate = 1.0;
 #define BUFFER_SIZE 4096
 
 
+printcheck::PrintChecker pc;
+
+
 PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent)
 	, thr_slider_echo(_T(""))
@@ -375,16 +378,9 @@ cv::Mat get_image(const std::string & filename)
 static vz::ImgCmp image_compare;
 static CString annotate_path("annotation.png");
 
-void PrintshopComparisonToolDlg::CompareImage() 
+void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 {
-
-	// new method
-	
-	std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
-	std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
-	printcheck::PrintChecker pc;
-	pc.process(orig_path, scan_path);
-	auto annotated = pc.applyLimit(0);
+	auto annotated = pc.applyLimit(Threshold);
 	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotated);
 
 	// save path to temporary annotation image
@@ -393,10 +389,19 @@ void PrintshopComparisonToolDlg::CompareImage()
 	DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
 
 	UpdateWindow();
+
+
+}
+void PrintshopComparisonToolDlg::CompareImage() 
+{
+
+	// new method
 	
+	std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
+	std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
+	pc.process(orig_path, scan_path);
 
-
-	// old method
+	ShowResults(0);
 	return;
 
 }
@@ -480,16 +485,11 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 		filt_slider_echo.Format(_T("%d"), filt_s);
 
 		image_compare.threshold_and_opening(thr, filt_s);
-		cv::Mat annotation_image = image_compare.annotate();
+		CString temp;
+		temp.Format(L"Threshold set to %d",thr);
+		NotifyVersionInfo(temp,L"Results will show....");
+		ShowResults(thr);
 
-		if (not annotation_image.empty()) 
-		{
-			cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
-			m_diffPath = annotate_path;
-			DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
-		}
-
-		UpdateData(FALSE);
 	}
 	else
 	{

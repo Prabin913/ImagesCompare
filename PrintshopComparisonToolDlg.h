@@ -45,6 +45,7 @@ private:
 	void SetTitle();
 
 	void DrawImage(CWnd *pRenderWnd, const CString &strImageFilePath);
+	void ShowResults(int Threshold);
 	void CompareImage();
 
 public:
