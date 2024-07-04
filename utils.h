@@ -12,6 +12,8 @@ extern CDialog* m_globalDlg;
 void ShowStatus(LPCWSTR lpText);
 
 extern wchar_t LOGFILENAME[1024];
+void NotifyVersionInfo(CString title, CString text);
+
 std::string wstring_to_string(const std::wstring& wstr);
 std::wstring string_to_wstring(const std::string& str);
 

@@ -36,6 +36,22 @@ std::wstring string_to_wstring(const std::string& str)
 	return wstr;
 }
 
+void NotifyVersionInfo(CString title, CString text)
+{
+	NOTIFYICONDATA nid = {};
+	nid.cbSize = sizeof(nid);
+	nid.hWnd = AfxGetApp()->GetMainWnd()->GetSafeHwnd();
+	nid.uID = 1;
+	nid.uFlags = NIF_INFO | NIF_ICON | NIF_MESSAGE;
+	nid.hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)); // Ensure IDR_MAINFRAME is a valid icon resource ID
+	nid.uTimeout = 10000; // Display for 10 seconds
+	StringCchCopy(nid.szInfoTitle, ARRAYSIZE(nid.szInfoTitle), title);
+	StringCchCopy(nid.szInfo, ARRAYSIZE(nid.szInfo), text);
+	Shell_NotifyIcon(NIM_ADD, &nid);
+
+	// Show the balloon notification
+	//Shell_NotifyIcon(NIM_MODIFY, &nid);
+}
 
 void ShowError(HRESULT errorCode)
 {

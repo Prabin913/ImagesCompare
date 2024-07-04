@@ -224,6 +224,8 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 	if(do_once)
 	{ 
 		do_once=false;
+		NotifyVersionInfo(L"Ready to start", L"Please select an original PDF file");
+
 	}
 	CDialog::OnTimer(nIDEvent);
 }
@@ -425,6 +427,8 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 
 				DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
+				NotifyVersionInfo(L"Original file loaded and converted", L"Now please select a scanned image");
+
 			}
 			//m_origPath = pdfPath;
 			//DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
@@ -445,11 +449,13 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 				SetTitle();
 				CompareImage();
 				WriteLogFile(L"Compare completed");
+				NotifyVersionInfo(L"Ready", L"You can click the result on the right to open it with your default image editor");
 			}
 			return;
 		}
 
 		UpdateWindow();
+
 	}
 	catch (const std::exception& e)
 	{
