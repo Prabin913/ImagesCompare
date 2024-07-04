@@ -88,7 +88,7 @@ HBRUSH PrintshopComparisonToolDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlCol
 		case IDC_STATIC_TH:
 		case IDC_STATIC_FL:
 		/*  IDC_STATIC_FL - bad IDC_STATIC_TH - good*/
-			pDC->SetBkMode(TRANSPARENT);
+			pDC->SetBkMode(OPAQUE);
 			pDC->SetBkColor(BG_COLOR);
 			return m_tx; // Return a brush with the same color
 			break;
