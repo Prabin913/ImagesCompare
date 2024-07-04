@@ -483,7 +483,7 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 
 		thr_slider_echo.Format(_T("%d"), thr);
 		filt_slider_echo.Format(_T("%d"), filt_s);
-
+		GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
 		image_compare.threshold_and_opening(thr, filt_s);
 		CString temp;
 		temp.Format(L"Threshold set to %d",thr);
