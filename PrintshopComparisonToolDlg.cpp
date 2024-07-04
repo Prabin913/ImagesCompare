@@ -79,36 +79,27 @@ HBRUSH PrintshopComparisonToolDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlCol
 {
 	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
 
-	if (pWnd == this)
-	{
-		return m_brBack;
-	}
-	// Check if the control is a menu
-	if (nCtlColor == WM_CTLCOLORMSGBOX)
-	{
-		// Set the background color for the menu
-		pDC->SetBkColor(TX_COLOR2);
-		return m_brBack2; // Return a brush with the same color
-	}
-
-
 	switch (pWnd->GetDlgCtrlID())
 	{
-		pDC->SetTextColor(TX_COLOR2);
-		pDC->SetBkMode(TRANSPARENT);
-		pDC->SetBkColor(BG_COLOR);
-		return m_brBack;
-		break;
-	default:
-	{
-		pDC->SetBkMode(TRANSPARENT);
-		pDC->SetBkColor(RGB(255, 255, 255));
-		pDC->SetTextColor(RGB(0, 0, 0));
-		return m_tx;
-	}
+		case IDC_SLIDER1:
+		case IDC_SLIDER2:
+		case IDC_STATIC_THR:
+		case IDC_STATIC_FILT_SIZE:
+		case IDC_STATIC_TH:
+		case IDC_STATIC_FL:
+		/*  IDC_STATIC_FL - bad IDC_STATIC_TH - good*/
+			pDC->SetBkMode(TRANSPARENT);
+			pDC->SetBkColor(BG_COLOR);
+			return m_tx; // Return a brush with the same color
+			break;
+		default:
+			pDC->SetBkMode(TRANSPARENT);
+			pDC->SetBkColor(RGB(0, 0, 0));
+			pDC->SetTextColor(RGB(0, 0, 0));
+			return m_brBack;
 	}
 
-	return hbr;
+	return m_tx;
 }
 BOOL PrintshopComparisonToolDlg::OnInitDialog()
 {
