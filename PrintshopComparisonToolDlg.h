@@ -36,8 +36,6 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnClose();
 	afx_msg void OnQuit();
-	afx_msg void OnStnClickedPicOrig();
-	afx_msg void OnStnClickedPicScan();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	DECLARE_MESSAGE_MAP()
 

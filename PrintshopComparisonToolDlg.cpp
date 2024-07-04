@@ -56,8 +56,6 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_WM_MOVE()
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
-	ON_STN_CLICKED(IDC_PIC_ORIG, &PrintshopComparisonToolDlg::OnStnClickedPicOrig)
-	ON_STN_CLICKED(IDC_PIC_SCAN, &PrintshopComparisonToolDlg::OnStnClickedPicScan)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
@@ -399,57 +397,8 @@ void PrintshopComparisonToolDlg::CompareImage()
 	// old method
 	return;
 
-	/*
-	image_compare.dilate_and_erode = 3;
-	image_compare.resized_image_scale = 0.5;
-	image_compare.min_contour_area = 20.0;
-
-	image_compare.set_flag	(vz::ImgCmp::Flags::kDiffColour				);
-	//image_compare.set_flag(vz::ImgCmp::Flags::kDiffGreyscale);
-	image_compare.set_flag(vz::ImgCmp::Flags::kThresholdTriangle);
-	image_compare.set_flag	(vz::ImgCmp::Flags::kDiffOriginalSize		);
-	//image_compare.set_flag(vz::ImgCmp::Flags::kDiffResized);
-	image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateAddRedBorder);
-	image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateAddGreenBorder);
-	image_compare.set_flag	(vz::ImgCmp::Flags::kAnnotateOverColour		);
-	//image_compare.set_flag(vz::ImgCmp::Flags::kAnnotateOverGrey);
-	image_compare.set_flag(vz::ImgCmp::Flags::kDrawContour);
-	image_compare.set_flag(vz::ImgCmp::Flags::kDrawRectangle);
-
-	std::string orgFilePath(ConvertWideCharToMultiByte(m_origPath));
-	cv::Mat tmp = get_image(orgFilePath);
-	cv::Size orgSize = tmp.size();
-	image_compare.set_master_image(tmp);
-
-	std::string scabFilePath(ConvertWideCharToMultiByte(m_scanPath));
-	
-	cv::Mat comparison_image = get_image(scabFilePath);
-	image_compare.compare(comparison_image,
-		threshold_slider.GetPos(),
-		filter_size_slider.GetPos());
-
-	cv::Mat annotation_image = image_compare.annotate();
-	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
-	
-	// save path to temporary annotation image
-	// so it can be drawn correctly in PrintshopComparisonToolDlg::OnPaint
-	m_diffPath = annotate_path;
-	DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
-
-	UpdateWindow();
-	*/
 }
 
-void PrintshopComparisonToolDlg::OnStnClickedPicOrig()
-{
-
-}
-
-
-void PrintshopComparisonToolDlg::OnStnClickedPicScan()
-{
-	// TODO: Add your control notification handler code here
-}
 
 
 void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
@@ -457,6 +406,13 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	try
 	{
 		CRect rc;
+		GetDlgItem(IDC_PIC_DIFF)->GetWindowRect(&rc);
+		ScreenToClient(&rc);
+		if (rc.PtInRect(point))
+		{
+			ShellExecute(NULL, L"OPEN", m_diffPath.GetString(), NULL, L"", TRUE);
+			return;
+		}
 		GetDlgItem(IDC_PIC_ORIG)->GetWindowRect(&rc);
 		ScreenToClient(&rc);
 		if (rc.PtInRect(point))
@@ -520,7 +476,8 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 		image_compare.threshold_and_opening(thr, filt_s);
 		cv::Mat annotation_image = image_compare.annotate();
 
-		if (not annotation_image.empty()) {
+		if (not annotation_image.empty()) 
+		{
 			cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotation_image);
 			m_diffPath = annotate_path;
 			DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
@@ -533,3 +490,5 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 		CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 	}
 }
+
+
