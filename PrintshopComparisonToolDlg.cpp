@@ -413,6 +413,8 @@ void PrintshopComparisonToolDlg::CompareImage()
 
 	// old method
 	return;
+
+	/*
 	image_compare.dilate_and_erode = 3;
 	image_compare.resized_image_scale = 0.5;
 	image_compare.min_contour_area = 20.0;
@@ -450,6 +452,7 @@ void PrintshopComparisonToolDlg::CompareImage()
 	DrawImage(GetDlgItem(IDC_PIC_DIFF), m_diffPath);
 
 	UpdateWindow();
+	*/
 }
 
 void PrintshopComparisonToolDlg::OnStnClickedPicOrig()
