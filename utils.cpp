@@ -1,6 +1,7 @@
 
 #include "pch.h"
 #include "utils.h"
+#include "resource.h"
 wchar_t LOGFILENAME[1024]{ L"log.txt" };
 const wchar_t* DATEFORMAT = L"%Y%m%d%H%M%S";
 
@@ -102,18 +103,13 @@ void OpenLogFile()
 }
 // Function:	WriteLogFile
 // Purpose:		Print a message to the log file and (in DEBUG) to the Console
-#include <fstream>
 
-#include <fstream>
-#include <locale>
-#include "resource.h"
 void DeleteLogFile()
 {
 	//DeleteFile(LOGFILENAME);
 }
 
 CDialog* m_globalDlg;
-#define IDC_STATUS                      2500
 
 void ShowStatus(LPCWSTR lpText)
 {
