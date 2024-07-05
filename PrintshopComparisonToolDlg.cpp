@@ -238,6 +238,11 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		NotifyVersionInfo(L"Ready to start", L"Please select an original PDF file");
 
 	}
+	thr_slider_echo.Format(_T("%d"), thr);
+	filt_slider_echo.Format(_T("%d"), filt_s);
+	GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
+	GetDlgItem(IDC_STATIC_FILT_SIZE)->SetWindowTextW(filt_slider_echo);
+
 	if (need_to_update && !mouse_down)
 	{
 		CWaitCursor w;
@@ -502,10 +507,6 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 		thr = threshold_slider.GetPos();
 		filt_s = filter_size_slider.GetPos();
 
-		thr_slider_echo.Format(_T("%d"), thr);
-		filt_slider_echo.Format(_T("%d"), filt_s);
-		GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
-		GetDlgItem(IDC_STATIC_FILT_SIZE)->SetWindowTextW(filt_slider_echo);
 		need_to_update = true;
 
 	}
