@@ -31,7 +31,7 @@ namespace printcheck
 		auto aligned = printcheck::align_orb( _ref, tst);
 		_error = printcheck::diff_pixel( _ref, aligned.Aligned);
 		_error.setTo(0, ~aligned.Mask);
-		return applyLimit(0);
+		return (cv::Mat)_ref;
 	}
 
 	/*!
