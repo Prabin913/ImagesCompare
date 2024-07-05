@@ -252,7 +252,13 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		NotifyVersionInfo(temp, L"Results will show....");
 		std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
 		std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
-		pc.process(orig_path, scan_path);
+//		pc.process(orig_path, scan_path);
+
+		imshow("blended", pc.process(orig_path, scan_path));
+		imshow("blended-50", pc.applyLimit(50));
+		imshow("error", pc.error());
+		imshow("error-map", pc.errormap());
+
 
 		ShowResults(thr);
 
