@@ -40,53 +40,38 @@ std::wstring string_to_wstring(const std::string& str)
 #include <strsafe.h>
 #include <Shellapi.h>
 
+// Function to display a balloon notification
 void NotifyVersionInfo(CString title, CString text)
 {
-	return;
-	// Ensure IDR_MAINFRAME is a valid icon resource ID
-	HICON hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
-	if (!hIcon)
-	{
-		// Handle the error, perhaps log it or show a message box
-		return;
-	}
-
+	// Create a NOTIFYICONDATA structure
 	NOTIFYICONDATA nid = {};
 	nid.cbSize = sizeof(NOTIFYICONDATA);
-	nid.hWnd = AfxGetApp()->GetMainWnd()->GetSafeHwnd();
+	nid.hWnd = AfxGetApp()->GetMainWnd()->GetSafeHwnd(); // Get the main window handle
 	nid.uID = 1;
-	nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_INFO;
+	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO;
 	nid.uCallbackMessage = WM_USER + 1;
-	nid.hIcon = hIcon;
-	nid.dwInfoFlags = NIIF_INFO;
+	nid.hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
+	StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), _T("Notification"));
 
-	// Copy the title and text to the notification structure
+	// Set the balloon information
 	StringCchCopy(nid.szInfoTitle, ARRAYSIZE(nid.szInfoTitle), title);
 	StringCchCopy(nid.szInfo, ARRAYSIZE(nid.szInfo), text);
+	nid.dwInfoFlags = NIIF_INFO; // NIIF_INFO for an information icon, you can also use NIIF_WARNING, NIIF_ERROR, etc.
+	nid.uTimeout = 5000; // Display for 5 seconds
 
-	// Set the tooltip (title + text) for older systems
-	StringCchCopy(nid.szTip, ARRAYSIZE(nid.szTip), title + _T("\n") + text);
+	// Add the icon to the system tray
+	Shell_NotifyIcon(NIM_ADD, &nid);
 
-	// Add the icon and show the notification
-	if (!Shell_NotifyIcon(NIM_ADD, &nid))
-	{
-		// Handle the error, perhaps log it or show a message box
-		return;
-	}
+	// Display the balloon notification
+	Shell_NotifyIcon(NIM_MODIFY, &nid);
 
-	// Set the version to use the new functionality
-	nid.uVersion = NOTIFYICON_VERSION_4;
-	Shell_NotifyIcon(NIM_SETVERSION, &nid);
-
-	// Sleep to ensure the notification is shown for the desired duration
+	// Sleep to allow the balloon to display for the specified time (optional, but should be managed properly in actual use)
 	Sleep(nid.uTimeout);
 
-	// Cleanup: remove the notification icon
+	// Remove the icon from the system tray
 	Shell_NotifyIcon(NIM_DELETE, &nid);
-
-	// Destroy the icon handle after use
-	DestroyIcon(hIcon);
 }
+
 
 void ShowError(HRESULT errorCode)
 {

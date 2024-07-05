@@ -135,10 +135,8 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>$(OutDir)ServerUpdate.exe
-copy $(ProjectDir)3rdparty\bin64\g3log.dll $(OutDir)g3log.dll
-copy $(ProjectDir)3rdparty\bin64\opencv_videoio_ffmpeg4100_64.dll $(OutDir)opencv_videoio_ffmpeg4100_64.dll
-copy $(ProjectDir)3rdparty\bin64\opencv_world4100.dll $(OutDir)opencv_world4100.dll</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -201,10 +199,8 @@ copy $(ProjectDir)3rdparty\bin64\opencv_world4100.dll $(OutDir)opencv_world4100.
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>$(OutDir)ServerUpdate.exe
-copy $(ProjectDir)3rdparty\bin64\g3log.dll $(OutDir)g3log.dll
-copy $(ProjectDir)3rdparty\bin64\opencv_videoio_ffmpeg4100_64.dll $(OutDir)opencv_videoio_ffmpeg4100_64.dll
-copy $(ProjectDir)3rdparty\bin64\opencv_world4100.dll $(OutDir)opencv_world4100.dll</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -587,7 +583,6 @@ copy $(ProjectDir)3rdparty\bin64\opencv_world4100.dll $(OutDir)opencv_world4100.
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SG_ButtonFly.h" />
-    <ClInclude Include="SplashWnd.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
@@ -713,7 +708,6 @@ copy $(ProjectDir)3rdparty\bin64\opencv_world4100.dll $(OutDir)opencv_world4100.
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SG_ButtonFly.cpp" />
-    <ClCompile Include="SplashWnd.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>

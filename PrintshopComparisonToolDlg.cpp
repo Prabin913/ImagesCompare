@@ -3,7 +3,6 @@
 //
 
 #include "pch.h"
-#include "SplashWnd.h"
 #include <stdlib.h>
 #include "framework.h"
 #include "PrintshopComparisonTool.h"
@@ -50,7 +49,7 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
-
+	ON_WM_HOTKEY()
 	ON_WM_PAINT()
 	ON_WM_CTLCOLOR()
 	ON_WM_QUERYDRAGICON()
@@ -66,6 +65,26 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 END_MESSAGE_MAP()
 
 // PrintshopComparisonToolDlg class implementation
+
+void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
+{
+	switch (nHotKeyId)
+	{
+		case 1:
+			imshow("error", pc.error());
+			break;
+		case 2:
+			imshow("blended-50", pc.applyLimit(50));
+			break;
+		case 3:
+			imshow("error-map", pc.errormap());
+			break;
+
+
+	}
+
+	CDialog::OnHotKey(nHotKeyId, nKey1, nKey2);
+}
 void PrintshopComparisonToolDlg::OnSize(UINT nType, int cx, int cy)
 {
 
@@ -107,7 +126,18 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
-	CSplashWnd::EnableSplashScreen();
+	if (!RegisterHotKey(m_hWnd, 1, MOD_CONTROL | MOD_SHIFT, 'E'))
+	{
+		AfxMessageBox(L"Failed to register hotkey!");
+	}
+	if (!RegisterHotKey(m_hWnd, 2, MOD_CONTROL | MOD_SHIFT, 'B'))
+	{
+		AfxMessageBox(L"Failed to register hotkey!");
+	}
+	if (!RegisterHotKey(m_hWnd, 3, MOD_CONTROL | MOD_SHIFT, 'M'))
+	{
+		AfxMessageBox(L"Failed to register hotkey!");
+	}
 
 
 	HDC desktopDC = ::GetDC(NULL);
@@ -181,7 +211,7 @@ void PrintshopComparisonToolDlg::SetTitle()
 	}
 	else
 	{
-		title.Format(L"Printshop Master - ready to start");
+		title.Format(L"Printshop Master (new) - ready to start");
 	}
 	SetWindowText(title);
 }
@@ -249,16 +279,10 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		image_compare.threshold_and_opening(thr, filt_s);
 		CString temp;
 		temp.Format(L"Threshold set to %d", thr);
-		NotifyVersionInfo(temp, L"Results will show....");
+		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to see blended - 50");
 		std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
 		std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
-//		pc.process(orig_path, scan_path);
-
-		imshow("blended", pc.process(orig_path, scan_path));
-		imshow("blended-50", pc.applyLimit(50));
-		imshow("error", pc.error());
-		imshow("error-map", pc.errormap());
-
+		pc.process(orig_path, scan_path);
 
 		ShowResults(thr);
 
@@ -288,7 +312,7 @@ CString SelectFileFromDialog(int type)
 	OPENFILENAME  ofn;
 	wchar_t* FilterSpec;
 	if (type == 1)
-		FilterSpec = { (wchar_t*)L"PDF Files(*.pdf)\0*.pdf\0All Files(*.*)\0*.*\0" };
+		FilterSpec = { (wchar_t*)L"PDF Files(*.pdf)\0*.pdf\0PNG Files(*.png)\0*.png\0All Files(*.*)\0*.*\0" };
 	else
 		FilterSpec = { (wchar_t*)L"PNG Files(*.png)\0*.png\0All Files(*.*)\0*.*\0" };
 	wchar_t* Title{ (wchar_t*)L"Open...." };
@@ -326,7 +350,8 @@ CString SelectFileFromDialog(int type)
 	}
 }
 
-bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath) {
+bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath) 
+{
 
 	char *szSrcFilePath = ConvertWideCharToMultiByte(pdfFilePath);
 	pdf *_pdf = new pdf(szSrcFilePath);

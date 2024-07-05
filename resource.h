@@ -1613,8 +1613,8 @@
 #define LVS_TYPESTYLEMASK               0xfc00
 #define SPVERSION_MASK                  0x0000FF00
 #define HTERROR                         -2
-#define PWR_FAIL                        -1
 #define UNICODE_NOCHAR                  0xFFFF
+#define PWR_FAIL                        -1
 #define HTTRANSPARENT                   -1
 
 // Next default values for new objects
