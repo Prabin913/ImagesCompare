@@ -20,7 +20,7 @@ namespace printcheck
 	 *  @return
 	 *    Returns with the visualization or empty Mat object in case of failure.
 	 */
-	cv::Mat PrintChecker::process( const std::filesystem::path& ref, const std::filesystem::path& scan)
+	cv::Mat PrintChecker::process( const std::filesystem::path& ref, const std::filesystem::path& scan, double &diff)
 	{
 		_ref = printcheck::read( ref);
 		auto tst = printcheck::read( scan);
@@ -31,6 +31,16 @@ namespace printcheck
 		auto aligned = printcheck::align_orb( _ref, tst);
 		_error = printcheck::diff_pixel( _ref, aligned.Aligned);
 		_error.setTo(0, ~aligned.Mask);
+
+		// Calculate total number of pixels and number of different pixels
+		int totalPixels = _ref.rows * _ref.cols * _ref.channels();
+		cv::Scalar diffSum = cv::sum(_error);
+		double numDifferentPixels = diffSum[0] / 255.0; // Assuming grayscale difference image
+
+		// Calculate percentage of different pixels
+		diff = (numDifferentPixels / totalPixels) * 100.0;
+
+
 		return (cv::Mat)_ref;
 	}
 

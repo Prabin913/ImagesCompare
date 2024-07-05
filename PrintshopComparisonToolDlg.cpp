@@ -279,14 +279,21 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 	if (need_to_update && !mouse_down)
 	{
 		CWaitCursor w;
+		double diff;
 		image_compare.threshold_and_opening(thr, filt_s);
 		CString temp;
 		temp.Format(L"Threshold set to %d", thr);
 		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
 		std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
 		std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
-		pc.process(orig_path, scan_path);
+		pc.process(orig_path, scan_path,diff);
 
+		CString stdDiff;
+		stdDiff.Format(L"Difference between images is  %.1f%%", diff);
+		if(diff == 0.0)
+			MessageBox(L"Identical images",L"There is no difference between the 2 images");
+		else
+			NotifyVersionInfo(L"Unidentical images",stdDiff);
 		ShowResults(thr);
 
 		need_to_update = false;

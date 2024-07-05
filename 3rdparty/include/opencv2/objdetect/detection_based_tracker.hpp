@@ -125,7 +125,7 @@ class CV_EXPORTS DetectionBasedTracker
         virtual void stop();
         virtual void resetTracking();
 
-        virtual void process(const cv::Mat& imageGray);
+        virtual void process(const cv::Mat& imageGray, double &diff);
 
         bool setParameters(const Parameters& params);
         const Parameters& getParameters() const;
