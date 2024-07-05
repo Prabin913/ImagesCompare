@@ -43,6 +43,12 @@ std::wstring string_to_wstring(const std::string& str)
 // Function to display a balloon notification
 void NotifyVersionInfo(CString title, CString text)
 {
+	static bool ongoing{false};
+	static CString last_text;
+	if(ongoing) return;
+	if(last_text == text) return;
+	last_text = text;
+	ongoing = true;
 	// Create a NOTIFYICONDATA structure
 	NOTIFYICONDATA nid = {};
 	nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -63,13 +69,14 @@ void NotifyVersionInfo(CString title, CString text)
 	Shell_NotifyIcon(NIM_ADD, &nid);
 
 	// Display the balloon notification
-	Shell_NotifyIcon(NIM_MODIFY, &nid);
+	//Shell_NotifyIcon(NIM_MODIFY, &nid);
 
 	// Sleep to allow the balloon to display for the specified time (optional, but should be managed properly in actual use)
 	Sleep(nid.uTimeout);
 
 	// Remove the icon from the system tray
 	Shell_NotifyIcon(NIM_DELETE, &nid);
+	ongoing = false;
 }
 
 

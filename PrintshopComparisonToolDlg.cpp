@@ -312,9 +312,9 @@ CString SelectFileFromDialog(int type)
 	OPENFILENAME  ofn;
 	wchar_t* FilterSpec;
 	if (type == 1)
-		FilterSpec = { (wchar_t*)L"PDF Files(*.pdf)\0*.pdf\0PNG Files(*.png)\0*.png\0All Files(*.*)\0*.*\0" };
+		FilterSpec = { (wchar_t*)L"PDF Files(*.pdf)\0*.pdf\0PNG Files(*.png)\0*.png\0Tiff Files(*.tiff)\0*.tiff\0All Files(*.*)\0*.*\0" };
 	else
-		FilterSpec = { (wchar_t*)L"PNG Files(*.png)\0*.png\0All Files(*.*)\0*.*\0" };
+		FilterSpec = { (wchar_t*)L"PNG Files(*.png)\0*.png\0JPG Files(*.jpg)\0*.jpg\0All Files(*.*)\0*.*\0" };
 	wchar_t* Title{ (wchar_t*)L"Open...." };
 	wchar_t szFileName[MAX_PATH];
 	wchar_t szFileTitle[MAX_PATH];
