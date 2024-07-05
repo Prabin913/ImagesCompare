@@ -25,7 +25,8 @@ public:
 	enum { IDD = IDD_PRINTSHOPCOMPARISONTOOL_DIALOG};
 #endif
 
-
+	int thr;
+	int filt_s;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	virtual BOOL OnInitDialog();
@@ -37,9 +38,12 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnQuit();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	DECLARE_MESSAGE_MAP()
 
 private:
+	bool mouse_down = false;
+
 	char *ConvertWideCharToMultiByte(const CString &strWideChar);
 	bool ConvertPDF2IMG(CString &pdfFilePath);
 	void SetTitle();

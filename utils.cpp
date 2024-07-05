@@ -42,6 +42,7 @@ std::wstring string_to_wstring(const std::string& str)
 
 void NotifyVersionInfo(CString title, CString text)
 {
+	return;
 	// Ensure IDR_MAINFRAME is a valid icon resource ID
 	HICON hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
 	if (!hIcon)

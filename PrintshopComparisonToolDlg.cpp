@@ -26,9 +26,11 @@ double g_fDPIRate = 1.0;
 #define DATETIME_BUFFER_SIZE 80
 #define BUFFER_SIZE 4096
 
+static vz::ImgCmp image_compare;
+static CString annotate_path("annotation.png");
 
 printcheck::PrintChecker pc;
-
+bool need_to_update = false;
 
 PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent)
@@ -44,8 +46,6 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SLIDER1, threshold_slider);
 	DDX_Control(pDX, IDC_SLIDER2, filter_size_slider);
-	DDX_Text(pDX, IDC_STATIC_THR, thr_slider_echo);
-	DDX_Text(pDX, IDC_STATIC_FILT_SIZE, filt_slider_echo);
 	DDX_Control(pDX, IDC_STATUS, m_Status);
 }
 
@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
 END_MESSAGE_MAP()
@@ -136,7 +137,14 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 
 	filter_size_slider.SetRange(0, 10, TRUE);
 	filter_size_slider.SetPos(3);
+
+	thr = filter_size_slider.GetPos();
+	filt_s = filter_size_slider.GetPos();
+
 	filt_slider_echo.Format(_T("%d"), filter_size_slider.GetPos());
+	thr_slider_echo.Format(_T("%d"), thr);
+	filt_slider_echo.Format(_T("%d"), filt_s);
+
 	UpdateData(FALSE);
 	SetTitle();
 	SetTimer(1000, 500, NULL);
@@ -229,6 +237,21 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		do_once=false;
 		NotifyVersionInfo(L"Ready to start", L"Please select an original PDF file");
 
+	}
+	if (need_to_update && !mouse_down)
+	{
+		CWaitCursor w;
+		image_compare.threshold_and_opening(thr, filt_s);
+		CString temp;
+		temp.Format(L"Threshold set to %d", thr);
+		NotifyVersionInfo(temp, L"Results will show....");
+		std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
+		std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
+		pc.process(orig_path, scan_path);
+
+		ShowResults(thr);
+
+		need_to_update = false;
 	}
 	CDialog::OnTimer(nIDEvent);
 }
@@ -334,6 +357,7 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath) {
 
 void PrintshopComparisonToolDlg::DrawImage(CWnd *pRenderWnd, const CString &strImageFilePath)
 {
+	CWaitCursor w;
 	if (strImageFilePath.IsEmpty()) return;
 
 	CRect rc;
@@ -355,6 +379,7 @@ char *PrintshopComparisonToolDlg::ConvertWideCharToMultiByte(const CString &strW
 
 cv::Mat get_image(const std::string & filename)
 {
+	CWaitCursor w;
 	WriteLogFile(L"reading file: %S",filename.c_str());
 	
 	if (filename.empty())
@@ -375,11 +400,10 @@ cv::Mat get_image(const std::string & filename)
 	return mat;
 }
 
-static vz::ImgCmp image_compare;
-static CString annotate_path("annotation.png");
 
 void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 {
+	CWaitCursor w;
 	auto annotated = pc.applyLimit(Threshold);
 	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotated);
 
@@ -394,22 +418,15 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 }
 void PrintshopComparisonToolDlg::CompareImage() 
 {
-
-	// new method
-	
-	std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
-	std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
-	pc.process(orig_path, scan_path);
-
-	ShowResults(threshold_slider.GetPos());
+	need_to_update=true;
 	return;
 
 }
 
 
-
 void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
+	mouse_down = true;
 	try
 	{
 		CRect rc;
@@ -452,9 +469,7 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 				DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
 				WriteLogFile(L"Starting to compare %s and %s", m_origPath.GetString(), m_scanPath.GetString());
 				SetTitle();
-				CompareImage();
-				WriteLogFile(L"Compare completed");
-				NotifyVersionInfo(L"Ready", L"You can click the result on the right to open it with your default image editor");
+				need_to_update =true;
 			}
 			return;
 		}
@@ -471,24 +486,27 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 	CDialog::OnLButtonDown(nFlags, point);
 }
+void PrintshopComparisonToolDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	mouse_down = false;
+	CDialog::OnLButtonDown(nFlags, point);
+}
+
 
 void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	if (pScrollBar == (CScrollBar*)&threshold_slider or
+	if (pScrollBar == (CScrollBar*)&threshold_slider ||
 		pScrollBar == (CScrollBar*)&filter_size_slider)
 	{
 		// update threshold and rerun the difference
-		int thr = threshold_slider.GetPos();
-		int filt_s = filter_size_slider.GetPos();
+		thr = threshold_slider.GetPos();
+		filt_s = filter_size_slider.GetPos();
 
 		thr_slider_echo.Format(_T("%d"), thr);
 		filt_slider_echo.Format(_T("%d"), filt_s);
 		GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
-		image_compare.threshold_and_opening(thr, filt_s);
-		CString temp;
-		temp.Format(L"Threshold set to %d",thr);
-		NotifyVersionInfo(temp,L"Results will show....");
-		ShowResults(thr);
+		GetDlgItem(IDC_STATIC_FILT_SIZE)->SetWindowTextW(filt_slider_echo);
+		need_to_update = true;
 
 	}
 	else
