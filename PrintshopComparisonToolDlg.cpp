@@ -290,8 +290,8 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 		CString stdDiff;
 		stdDiff.Format(L"Difference between images is  %.1f%%", diff);
-		if(diff == 0.0)
-			MessageBox(L"Identical images",L"There is no difference between the 2 images");
+		if (diff == 0.0)
+			NotifyVersionInfo(L"Identical images!", stdDiff);
 		else
 			NotifyVersionInfo(L"Unidentical images",stdDiff);
 		ShowResults(thr);
