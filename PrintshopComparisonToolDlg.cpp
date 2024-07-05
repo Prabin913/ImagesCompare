@@ -11,6 +11,8 @@
 #include "mupdf/pdf.hpp"
 #include "PrintChecker.hpp"
 #include "utils.h"
+#include "SGInputDlg.h"
+
 
 #include <iostream>
 #include <sstream>
@@ -33,8 +35,6 @@ bool need_to_update = false;
 
 PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent)
-	, thr_slider_echo(_T(""))
-	, filt_slider_echo(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -62,19 +62,34 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_WM_LBUTTONUP()
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
+	ON_NOTIFY(NM_DBLCLK, IDC_SLIDER1, &PrintshopComparisonToolDlg::OnDblClickSlider1)
 END_MESSAGE_MAP()
 
 // PrintshopComparisonToolDlg class implementation
-
 void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 {
+	CInputNumberDialog dlg;
+	int userInput = -1;
 	switch (nHotKeyId)
 	{
 		case 1:
 			imshow("error", pc.error());
 			break;
 		case 2:
-			imshow("blended-50", pc.applyLimit(50));
+			// Open the dialog for user input
+			if (dlg.DoModal() == IDOK)
+			{ 
+				userInput = dlg.GetUserInput();
+				if (userInput >= 1 && userInput <= 128)
+				{
+					// Update the slider position
+					threshold_slider.SetPos(userInput);
+					UpdateData(FALSE);
+					thr = userInput;
+					need_to_update = true;
+					return;
+				}
+			}
 			break;
 		case 3:
 			imshow("error-map", pc.errormap());
@@ -138,7 +153,9 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	{
 		AfxMessageBox(L"Failed to register hotkey!");
 	}
-
+	filter_size_slider.SetRange(0, 10, TRUE);
+	threshold_slider.SetRange(0, 256, TRUE);
+	UpdateData(FALSE);
 
 	HDC desktopDC = ::GetDC(NULL);
 	int horDPI = GetDeviceCaps(desktopDC, LOGPIXELSX);
@@ -160,22 +177,6 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
-	// initialize sliders
-	threshold_slider.SetRange(0, 256, TRUE);
-	threshold_slider.SetPos(100);
-	thr_slider_echo.Format(_T("%d"), threshold_slider.GetPos());
-
-	filter_size_slider.SetRange(0, 10, TRUE);
-	filter_size_slider.SetPos(3);
-
-	thr = filter_size_slider.GetPos();
-	filt_s = filter_size_slider.GetPos();
-
-	filt_slider_echo.Format(_T("%d"), filter_size_slider.GetPos());
-	thr_slider_echo.Format(_T("%d"), thr);
-	filt_slider_echo.Format(_T("%d"), filt_s);
-
-	UpdateData(FALSE);
 	SetTitle();
 	SetTimer(1000, 500, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -260,7 +261,9 @@ HCURSOR PrintshopComparisonToolDlg::OnQueryDragIcon()
 void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 {
 
-	// TODO: Add your message handler code here and/or call default
+	CString thr_slider_echo;
+	CString filt_slider_echo;
+
 	static bool do_once{true};
 	if(do_once)
 	{ 
@@ -279,7 +282,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		image_compare.threshold_and_opening(thr, filt_s);
 		CString temp;
 		temp.Format(L"Threshold set to %d", thr);
-		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to see blended - 50");
+		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
 		std::string orig_path = ConvertWideCharToMultiByte(m_origPath.GetString());
 		std::string scan_path = ConvertWideCharToMultiByte(m_scanPath.GetString());
 		pc.process(orig_path, scan_path);
@@ -531,15 +534,30 @@ void PrintshopComparisonToolDlg::OnLButtonUp(UINT nFlags, CPoint point)
 
 void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
+	if (mouse_down) return;
+
 	if (pScrollBar == (CScrollBar*)&threshold_slider ||
 		pScrollBar == (CScrollBar*)&filter_size_slider)
 	{
+		static int last_th = -1;
+		static int last_fs = -1;
+
 		// update threshold and rerun the difference
-		thr = threshold_slider.GetPos();
-		filt_s = filter_size_slider.GetPos();
+		int current_thr = threshold_slider.GetPos();
+		if (current_thr != last_th)
+		{
+			thr = current_thr;
+			need_to_update = true;
+			last_th = thr;
+		}
 
-		need_to_update = true;
-
+		int current_filt_s = filter_size_slider.GetPos();
+		if (current_filt_s != last_fs)
+		{
+			filt_s = current_filt_s;
+			need_to_update = true;
+			last_fs = filt_s;
+		}
 	}
 	else
 	{
@@ -548,3 +566,23 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 }
 
 
+
+
+void PrintshopComparisonToolDlg::OnDblClickSlider1(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	CInputNumberDialog dlg;
+	int userInput = -1;
+	if (dlg.DoModal() == IDOK)
+	{
+		userInput = dlg.GetUserInput();
+		if (userInput >= 1 && userInput <= 128)
+		{
+			// Update the slider position
+			threshold_slider.SetPos(userInput);
+			UpdateData(FALSE);
+			thr = userInput;
+			need_to_update = true;
+			return;
+		}
+	}
+}

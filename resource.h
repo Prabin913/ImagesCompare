@@ -1497,6 +1497,9 @@
 #define LVS_OWNERDATA                   0x1000
 #define TVS_FULLROWSELECT               0x1000
 #define TCS_FOCUSONBUTTONDOWN           0x1000
+#define IDC_EDIT_NUMBER                 4393
+#define IDC_STATIC_TEXT                 4394
+#define IDD_INPUT_NUMBER_DIALOG         4422
 #define CS_BYTEALIGNWINDOW              0x2000
 #define TBSTYLE_CUSTOMERASE             0x2000
 #define RBS_AUTOSIZE                    0x00002000

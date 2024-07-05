@@ -70,8 +70,7 @@ private:
 public:
 	CSliderCtrl threshold_slider;
 	CSliderCtrl filter_size_slider;
-	CString thr_slider_echo;
-	CString filt_slider_echo;
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	CStatic m_Status;
+	afx_msg void OnDblClickSlider1(NMHDR* pNMHDR, LRESULT* pResult);
 };

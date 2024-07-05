@@ -27,10 +27,12 @@
     <ClCompile Include="SG_ButtonFly.cpp">
       <Filter>imaging</Filter>
     </ClCompile>
-    <ClCompile Include="SplashWnd.cpp">
-      <Filter>imaging</Filter>
-    </ClCompile>
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="printcheck\align.cppm" />
+    <ClCompile Include="printcheck\cv.cppm" />
+    <ClCompile Include="printcheck\difference.cppm" />
+    <ClCompile Include="printcheck\PrintChecker.cpp" />
+    <ClCompile Include="SGInputDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrintshopComparisonTool.h" />
@@ -884,9 +886,6 @@
     <ClInclude Include="3rdparty\include\opencv2\core\softfloat.hpp">
       <Filter>imaging</Filter>
     </ClInclude>
-    <ClInclude Include="SplashWnd.h">
-      <Filter>imaging</Filter>
-    </ClInclude>
     <ClInclude Include="3rdparty\include\opencv2\core\sse_utils.hpp">
       <Filter>imaging</Filter>
     </ClInclude>
@@ -1066,6 +1065,8 @@
     </ClInclude>
     <ClInclude Include="utils.h" />
     <ClInclude Include="PrintChecker.hpp" />
+    <ClInclude Include="printcheck\PrintChecker.hpp" />
+    <ClInclude Include="SGInputDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />
@@ -1089,8 +1090,5 @@
     <Filter Include="imaging">
       <UniqueIdentifier>{8024cc36-5518-4150-adc1-ce7cdebc3e27}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="3rdparty\lib64\LeanLib.lib" />
   </ItemGroup>
 </Project>
