@@ -46,7 +46,6 @@ void NotifyVersionInfo(CString title, CString text)
 	static bool ongoing{false};
 	static CString last_text;
 	if(ongoing) return;
-	if(last_text == text) return;
 	last_text = text;
 	ongoing = true;
 	// Create a NOTIFYICONDATA structure
