@@ -41,15 +41,13 @@ protected:
 
 private:
 	COLORREF m_borderColor;
-	bool mouse_down = false;
-
+	
 	char *ConvertWideCharToMultiByte(const CString &strWideChar);
 	bool ConvertPDF2IMG(CString &pdfFilePath);
 	void SetTitle();
 
 	void DrawImage(CWnd *pRenderWnd, const CString &strImageFilePath);
 	void ShowResults(int Threshold);
-	void CompareImage();
 
 public:
 	// Add member variable to store the last rect
@@ -69,5 +67,14 @@ public:
 	CSliderCtrl filter_size_slider;
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	CStatic m_Status;
-	afx_msg void OnDblClickSlider1(NMHDR* pNMHDR, LRESULT* pResult);
+	CButton m_BtnOrig;
+	CButton m_BtnScan;
+	CButton m_BtnProc;
+	afx_msg void OnBnClickedButtonOrig();
+	afx_msg void OnBnClickedButtonScan();
+	CButton m_BtnOpenResult;
+	CButton m_BtnSetTH;
+	afx_msg void OnBnClickedButtonOpenresult();
+	afx_msg void OnBnClickedButtonSetTH();
+	afx_msg void OnBnClickedButtonProc();
 };

@@ -47,6 +47,11 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER1, threshold_slider);
 	DDX_Control(pDX, IDC_SLIDER2, filter_size_slider);
 	DDX_Control(pDX, IDC_STATUS, m_Status);
+	DDX_Control(pDX, IDC_BUTTON_ORIG, m_BtnOrig);
+	DDX_Control(pDX, IDC_BUTTON_SCAN, m_BtnScan);
+	DDX_Control(pDX, IDC_BUTTON_PROC, m_BtnProc);
+	DDX_Control(pDX, IDC_BUTTON_OPENRESULT, m_BtnOpenResult);
+	DDX_Control(pDX, IDC_BUTTON_SET_TH, m_BtnSetTH);
 }
 
 BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
@@ -59,38 +64,25 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_WM_MOVE()
 	ON_WM_CLOSE()
 	ON_WM_DESTROY()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_LBUTTONUP()
 	ON_WM_VSCROLL()
 	ON_WM_HSCROLL()
-	ON_NOTIFY(NM_DBLCLK, IDC_SLIDER1, &PrintshopComparisonToolDlg::OnDblClickSlider1)
+	ON_BN_CLICKED(IDC_BUTTON_ORIG, &PrintshopComparisonToolDlg::OnBnClickedButtonOrig)
+	ON_BN_CLICKED(IDC_BUTTON_SCAN, &PrintshopComparisonToolDlg::OnBnClickedButtonScan)
+	ON_BN_CLICKED(IDC_BUTTON_OPENRESULT, &PrintshopComparisonToolDlg::OnBnClickedButtonOpenresult)
+	ON_BN_CLICKED(IDC_BUTTON_SET_TH,&PrintshopComparisonToolDlg::OnBnClickedButtonSetTH)
+	ON_BN_CLICKED(IDC_BUTTON_PROC, &PrintshopComparisonToolDlg::OnBnClickedButtonProc)
 END_MESSAGE_MAP()
 
 // PrintshopComparisonToolDlg class implementation
 void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
 {
-	CInputNumberDialog dlg;
-	int userInput = -1;
 	switch (nHotKeyId)
 	{
 		case 1:
 			imshow("error", pc.error());
 			break;
 		case 2:
-			// Open the dialog for user input
-			if (dlg.DoModal() == IDOK)
-			{ 
-				userInput = dlg.GetUserInput();
-				if (userInput >= 1 && userInput <= 128)
-				{
-					// Update the slider position
-					threshold_slider.SetPos(userInput);
-					UpdateData(FALSE);
-					thr = userInput;
-					need_to_update = true;
-					return;
-				}
-			}
+			OnBnClickedButtonSetTH();
 			break;
 		case 3:
 			imshow("error-map", pc.errormap());
@@ -171,6 +163,11 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	filter_size_slider.SetRange(0, 10, TRUE);
 	threshold_slider.SetRange(0, 256, TRUE);
 	threshold_slider.SetPos(100);
+	m_BtnOpenResult.EnableWindow(FALSE);
+	m_BtnProc.EnableWindow(FALSE);
+	m_BtnScan.EnableWindow(FALSE);
+
+
 	UpdateData(FALSE);
 	thr = 100;
 	need_to_update = true;
@@ -222,19 +219,21 @@ void PrintshopComparisonToolDlg::SetTitle()
 	}
 	if (PDF != L"" && PNG != L"")
 	{
-		images_loaded = true;
-		title.Format(L"Printshop Master PDF selected :'%s' PNG selected:'%s'", PDF, PNG);
-		m_pictureOrig.SetBorderColor(RGB(255, 255, 255));
-		m_pictureOrig.SetBorderThickness(7);
-		m_pictureScan.SetBorderColor(RGB(255, 255, 255));
-		m_pictureScan.SetBorderThickness(7);
-		m_pictureResults.SetBorderColor(RGB(255, 255, 255));
-		m_pictureResults.SetBorderThickness(10);
+		m_BtnOpenResult.EnableWindow(TRUE);
+		m_BtnProc.EnableWindow(TRUE);
+		m_BtnScan.EnableWindow(TRUE);
+		UpdateData(FALSE);
+
 
 	}
 	else
 	if (PDF != L"")
 	{
+		m_BtnOpenResult.EnableWindow(FALSE);
+		m_BtnProc.EnableWindow(FALSE);
+		m_BtnScan.EnableWindow(TRUE);
+		UpdateData(FALSE);
+
 		title.Format(L"Printshop Master PDF selected :'%s' PNG not selected yet", PDF);
 		m_pictureOrig.SetBorderColor(RGB(255, 255, 255));
 		m_pictureOrig.SetBorderThickness(7);
@@ -246,6 +245,13 @@ void PrintshopComparisonToolDlg::SetTitle()
 	}
 	else
 	{
+
+		m_BtnOpenResult.EnableWindow(FALSE);
+		m_BtnProc.EnableWindow(FALSE);
+		m_BtnScan.EnableWindow(FALSE);
+		UpdateData(FALSE);
+		title.Format(L"Printshop Master PDF selected :'%s' PNG selected:'%s'", PDF, PNG);
+
 		m_pictureOrig.SetBorderColor(RGB(255,0,255));
 		m_pictureOrig.SetBorderThickness(10);
 		m_pictureScan.SetBorderColor(RGB(255, 255, 255));
@@ -317,7 +323,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 	GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
 	GetDlgItem(IDC_STATIC_FILT_SIZE)->SetWindowTextW(filt_slider_echo);
 
-	if (need_to_update && !mouse_down && images_loaded)
+	if (need_to_update && images_loaded)
 	{
 		CWaitCursor w;
 		double diff;
@@ -533,85 +539,12 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 
 
 }
-void PrintshopComparisonToolDlg::CompareImage() 
-{
-	need_to_update=true;
-	return;
-
-}
 
 
-void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	mouse_down = true;
-	try
-	{
-		CRect rc;
-		GetDlgItem(IDC_PIC_DIFF)->GetWindowRect(&rc);
-		ScreenToClient(&rc);
-		if (rc.PtInRect(point))
-		{
-			ShellExecute(NULL, L"OPEN", m_diffPath.GetString(), NULL, L"", TRUE);
-			return;
-		}
-		GetDlgItem(IDC_PIC_ORIG)->GetWindowRect(&rc);
-		ScreenToClient(&rc);
-		if (rc.PtInRect(point))
-		{
-			WriteLogFile(L"User clicked PDF area");
-
-			CString pdfPath = SelectFileFromDialog(1);
-			WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());
-			if (ConvertPDF2IMG(pdfPath))
-			{
-
-				DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
-				NotifyVersionInfo(L"Original file loaded and converted", L"Now please select a scanned image");
-
-			}
-			//m_origPath = pdfPath;
-			//DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
-			return;
-		}
-
-		GetDlgItem(IDC_PIC_SCAN)->GetWindowRect(&rc);
-		ScreenToClient(&rc);
-		if (rc.PtInRect(point))
-		{
-			WriteLogFile(L"Using clicked PNG area");
-
-			m_scanPath = SelectFileFromDialog(0);
-			if (!m_scanPath.IsEmpty())
-			{
-				DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
-				WriteLogFile(L"Starting to compare %s and %s", m_origPath.GetString(), m_scanPath.GetString());
-				SetTitle();
-				need_to_update =true;
-			}
-			return;
-		}
-
-
-	}
-	catch (const std::exception& e)
-	{
-		// Log any unhandled exception that may occur during
-		// the image comparison.
-		WriteLogFile(L"%S: %S", typeid(e).name(), e.what());
-	}
-
-	CDialog::OnLButtonDown(nFlags, point);
-}
-void PrintshopComparisonToolDlg::OnLButtonUp(UINT nFlags, CPoint point)
-{
-	mouse_down = false;
-	CDialog::OnLButtonDown(nFlags, point);
-}
 
 
 void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	if (mouse_down) return;
 
 	if (pScrollBar == (CScrollBar*)&threshold_slider ||
 		pScrollBar == (CScrollBar*)&filter_size_slider)
@@ -645,21 +578,70 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 
 
 
-void PrintshopComparisonToolDlg::OnDblClickSlider1(NMHDR* pNMHDR, LRESULT* pResult)
+
+
+void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
+{
+	WriteLogFile(L"User clicked PDF area");
+
+	CString pdfPath = SelectFileFromDialog(1);
+	WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());
+	if (ConvertPDF2IMG(pdfPath))
+	{
+
+		DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
+		NotifyVersionInfo(L"Original file loaded and converted", L"Now please select a scanned image");
+
+	}
+}
+
+
+void PrintshopComparisonToolDlg::OnBnClickedButtonScan()
+{
+	WriteLogFile(L"Using clicked PNG area");
+
+	m_scanPath = SelectFileFromDialog(0);
+	if (!m_scanPath.IsEmpty())
+	{
+		DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
+		SetTitle();
+	}
+	return;
+}
+
+
+void PrintshopComparisonToolDlg::OnBnClickedButtonOpenresult()
+{
+	ShellExecute(NULL, L"OPEN", m_diffPath.GetString(), NULL, L"", TRUE);
+}
+void PrintshopComparisonToolDlg::OnBnClickedButtonSetTH()
 {
 	CInputNumberDialog dlg;
-	int userInput = -1;
-	if (dlg.DoModal() == IDOK)
+	dlg.DoModal();
+	int userInput = dlg.GetUserInput();
+	if (userInput >= 1 && userInput <= 128)
 	{
-		userInput = dlg.GetUserInput();
-		if (userInput >= 1 && userInput <= 128)
-		{
-			// Update the slider position
-			threshold_slider.SetPos(userInput);
-			UpdateData(FALSE);
-			thr = userInput;
-			need_to_update = true;
-			return;
-		}
+		// Update the slider position
+		threshold_slider.SetPos(userInput);
+		UpdateData(FALSE);
+		thr = userInput;
+		need_to_update = true;
+		return;
 	}
+
+}
+
+
+void PrintshopComparisonToolDlg::OnBnClickedButtonProc()
+{
+	WriteLogFile(L"Starting to compare %s and %s", m_origPath.GetString(), m_scanPath.GetString());
+	images_loaded = true;
+	m_pictureOrig.SetBorderColor(RGB(255, 255, 255));
+	m_pictureOrig.SetBorderThickness(7);
+	m_pictureScan.SetBorderColor(RGB(255, 255, 255));
+	m_pictureScan.SetBorderThickness(7);
+	m_pictureResults.SetBorderColor(RGB(255, 255, 255));
+	m_pictureResults.SetBorderThickness(10);
+
+	need_to_update = true;
 }
