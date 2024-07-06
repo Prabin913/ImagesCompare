@@ -33,6 +33,7 @@
     <ClCompile Include="printcheck\difference.cppm" />
     <ClCompile Include="printcheck\PrintChecker.cpp" />
     <ClCompile Include="SGInputDlg.cpp" />
+    <ClCompile Include="SGPictureControl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrintshopComparisonTool.h" />
@@ -1067,6 +1068,7 @@
     <ClInclude Include="PrintChecker.hpp" />
     <ClInclude Include="printcheck\PrintChecker.hpp" />
     <ClInclude Include="SGInputDlg.h" />
+    <ClInclude Include="SGPictureControl.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />

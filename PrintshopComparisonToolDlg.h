@@ -2,14 +2,9 @@
 // PrintshopComparisonToolSetupDlg.h : header file
 //
 #include "SG_ButtonFly.h"
-
 #pragma once
-#define BG_COLOR		RGB(215, 217, 239)
-#define	TX_COLOR		RGB(25, 19, 31)
-#define	TX_COLOR2		RGB(64, 6, 49)
-#define	TX_COLOR3		RGB(0, 0, 0)
-#define	TX_HOVER_COLOR	RGB(180, 151, 209)
 
+#include "SGPictureControl.h"
 
 using PasswordCheckCallback = std::function<bool(const std::wstring&)>;
 
@@ -27,6 +22,7 @@ public:
 
 	int thr;
 	int filt_s;
+	SGPictureControl m_pictureResults,m_pictureOrig,m_pictureScan;
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	virtual BOOL OnInitDialog();
@@ -44,6 +40,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
+	COLORREF m_borderColor;
 	bool mouse_down = false;
 
 	char *ConvertWideCharToMultiByte(const CString &strWideChar);

@@ -11,6 +11,13 @@
 #endif
 
 #include "resource.h"		// main symbols
+
+#define BG_COLOR		RGB(215, 217, 239)
+#define	TX_COLOR		RGB(25, 19, 31)
+#define	TX_COLOR2		RGB(64, 6, 49)
+#define	TX_COLOR3		RGB(0, 0, 0)
+#define	TX_HOVER_COLOR	RGB(180, 151, 209)
+
 class CSecuredGlobe_PRS_Class
 {
 public:

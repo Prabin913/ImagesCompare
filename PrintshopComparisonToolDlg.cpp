@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "framework.h"
 #include "PrintshopComparisonTool.h"
+#include "SGPictureControl.h"
 #include "PrintshopComparisonToolDlg.h"
 #include "afxdialogex.h"
 #include "mupdf/pdf.hpp"
@@ -103,9 +104,12 @@ void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2
 void PrintshopComparisonToolDlg::OnSize(UINT nType, int cx, int cy)
 {
 
+	CDialog::OnSize(nType, cx, cy);
+
 	if (nType == SIZE_RESTORED || nType == SIZE_MAXIMIZED)
 	{
 		GetWindowRect(m_LastRect);
+
 	}
 }
 
@@ -117,13 +121,17 @@ HBRUSH PrintshopComparisonToolDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlCol
 
 	switch (pWnd->GetDlgCtrlID())
 	{
+		case IDC_STATIC_TH:
+			pDC->SetBkMode(TRANSPARENT);
+			pDC->SetBkColor(BG_COLOR);
+			return m_tx; // Return a brush with the same color
+			break;
 		case IDC_SLIDER1:
 		case IDC_SLIDER2:
+
 		case IDC_STATIC_THR:
 		case IDC_STATIC_FILT_SIZE:
-		case IDC_STATIC_TH:
 		case IDC_STATIC_FL:
-		/*  IDC_STATIC_FL - bad IDC_STATIC_TH - good*/
 			pDC->SetBkMode(OPAQUE);
 			pDC->SetBkColor(BG_COLOR);
 			return m_tx; // Return a brush with the same color
@@ -141,6 +149,13 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
+	// Subclass the picture control
+	m_pictureResults.SubclassDlgItem(IDC_PIC_DIFF, this);
+	m_pictureResults.SetBorderThickness(10);
+	m_pictureOrig.SubclassDlgItem(IDC_PIC_ORIG,this);
+	m_pictureOrig.SetBorderThickness(10);
+	m_pictureScan.SubclassDlgItem(IDC_PIC_SCAN,this);
+
 	if (!RegisterHotKey(m_hWnd, 1, MOD_CONTROL | MOD_SHIFT, 'E'))
 	{
 		AfxMessageBox(L"Failed to register hotkey!");
@@ -203,15 +218,35 @@ void PrintshopComparisonToolDlg::SetTitle()
 	if (PDF != L"" && PNG != L"")
 	{
 		title.Format(L"Printshop Master PDF selected :'%s' PNG selected:'%s'", PDF, PNG);
+		m_pictureOrig.SetBorderColor(RGB(255, 255, 255));
+		m_pictureOrig.SetBorderThickness(7);
+		m_pictureScan.SetBorderColor(RGB(255, 255, 255));
+		m_pictureScan.SetBorderThickness(7);
+		m_pictureResults.SetBorderColor(RGB(255, 255, 255));
+		m_pictureResults.SetBorderThickness(10);
+
 	}
 	else
 	if (PDF != L"")
 	{
 		title.Format(L"Printshop Master PDF selected :'%s' PNG not selected yet", PDF);
+		m_pictureOrig.SetBorderColor(RGB(255, 255, 255));
+		m_pictureOrig.SetBorderThickness(7);
+		m_pictureScan.SetBorderColor(RGB(255, 0, 255));
+		m_pictureScan.SetBorderThickness(10);
+		m_pictureResults.SetBorderColor(RGB(255, 255, 255));
+		m_pictureResults.SetBorderThickness(7);
 
 	}
 	else
 	{
+		m_pictureOrig.SetBorderColor(RGB(255,0,255));
+		m_pictureOrig.SetBorderThickness(10);
+		m_pictureScan.SetBorderColor(RGB(255, 255, 255));
+		m_pictureScan.SetBorderThickness(7);
+		m_pictureResults.SetBorderColor(RGB(255, 255, 255));
+		m_pictureResults.SetBorderThickness(7);
+
 		title.Format(L"Printshop Master (new) - ready to start");
 	}
 	SetWindowText(title);
@@ -291,9 +326,20 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		CString stdDiff;
 		stdDiff.Format(L"Difference between images is  %.1f%%", diff);
 		if (diff == 0.0)
+		
+		{ 
+			m_pictureResults.SetBorderColor(RGB(0, 255, 0));
+			m_pictureResults.SetBorderThickness(10);
 			NotifyVersionInfo(L"Identical images!", stdDiff);
+
+		}
 		else
-			NotifyVersionInfo(L"Unidentical images",stdDiff);
+		{
+			m_pictureResults.SetBorderColor(RGB(255, 0, 0));
+			m_pictureResults.SetBorderThickness(10);
+			NotifyVersionInfo(L"Unidentical images", stdDiff);
+
+		}
 		ShowResults(thr);
 
 		need_to_update = false;
@@ -401,18 +447,35 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath)
 	return true;
 }
 
-void PrintshopComparisonToolDlg::DrawImage(CWnd *pRenderWnd, const CString &strImageFilePath)
+void PrintshopComparisonToolDlg::DrawImage(CWnd* pRenderWnd, const CString& strImageFilePath)
 {
 	CWaitCursor w;
 	if (strImageFilePath.IsEmpty()) return;
 
 	CRect rc;
 	pRenderWnd->GetWindowRect(&rc);
+	pRenderWnd->ScreenToClient(&rc); // Convert to client coordinates
+
+	CDC* pDC = pRenderWnd->GetDC();
+	if (!pDC) return;
 
 	CImage pngImage;
-	pngImage.Load(strImageFilePath);
-	pngImage.StretchBlt(pRenderWnd->GetDC()->GetSafeHdc(), CRect(0, 0, rc.Width(), rc.Height()));
+	HRESULT hr = pngImage.Load(strImageFilePath);
+	if (FAILED(hr)) return;
+
+	// Clear the background
+	rc.left=11;
+	rc.top=11;
+	rc.right=rc.right-11;
+	rc.bottom=rc.bottom-11;
+	pDC->FillSolidRect(&rc, RGB(255, 255, 255));
+
+	// Draw the image
+	pngImage.StretchBlt(pDC->GetSafeHdc(), 11, 11, rc.Width()-22, rc.Height()-22, SRCCOPY);
+
+	pRenderWnd->ReleaseDC(pDC);
 }
+
 
 char *PrintshopComparisonToolDlg::ConvertWideCharToMultiByte(const CString &strWideChar) {
 	int strLen = WideCharToMultiByte(CP_UTF8, 0, strWideChar, -1, NULL, 0, NULL, NULL);
@@ -520,7 +583,6 @@ void PrintshopComparisonToolDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			return;
 		}
 
-		UpdateWindow();
 
 	}
 	catch (const std::exception& e)
