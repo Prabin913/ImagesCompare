@@ -317,7 +317,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 	GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
 	GetDlgItem(IDC_STATIC_FILT_SIZE)->SetWindowTextW(filt_slider_echo);
 
-	if (need_to_update && !mouse_down)
+	if (need_to_update && !mouse_down && images_loaded)
 	{
 		CWaitCursor w;
 		double diff;
