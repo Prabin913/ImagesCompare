@@ -33,7 +33,7 @@ static CString annotate_path("annotation.png");
 
 printcheck::PrintChecker pc;
 bool need_to_update = false;
-
+bool images_loaded=false;
 PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent)
 {
@@ -170,6 +170,11 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	}
 	filter_size_slider.SetRange(0, 10, TRUE);
 	threshold_slider.SetRange(0, 256, TRUE);
+	threshold_slider.SetPos(100);
+	UpdateData(FALSE);
+	thr = 100;
+	need_to_update = true;
+
 	UpdateData(FALSE);
 
 	HDC desktopDC = ::GetDC(NULL);
@@ -217,6 +222,7 @@ void PrintshopComparisonToolDlg::SetTitle()
 	}
 	if (PDF != L"" && PNG != L"")
 	{
+		images_loaded = true;
 		title.Format(L"Printshop Master PDF selected :'%s' PNG selected:'%s'", PDF, PNG);
 		m_pictureOrig.SetBorderColor(RGB(255, 255, 255));
 		m_pictureOrig.SetBorderThickness(7);
@@ -512,7 +518,9 @@ cv::Mat get_image(const std::string & filename)
 
 void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 {
+	if(!images_loaded) return;
 	CWaitCursor w;
+
 	auto annotated = pc.applyLimit(Threshold);
 	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotated);
 
