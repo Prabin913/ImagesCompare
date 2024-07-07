@@ -339,42 +339,32 @@ HCURSOR PrintshopComparisonToolDlg::OnQueryDragIcon()
 
 void PrintshopComparisonToolDlg::UpdatePagesStates()
 {
-	if (NoPages == 2)
+	if (NoPages == 1)
 	{
-		m_BtnSideB.EnableWindow(TRUE);
-		m_BtnSideA.EnableWindow(TRUE);
-
-		if (curPage == 1)
-		{
-			m_BtnSideA.SetState(TRUE);
-			m_BtnSideB.SetState(FALSE);
-			m_pictureResults2.ShowWindow(FALSE);
-			m_pictureResults1.ShowWindow(TRUE);
-			m_pictureOrig2.ShowWindow(FALSE);
-			m_pictureOrig1.ShowWindow(TRUE);
-			m_pictureScan2.ShowWindow(FALSE);
-			m_pictureScan1.ShowWindow(TRUE);
-
-		}
-		else
-		{
-			m_BtnSideB.SetState(TRUE);
-			m_BtnSideA.SetState(FALSE);
-			m_pictureResults1.ShowWindow(FALSE);
-			m_pictureResults2.ShowWindow(TRUE);
-			m_pictureOrig1.ShowWindow(FALSE);
-			m_pictureOrig2.ShowWindow(TRUE);
-			m_pictureScan1.ShowWindow(FALSE);
-			m_pictureScan2.ShowWindow(TRUE);
-
-
-		}
+		m_BtnSideB.EnableWindow(FALSE);
+		m_BtnSideA.EnableWindow(FALSE);
 
 	}
 	else
 	{
-		m_BtnSideB.EnableWindow(FALSE);
-		m_BtnSideA.EnableWindow(FALSE);
+		m_BtnSideB.EnableWindow(TRUE);
+		m_BtnSideA.EnableWindow(TRUE);
+
+	}
+
+	if (NoPages == 2 && curPage == 2)
+	{
+		m_BtnSideB.SetState(TRUE);
+		m_BtnSideA.SetState(FALSE);
+		m_pictureResults1.ShowWindow(FALSE);
+		m_pictureResults2.ShowWindow(TRUE);
+		m_pictureOrig1.ShowWindow(FALSE);
+		m_pictureOrig2.ShowWindow(TRUE);
+		m_pictureScan1.ShowWindow(FALSE);
+		m_pictureScan2.ShowWindow(TRUE);
+	}
+	else
+	{
 		m_BtnSideA.SetState(TRUE);
 		m_BtnSideB.SetState(FALSE);
 		m_pictureResults2.ShowWindow(FALSE);
@@ -385,6 +375,7 @@ void PrintshopComparisonToolDlg::UpdatePagesStates()
 		m_pictureScan1.ShowWindow(TRUE);
 
 	}
+
 	UpdateData(FALSE);
 }
 void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
