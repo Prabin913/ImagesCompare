@@ -312,6 +312,9 @@ void PrintshopComparisonToolDlg::UpdatePagesStates()
 {
 	if (NoPages == 2)
 	{
+		m_BtnSideB.EnableWindow(TRUE);
+		m_BtnSideA.EnableWindow(TRUE);
+
 		if (curPage == 1)
 		{
 			m_BtnSideA.SetState(TRUE);
@@ -325,6 +328,12 @@ void PrintshopComparisonToolDlg::UpdatePagesStates()
 		}
 
 	}
+	else
+	{
+		m_BtnSideB.EnableWindow(FALSE);
+		m_BtnSideA.EnableWindow(FALSE);
+	}
+	UpdateData(FALSE);
 }
 void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 {
@@ -346,6 +355,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if (need_to_update && images_loaded)
 	{
+		UpdatePagesStates();
 		CWaitCursor w;
 		double diff;
 		image_compare.threshold_and_opening(thr, filt_s);
@@ -482,12 +492,16 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages
 			return false;
 		}
 		m_origPath2 = pdfFilePath + _T(".2.png");
+		curPage=1;
+		NoPages=2;
 		GetDlgItem(IDC_BUTTON_SIDE_A)->EnableWindow(TRUE);
 		GetDlgItem(IDC_BUTTON_SIDE_B)->EnableWindow(TRUE);
 
 	}
 	else
 	{
+		curPage = 1;
+		NoPages = 1;
 		GetDlgItem(IDC_BUTTON_SIDE_A)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BUTTON_SIDE_B)->EnableWindow(FALSE);
 
