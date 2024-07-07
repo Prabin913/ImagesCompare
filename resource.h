@@ -1268,12 +1268,10 @@
 #define IDC_BUTTON_ORIG                 1000
 #define IDC_BUTTON_SCAN                 1001
 #define IDC_BUTTON_PROC                 1002
-#define IDC_BUTTON_PROC2                1003
 #define IDC_BUTTON_OPENRESULT           1003
 #define IDC_BUTTON_SET_TH               1004
 #define IDC_BUTTON_SIDE_A               1005
 #define IDC_BUTTON_SIDE_B               1006
-#define IDC_BUTTON_SCAN2                1007
 
 #define CF_GDIOBJLAST                   0x03FF
 #define _WIN32_WINNT_NT4                0x0400

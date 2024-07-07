@@ -433,7 +433,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		temp.Format(L"Threshold set to %d", thr);
 		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
 		std::string orig_path = ConvertWideCharToMultiByte(sCurPage.GetString());
-		std::string scan_path = ConvertWideCharToMultiByte(m_scanPath1.GetString());
+		std::string scan_path = ConvertWideCharToMultiByte((curPage==2)?m_scanPath2.GetString() : m_scanPath1.GetString());
 		pc.process(orig_path, scan_path,diff);
 
 		CString stdDiff;
