@@ -82,4 +82,6 @@ public:
 	afx_msg void OnBnClickedButtonProc();
 	CButton m_BtnSideA;
 	CButton m_BtnSideB;
+	afx_msg void OnBnClickedButtonSideA();
+	afx_msg void OnBnClickedButtonSideB();
 };

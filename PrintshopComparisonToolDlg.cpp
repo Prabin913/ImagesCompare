@@ -75,6 +75,8 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_OPENRESULT, &PrintshopComparisonToolDlg::OnBnClickedButtonOpenresult)
 	ON_BN_CLICKED(IDC_BUTTON_SET_TH,&PrintshopComparisonToolDlg::OnBnClickedButtonSetTH)
 	ON_BN_CLICKED(IDC_BUTTON_PROC, &PrintshopComparisonToolDlg::OnBnClickedButtonProc)
+	ON_BN_CLICKED(IDC_BUTTON_SIDE_A, &PrintshopComparisonToolDlg::OnBnClickedButtonSideA)
+	ON_BN_CLICKED(IDC_BUTTON_SIDE_B, &PrintshopComparisonToolDlg::OnBnClickedButtonSideB)
 END_MESSAGE_MAP()
 
 // PrintshopComparisonToolDlg class implementation
@@ -665,6 +667,11 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonScan()
 	m_scanPath = SelectFileFromDialog(0);
 	if (!m_scanPath.IsEmpty())
 	{
+		if (m_scanPath.Right(3).MakeUpper() == L"PDF")
+		{
+			MessageBox(L"Scanned image can't be a PDF");
+			return;
+		}
 		DrawImage(GetDlgItem(IDC_PIC_SCAN), m_scanPath);
 		SetTitle();
 	}
@@ -706,4 +713,24 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonProc()
 	m_pictureResults.SetBorderThickness(10);
 
 	need_to_update = true;
+}
+
+
+void PrintshopComparisonToolDlg::OnBnClickedButtonSideA()
+{
+	if (NoPages != 1)
+	{
+		curPage=1;
+		UpdatePagesStates();
+	}
+}
+
+
+void PrintshopComparisonToolDlg::OnBnClickedButtonSideB()
+{
+	if (NoPages != 1)
+	{
+		curPage = 2;
+		UpdatePagesStates();
+	}
 }
