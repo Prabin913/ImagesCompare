@@ -38,7 +38,8 @@ PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-
+	NoPages=1;
+	curPage=1;
 }
 
 void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
@@ -307,7 +308,24 @@ HCURSOR PrintshopComparisonToolDlg::OnQueryDragIcon()
 }
 
 
+void PrintshopComparisonToolDlg::UpdatePagesStates()
+{
+	if (NoPages == 2)
+	{
+		if (curPage == 1)
+		{
+			m_BtnSideA.SetState(TRUE);
+			m_BtnSideB.SetState(FALSE);
+		}
+		else
+		{
+			m_BtnSideB.SetState(TRUE);
+			m_BtnSideA.SetState(FALSE);
 
+		}
+
+	}
+}
 void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 {
 
@@ -617,9 +635,10 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 	WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());
 	if (ConvertPDF2IMG(pdfPath,pages))
 	{
-
+		CString strPages;
+		strPages.Format(L"File has %d pages",pages);
 		DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
-		NotifyVersionInfo(L"Original file loaded and converted", L"Now please select a scanned image");
+		NotifyVersionInfo(L"Original file loaded and converted. "+strPages, L"Now please select a scanned image");
 
 	}
 }

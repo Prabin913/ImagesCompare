@@ -44,6 +44,8 @@ private:
 	
 	char *ConvertWideCharToMultiByte(const CString &strWideChar);
 	bool ConvertPDF2IMG(CString &pdfFilePath, int& pages);
+	void UpdatePagesStates();
+
 	void SetTitle();
 
 	void DrawImage(CWnd *pRenderWnd, const CString &strImageFilePath);
@@ -56,7 +58,8 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
-
+	int curPage;
+	int NoPages;
 private:
 	CBrush m_brBack, m_brBack2, m_brBack3;
 	CBrush m_tx;
