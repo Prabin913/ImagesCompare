@@ -22,7 +22,11 @@ public:
 
 	int thr;
 	int filt_s;
-	SGPictureControl m_pictureResults,m_pictureOrig,m_pictureScan;
+	SGPictureControl 
+		m_pictureResults1, m_pictureResults2,
+		m_pictureOrig1, m_pictureOrig2,
+		m_pictureScan1, m_pictureScan2;
+
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	virtual BOOL OnInitDialog();
@@ -35,8 +39,6 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnClose();
 	afx_msg void OnQuit();
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	DECLARE_MESSAGE_MAP()
 
 private:
@@ -64,7 +66,10 @@ private:
 	CBrush m_brBack, m_brBack2, m_brBack3;
 	CBrush m_tx;
 
-	CString m_origPath, m_origPath2,m_scanPath, m_diffPath;
+	CString 
+		m_origPath1, m_origPath2,
+		m_scanPath1, m_scanPath2,
+		m_diffPath1, m_diffPath2;
 public:
 	CSliderCtrl threshold_slider;
 	CSliderCtrl filter_size_slider;

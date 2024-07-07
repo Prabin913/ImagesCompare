@@ -793,13 +793,13 @@
 #define IDD_PRINTSHOPCOMPARISONTOOL_DIALOG 101
 #define VK_NUMPAD5                      0x65
 #define LANG_DIVEHI                     0x65
-#define IDC_PIC_ORIG                    102
+#define IDC_PIC_ORIG1                   102
 #define VK_NUMPAD6                      0x66
-#define IDC_PIC_SCAN                    103
+#define IDC_PIC_SCAN1                   103
 #define VK_NUMPAD7                      0x67
 #define LANG_FULAH                      0x67
 #define LANG_PULAR                      0x67
-#define IDC_PIC_DIFF                    104
+#define IDC_PIC_DIFF1                   104
 #define VK_NUMPAD8                      0x68
 #define LANG_HAUSA                      0x68
 #define IDC_SLIDER1                     105
@@ -825,7 +825,9 @@
 #define IDR_MAINFRAME                   112
 #define VK_F1                           0x70
 #define LANG_IGBO                       0x70
+#define IDC_PIC_SCAN2                   112
 #define VK_F2                           0x71
+#define IDC_PIC_DIFF2                   113
 #define VK_F3                           0x72
 #define VK_F4                           0x73
 #define LANG_TIGRIGNA                   0x73
@@ -1270,8 +1272,9 @@
 #define IDC_BUTTON_OPENRESULT           1003
 #define IDC_BUTTON_SET_TH               1004
 #define IDC_BUTTON_SIDE_A               1005
-#define IDC_BUTTON_SIDE_A2              1006
 #define IDC_BUTTON_SIDE_B               1006
+#define IDC_BUTTON_SCAN2                1007
+
 #define CF_GDIOBJLAST                   0x03FF
 #define _WIN32_WINNT_NT4                0x0400
 #define _WIN32_IE_IE40                  0x0400
@@ -1515,6 +1518,7 @@
 #define LVS_NOSCROLL                    0x2000
 #define TVS_NOSCROLL                    0x2000
 #define TCS_OWNERDRAWFIXED              0x2000
+#define IDC_PIC_ORIG2                   12102
 #define CS_GLOBALCLASS                  0x4000
 #define TBSTYLE_REGISTERDROP            0x4000
 #define RBS_VERTICALGRIPPER             0x00004000
