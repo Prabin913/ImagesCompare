@@ -1269,6 +1269,9 @@
 #define IDC_BUTTON_PROC2                1003
 #define IDC_BUTTON_OPENRESULT           1003
 #define IDC_BUTTON_SET_TH               1004
+#define IDC_BUTTON_SIDE_A               1005
+#define IDC_BUTTON_SIDE_A2              1006
+#define IDC_BUTTON_SIDE_B               1006
 #define CF_GDIOBJLAST                   0x03FF
 #define _WIN32_WINNT_NT4                0x0400
 #define _WIN32_IE_IE40                  0x0400

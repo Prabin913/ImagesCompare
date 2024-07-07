@@ -52,6 +52,8 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_PROC, m_BtnProc);
 	DDX_Control(pDX, IDC_BUTTON_OPENRESULT, m_BtnOpenResult);
 	DDX_Control(pDX, IDC_BUTTON_SET_TH, m_BtnSetTH);
+	DDX_Control(pDX, IDC_BUTTON_SIDE_A, m_BtnSideA);
+	DDX_Control(pDX, IDC_BUTTON_SIDE_B, m_BtnSideB);
 }
 
 BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)

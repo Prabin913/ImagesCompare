@@ -77,4 +77,6 @@ public:
 	afx_msg void OnBnClickedButtonOpenresult();
 	afx_msg void OnBnClickedButtonSetTH();
 	afx_msg void OnBnClickedButtonProc();
+	CButton m_BtnSideA;
+	CButton m_BtnSideB;
 };
