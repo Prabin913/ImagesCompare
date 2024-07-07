@@ -43,7 +43,7 @@ private:
 	COLORREF m_borderColor;
 	
 	char *ConvertWideCharToMultiByte(const CString &strWideChar);
-	bool ConvertPDF2IMG(CString &pdfFilePath);
+	bool ConvertPDF2IMG(CString &pdfFilePath, int& pages);
 	void SetTitle();
 
 	void DrawImage(CWnd *pRenderWnd, const CString &strImageFilePath);
@@ -61,7 +61,7 @@ private:
 	CBrush m_brBack, m_brBack2, m_brBack3;
 	CBrush m_tx;
 
-	CString m_origPath, m_scanPath, m_diffPath;
+	CString m_origPath, m_origPath2,m_scanPath, m_diffPath;
 public:
 	CSliderCtrl threshold_slider;
 	CSliderCtrl filter_size_slider;

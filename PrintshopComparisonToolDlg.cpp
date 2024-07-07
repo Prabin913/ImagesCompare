@@ -54,6 +54,7 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SET_TH, m_BtnSetTH);
 	DDX_Control(pDX, IDC_BUTTON_SIDE_A, m_BtnSideA);
 	DDX_Control(pDX, IDC_BUTTON_SIDE_B, m_BtnSideB);
+
 }
 
 BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
@@ -420,7 +421,7 @@ CString SelectFileFromDialog(int type)
 	}
 }
 
-bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath) 
+bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages) 
 {
 
 	char *szSrcFilePath = ConvertWideCharToMultiByte(pdfFilePath);
@@ -434,9 +435,9 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath)
 		CString strErr;
 		strErr.Format(_T("%s was protected by password"), pdfFilePath);
 		AfxMessageBox(strErr);
+		return false;
 	}
 
-	int pages = 0;
 	int zoom = 300;
 	if (_pdf->good() && _pdf->size() != 0) 
 	{
@@ -452,10 +453,29 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath)
 		AfxMessageBox(_T("Failed to render document."));
 		return false;
 	}
+	m_origPath = pdfFilePath + _T(".1.png");
 
+	if (pages == 2)
+	{
+		from = to = 2;
+		if (!_pdf->render(szSrcFilePath, from, to, zoom))
+		{
+			AfxMessageBox(_T("Failed to render page 2 of document."));
+			return false;
+		}
+		m_origPath2 = pdfFilePath + _T(".2.png");
+		GetDlgItem(IDC_BUTTON_SIDE_A)->EnableWindow(TRUE);
+		GetDlgItem(IDC_BUTTON_SIDE_B)->EnableWindow(TRUE);
+
+	}
+	else
+	{
+		GetDlgItem(IDC_BUTTON_SIDE_A)->EnableWindow(FALSE);
+		GetDlgItem(IDC_BUTTON_SIDE_B)->EnableWindow(FALSE);
+
+	}
 	free(szSrcFilePath);
 
-	m_origPath = pdfFilePath + _T(".1.png");
 	SetTitle();
 
 	return true;
@@ -584,11 +604,18 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 
 void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 {
+	int pages;
+	DeleteFile(m_origPath);
+	m_origPath = L"";
+	DeleteFile(m_origPath2);
+	m_origPath2 = L"";
+
 	WriteLogFile(L"User clicked PDF area");
 
 	CString pdfPath = SelectFileFromDialog(1);
+	if(pdfPath == L"") return;
 	WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());
-	if (ConvertPDF2IMG(pdfPath))
+	if (ConvertPDF2IMG(pdfPath,pages))
 	{
 
 		DrawImage(GetDlgItem(IDC_PIC_ORIG), m_origPath);
