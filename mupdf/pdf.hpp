@@ -7,7 +7,8 @@
 
 #pragma once
 
-extern "C" {
+extern "C" 
+{
 #include <mupdf/fitz.h>
 }
 
@@ -38,7 +39,8 @@ public:
     int  size();
     bool good();
     bool render(const char *export_filename, int from, int to, int zoom = 100);
-	char *get_image_path() {
+	char *get_image_path() 
+    {
 		return _image_name;
 	}
 };

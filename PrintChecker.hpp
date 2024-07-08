@@ -26,6 +26,9 @@ namespace printcheck
 				//!  update visualization with the new requested limit
 			cv::Mat applyLimit( int);
 
+			// my own tests
+			cv::Mat test(const std::filesystem::path& ref, const std::filesystem::path& scan);
+
 		//  Getters
 				//!  returns with a deep copy of the calculated error map
 			cv::Mat error() const { return _error.clone(); }

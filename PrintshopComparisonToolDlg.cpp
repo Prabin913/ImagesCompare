@@ -378,6 +378,27 @@ void PrintshopComparisonToolDlg::UpdatePagesStates()
 
 	UpdateData(FALSE);
 }
+CString PrintshopComparisonToolDlg::GetCurrentPagePath()
+{
+	if (NoPages == 2)
+	{
+		if (curPage == 1)
+		{
+			return m_origPath1;
+		}
+		else
+		{
+			return m_origPath2;
+
+		}
+	}
+	else
+	{
+		return m_origPath1 ;
+
+	}
+
+}
 void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 {
 
@@ -398,24 +419,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if (need_to_update && images_loaded)
 	{
-		CString sCurPage;
-		if (NoPages == 2)
-		{
-			if (curPage == 1)
-			{
-				sCurPage = m_origPath1;
-			}
-			else
-			{
-				sCurPage = m_origPath2;
-
-			}
-		}
-		else
-		{
-			sCurPage = m_origPath1;
-
-		}
+		CString sCurPage = GetCurrentPagePath();
 		UpdatePagesStates();
 		CWaitCursor w;
 		double diff;
@@ -564,7 +568,7 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages
 		AfxMessageBox(_T("Failed to render document."));
 		return false;
 	}
-	m_origPath1 = pdfFilePath + _T(".1.png");
+	m_origPath1 = pdfFilePath + _T(".1.temp");
 
 	if (pages == 2)
 	{
@@ -574,7 +578,7 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages
 			AfxMessageBox(_T("Failed to render page 2 of document."));
 			return false;
 		}
-		m_origPath2 = pdfFilePath + _T(".2.png");
+		m_origPath2 = pdfFilePath + _T(".2.temp");
 		curPage=1;
 		NoPages=2;
 		GetDlgItem(IDC_BUTTON_SIDE_A)->EnableWindow(TRUE);

@@ -118,7 +118,7 @@ void pdf::generate_image_name(int page, int width)
 
     if (_image_name == nullptr)
     {
-        std::string filename = _export_filename + '.' + ss.str() + ".png";
+        std::string filename = _export_filename + '.' + ss.str() + ".temp";
         _image_name = new char[filename.size() + 1];
         std::copy(filename.begin(), filename.end(), _image_name);
         _image_name[filename.size()] = '\0';
