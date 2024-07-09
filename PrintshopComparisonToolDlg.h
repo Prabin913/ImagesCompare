@@ -44,7 +44,6 @@ protected:
 private:
 	COLORREF m_borderColor;
 	
-	char *ConvertWideCharToMultiByte(const CString &strWideChar);
 	bool ConvertPDF2IMG(CString &pdfFilePath, int& pages);
 	void UpdatePagesStates();
 	CString GetCurrentPagePath();
