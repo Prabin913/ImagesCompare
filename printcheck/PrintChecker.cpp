@@ -205,7 +205,8 @@ static Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string i
 	cv::Size size2 = second.size();
 
 	// Compare the sizes and resize image2 if needed
-	if (size1 != size2) {
+	if (size1 != size2) 
+	{
 		std::cout << "The images are of different sizes. Resizing image2 to match image1." << std::endl;
 		SSIMAligner(first, second, second);
 		cv::resize(second, second, size1);
@@ -235,7 +236,8 @@ static Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string i
 	for (const auto& c : contours)
 	{
 		double area = contourArea(c);
-		if (area > 100) {
+		if (area > 100) 
+		{
 			Rect bounding_rect = boundingRect(c);
 			rectangle(first, bounding_rect, Scalar(36, 255, 12), 2);
 			rectangle(second, bounding_rect, Scalar(36, 255, 12), 2);

@@ -7,6 +7,10 @@
 #include <opencv2/core.hpp>
 #include <filesystem>
 
+ // Code added by Ismayil X
+static cv::Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string imgsecond, double* score);
+
+
 namespace printcheck
 {
 
