@@ -124,30 +124,6 @@ static double calculateSSIM(const Mat& img1, const Mat& img2,Mat &diff)
 	return mssim[0];
 
 
-
-
-	//   if (img1.empty() || img2.empty())
-	//   {
-	//       cout << "Could not open or find the image" << endl;
-	//       return -1;
-	//   }
-
-	//   // Resize img2 to match the size of img1
-	//   resize(img2, img2, img1.size());
-
-	//   Mat diffGray, thresh;
-	//   absdiff(img1, img2, diff);
-	//   cvtColor(diff, diffGray, COLOR_BGR2GRAY);
-	//   threshold(diffGray, thresh, 30, 255, THRESH_BINARY);
-
-	//   // Create a mask with red color where differences are found
-	//   Mat redMask = Mat::zeros(img1.size(), img1.type());
-	//   redMask.setTo(Scalar(0, 0, 255), thresh);
-
-	//   // Apply the red mask to the original image
-	   //diff = img1;
-	   //diff.setTo(Scalar(0, 0, 255), thresh);
-	   //return 30;
 }
 static void SSIMAligner(Mat img1, Mat img2, Mat* aligned)
 {
@@ -203,71 +179,119 @@ static void SSIMAligner(Mat img1, Mat img2, Mat* aligned)
 }
 
 
+
 static cv::Mat getDifferenceBetweenImageWithSSIM(cv::Mat first, cv::Mat second, double* score)
 {
-	/*Mat first = imread(imgfirst);
-	Mat second = imread(imgsecond);
-
-	if (first.empty() || second.empty())
-	{
-		cout << "Could not open or find the images!" << endl;
-		Mat empt;
-		return empt;
-	}*/
-
 	cv::Size size1 = first.size();
 	cv::Size size2 = second.size();
 
-	// Compare the sizes and resize image2 if needed
-	if (size1 != size2) 
+	if (size1 != size2)
 	{
 		std::cout << "The images are of different sizes. Resizing image2 to match image1." << std::endl;
-		SSIMAligner(first, second, &second);
+		SSIMAligner(first, second, &second);  // Assuming SSIMAligner is defined elsewhere
 		cv::resize(second, second, size1);
 	}
 	else
 	{
 		std::cout << "The images are of the same size." << std::endl;
 	}
-	//resize(second, second, first.size());
-	Mat first_gray, second_gray;
-	cvtColor(first, first_gray, COLOR_BGR2GRAY);
-	cvtColor(second, second_gray, COLOR_BGR2GRAY);
 
-	Mat diff;
-	*score = calculateSSIM(first_gray, second_gray, diff) * 100;
-	cout << "Similarity Score: " << *score << "%" << endl;
+	cv::Mat first_gray, second_gray;
+	cv::cvtColor(first, first_gray, cv::COLOR_BGR2GRAY);
+	cv::cvtColor(second, second_gray, cv::COLOR_BGR2GRAY);
 
-	Mat thresh;
-	threshold(diff, thresh, 0, 255, THRESH_BINARY_INV | THRESH_OTSU);
+	cv::Mat diff;
+	*score = calculateSSIM(first_gray, second_gray, diff) * 100;  // Assuming calculateSSIM is defined elsewhere
+	std::cout << "Similarity Score: " << *score << "%" << std::endl;
 
-	vector<vector<Point>> contours;
-	findContours(thresh, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+	cv::Mat thresh;
+	cv::threshold(diff, thresh, 0, 255, cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
 
-	Mat mask = Mat::zeros(first.size(), CV_8UC3);
-	Mat filled = second.clone();
+	std::vector<std::vector<cv::Point>> contours;
+	cv::findContours(thresh, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+	cv::Mat filled = second.clone();
 
 	for (const auto& c : contours)
 	{
-		double area = contourArea(c);
-		if (area > 100) 
+		double area = cv::contourArea(c);
+		if (area > 100)
 		{
-			Rect bounding_rect = boundingRect(c);
-			rectangle(first, bounding_rect, Scalar(36, 255, 12), 2);
-			rectangle(second, bounding_rect, Scalar(36, 255, 12), 2);
-			drawContours(mask, vector<vector<Point>>{c}, -1, Scalar(0, 255, 0), -1);
-			drawContours(filled, vector<vector<Point>>{c}, -1, Scalar(0, 255, 0), -1);
+			cv::Rect bounding_rect = cv::boundingRect(c);
+			cv::Point center(bounding_rect.x + bounding_rect.width / 2, bounding_rect.y + bounding_rect.height / 2);
+			int radius = std::max(bounding_rect.width, bounding_rect.height) / 2;
+			cv::circle(filled, center, radius, cv::Scalar(36, 255, 12), 2);
 		}
 	}
 
-	//imshow("first", first);
-	//imshow("second", second);
-	//imshow("diff", diff);
-	//imwrite("diffa.png", diff);
-	//imshow("mask", mask);
-	/*imwrite("maska.png", mask);
-	imwrite("filled.png", filled);
-	waitKey(0);*/
 	return filled;
-
 }
+
+//static cv::Mat getDifferenceBetweenImageWithSSIM(cv::Mat first, cv::Mat second, double* score)
+//{
+//	/*Mat first = imread(imgfirst);
+//	Mat second = imread(imgsecond);
+//
+//	if (first.empty() || second.empty())
+//	{
+//		cout << "Could not open or find the images!" << endl;
+//		Mat empt;
+//		return empt;
+//	}*/
+//
+//	cv::Size size1 = first.size();
+//	cv::Size size2 = second.size();
+//
+//	// Compare the sizes and resize image2 if needed
+//	if (size1 != size2) 
+//	{
+//		std::cout << "The images are of different sizes. Resizing image2 to match image1." << std::endl;
+//		SSIMAligner(first, second, &second);
+//		cv::resize(second, second, size1);
+//	}
+//	else
+//	{
+//		std::cout << "The images are of the same size." << std::endl;
+//	}
+//	//resize(second, second, first.size());
+//	Mat first_gray, second_gray;
+//	cvtColor(first, first_gray, COLOR_BGR2GRAY);
+//	cvtColor(second, second_gray, COLOR_BGR2GRAY);
+//
+//	Mat diff;
+//	*score = calculateSSIM(first_gray, second_gray, diff) * 100;
+//	cout << "Similarity Score: " << *score << "%" << endl;
+//
+//	Mat thresh;
+//	threshold(diff, thresh, 0, 255, THRESH_BINARY_INV | THRESH_OTSU);
+//
+//	vector<vector<Point>> contours;
+//	findContours(thresh, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+//
+//	Mat mask = Mat::zeros(first.size(), CV_8UC3);
+//	Mat filled = second.clone();
+//
+//	for (const auto& c : contours)
+//	{
+//		double area = contourArea(c);
+//		if (area > 100) 
+//		{
+//			Rect bounding_rect = boundingRect(c);
+//			rectangle(first, bounding_rect, Scalar(36, 255, 12), 2);
+//			rectangle(second, bounding_rect, Scalar(36, 255, 12), 2);
+//			drawContours(mask, vector<vector<Point>>{c}, -1, Scalar(0, 255, 0), -1);
+//			drawContours(filled, vector<vector<Point>>{c}, -1, Scalar(0, 255, 0), -1);
+//		}
+//	}
+//
+//	//imshow("first", first);
+//	//imshow("second", second);
+//	//imshow("diff", diff);
+//	//imwrite("diffa.png", diff);
+//	//imshow("mask", mask);
+//	/*imwrite("maska.png", mask);
+//	imwrite("filled.png", filled);
+//	waitKey(0);*/
+//	return filled;
+//
+//}
