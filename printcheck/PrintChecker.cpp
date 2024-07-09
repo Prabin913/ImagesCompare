@@ -204,27 +204,18 @@ static cv::Mat getDifferenceBetweenImageWithSSIM(cv::Mat first, cv::Mat second, 
 	*score = calculateSSIM(first_gray, second_gray, diff) * 100;  // Assuming calculateSSIM is defined elsewhere
 	std::cout << "Similarity Score: " << *score << "%" << std::endl;
 
-	cv::Mat thresh;
-	cv::threshold(diff, thresh, 0, 255, cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+	Mat difff, diffGray, thresh;
+    absdiff(first, second, difff);
+    cvtColor(difff, diffGray, COLOR_BGR2GRAY);
+    threshold(diffGray, thresh, 30, 255, THRESH_BINARY);
 
-	std::vector<std::vector<cv::Point>> contours;
-	cv::findContours(thresh, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    // Create a mask with red color where differences are found
+    Mat redMask = Mat::zeros(first.size(), first.type());
+    redMask.setTo(Scalar(0, 0, 255), thresh);
 
-	cv::Mat filled = second.clone();
-
-	for (const auto& c : contours)
-	{
-		double area = cv::contourArea(c);
-		if (area > 100)
-		{
-			cv::Rect bounding_rect = cv::boundingRect(c);
-			cv::Point center(bounding_rect.x + bounding_rect.width / 2, bounding_rect.y + bounding_rect.height / 2);
-			int radius = std::max(bounding_rect.width, bounding_rect.height) / 2;
-			cv::circle(filled, center, radius, cv::Scalar(36, 255, 12), 2);
-		}
-	}
-
-	return filled;
+    // Apply the red mask to the original image
+    first.setTo(Scalar(0, 0, 255), thresh);
+	return first;
 }
 
 //static cv::Mat getDifferenceBetweenImageWithSSIM(cv::Mat first, cv::Mat second, double* score)
