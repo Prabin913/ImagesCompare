@@ -660,7 +660,8 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 	if(!images_loaded) return;
 	CWaitCursor w;
 	auto annotated = pc.applyLimit(Threshold);
-	cv::imwrite(wstring_to_string(annotate_path.GetString()).c_str(), annotated);
+	std::string annotation_filename = wstring_to_string(annotate_path.GetString()).c_str();
+	cv::imwrite(annotation_filename, annotated);
 
 	if (NoPages == 2 && curPage == 2)
 	{
