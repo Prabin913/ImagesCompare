@@ -5,8 +5,8 @@ import printcheck.cv;
 import printcheck.align;
 import printcheck.difference;
 
-static cv::Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string imgsecond, double* score);
-
+static cv::Mat getDifferenceBetweenImageWithSSIM(cv::Mat first, cv::Mat second, double* score);
+cv::Mat finalWork;
 namespace printcheck
 {
 /**************************************************************************************************/
@@ -22,33 +22,37 @@ namespace printcheck
 	 *  @return
 	 *    Returns with the visualization or empty Mat object in case of failure.
 	 */
-	cv::Mat PrintChecker::process( const std::filesystem::path& ref, const std::filesystem::path& scan, double &diff)
-	{
-		std::string s1(ref.begin(),ref.end());
-		std::string s2(scan.begin(),scan.end());
-		double score;
-		getDifferenceBetweenImageWithSSIM(s1, s2,&score);
 
-		_ref = printcheck::read( ref);
-		auto tst = printcheck::read( scan);
-		if (_ref.empty() || tst.empty())
+	cv::Mat PrintChecker::process(const std::filesystem::path& ref, const std::filesystem::path& scan, double* diff)
+	{
+		//std::string s1(ref.begin(),ref.end());
+		//std::string s2(scan.begin(),scan.end());
+		std::string s1 = ref.string();
+		std::string s2 = scan.string();
+
+		cv::Mat refer = printcheck::read(ref);
+		cv::Mat tst = printcheck::read( scan);
+		if (refer.empty() || tst.empty())
 		{
 			return {};
 		}
-		auto aligned = printcheck::align_orb( _ref, tst);
-		_error = printcheck::diff_pixel( _ref, aligned.Aligned);
-		_error.setTo(0, ~aligned.Mask);
+		cv::Mat result = getDifferenceBetweenImageWithSSIM(refer,tst,diff);
+		finalWork = result;
+		return result;
+		//auto aligned = printcheck::align_orb( _ref, tst);
+		//_error = printcheck::diff_pixel( _ref, aligned.Aligned);
+		//_error.setTo(0, ~aligned.Mask);
 
-		// Calculate total number of pixels and number of different pixels
-		int totalPixels = _ref.rows * _ref.cols * _ref.channels();
-		cv::Scalar diffSum = cv::sum(_error);
-		double numDifferentPixels = diffSum[0] / 255.0; // Assuming grayscale difference image
+		//// Calculate total number of pixels and number of different pixels
+		//int totalPixels = _ref.rows * _ref.cols * _ref.channels();
+		//cv::Scalar diffSum = cv::sum(_error);
+		//double numDifferentPixels = diffSum[0] / 255.0; // Assuming grayscale difference image
 
-		// Calculate percentage of different pixels
-		diff = (numDifferentPixels / totalPixels) * 100.0;
+		//// Calculate percentage of different pixels
+		//diff = (numDifferentPixels / totalPixels) * 100.0;
 
 
-		return (cv::Mat)_ref;
+		//return (cv::Mat)_ref;
 	}
 
 	/*!
@@ -64,12 +68,15 @@ namespace printcheck
 	 */
 	cv::Mat PrintChecker::applyLimit( int limit)
 	{
-		if (_ref.empty() || _error.empty()) { return {}; }
+		/*if (_ref.empty() || _error.empty()) { return {}; }
 
 		auto mask = printcheck::mask_error( _error, limit);
 		auto [blended, map] = printcheck::blend_error( _ref, _error, mask);
 		_errormap = map;
-		return blended;
+		return blended;*/
+		return finalWork;
+
+
 	}
 
 }
@@ -81,10 +88,11 @@ namespace printcheck
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <vector>
+#include "PrintChecker.hpp"
 using namespace cv;
 using namespace std;
 
-static double calculateSSIM(const Mat& img1, const Mat& img2, Mat& diff)
+static double calculateSSIM(const Mat& img1, const Mat& img2,Mat &diff)
 {
 	const double C1 = 6.5025, C2 = 58.5225;
 	Mat img1_float, img2_float;
@@ -142,7 +150,7 @@ static double calculateSSIM(const Mat& img1, const Mat& img2, Mat& diff)
 	   //diff.setTo(Scalar(0, 0, 255), thresh);
 	   //return 30;
 }
-static void SSIMAligner(Mat img1, Mat img2, Mat aligned)
+static void SSIMAligner(Mat img1, Mat img2, Mat* aligned)
 {
 	Ptr<ORB> orb = ORB::create();
 	vector<KeyPoint> keypoints1, keypoints2;
@@ -181,7 +189,7 @@ static void SSIMAligner(Mat img1, Mat img2, Mat aligned)
 
 	// Warp img2 to align with img1
 
-	warpPerspective(img2, aligned, homography, img1.size());
+	warpPerspective(img2, *aligned, homography, img1.size());
 
 	// Save the aligned image
 	//imwrite("aligned_image.png", img2Aligned);
@@ -196,9 +204,9 @@ static void SSIMAligner(Mat img1, Mat img2, Mat aligned)
 }
 
 
-static Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string imgsecond, double* score)
+static cv::Mat getDifferenceBetweenImageWithSSIM(cv::Mat first, cv::Mat second, double* score)
 {
-	Mat first = imread(imgfirst);
+	/*Mat first = imread(imgfirst);
 	Mat second = imread(imgsecond);
 
 	if (first.empty() || second.empty())
@@ -206,7 +214,7 @@ static Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string i
 		cout << "Could not open or find the images!" << endl;
 		Mat empt;
 		return empt;
-	}
+	}*/
 
 	cv::Size size1 = first.size();
 	cv::Size size2 = second.size();
@@ -215,7 +223,7 @@ static Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string i
 	if (size1 != size2) 
 	{
 		std::cout << "The images are of different sizes. Resizing image2 to match image1." << std::endl;
-		SSIMAligner(first, second, second);
+		SSIMAligner(first, second, &second);
 		cv::resize(second, second, size1);
 	}
 	else

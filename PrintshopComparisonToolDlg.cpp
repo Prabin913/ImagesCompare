@@ -429,7 +429,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
 		std::string orig_path = ConvertWideCharToMultiByte(sCurPage.GetString());
 		std::string scan_path = ConvertWideCharToMultiByte((curPage==2)?m_scanPath2.GetString() : m_scanPath1.GetString());
-		pc.process(orig_path, scan_path,diff);
+		pc.process(orig_path, scan_path,&diff);
 
 		CString stdDiff;
 		stdDiff.Format(L"Difference between images is  %.1f%%", diff);

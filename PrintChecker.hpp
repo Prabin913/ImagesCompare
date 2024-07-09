@@ -7,10 +7,6 @@
 #include <opencv2/core.hpp>
 #include <filesystem>
 
- // Code added by Ismayil X
-static cv::Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string imgsecond, double* score);
-
-
 namespace printcheck
 {
 
@@ -22,37 +18,35 @@ namespace printcheck
 	 */
 	class PrintChecker
 	{
-		public:
+	public:
 		//  Functionality
 				//!  process the given reference image and the scanned version of the same content
-			cv::Mat process( const std::filesystem::path&, const std::filesystem::path&, double &diff);
+			//cv::Mat PrintChecker::process( const std::filesystem::path& ref, const std::filesystem::path& scan, double *diff)
+		cv::Mat process(const std::filesystem::path& ref, const std::filesystem::path& scan, double* diff);
 
-				//!  update visualization with the new requested limit
-			cv::Mat applyLimit( int);
-
-			// my own tests
-			cv::Mat test(const std::filesystem::path& ref, const std::filesystem::path& scan);
+		//!  update visualization with the new requested limit
+		cv::Mat applyLimit(int);
 
 		//  Getters
 				//!  returns with a deep copy of the calculated error map
-			cv::Mat error() const { return _error.clone(); }
+		cv::Mat error() const { return _error.clone(); }
 
-				//!  returns with a deep copy of the colormap version of error map
-			cv::Mat errormap() const { return _errormap.clone(); }
+		//!  returns with a deep copy of the colormap version of error map
+		cv::Mat errormap() const { return _errormap.clone(); }
 
-		private:
+	private:
 		//  Private Members
 				//!  currently applied threshold for error visualization [0-255]
-			int _limit = 0u;
+		int _limit = 0u;
 
-				//!  stores the loaded last reference image, stored as we need it in \ref applyLimit
-			cv::Mat _ref;
+		//!  stores the loaded last reference image, stored as we need it in \ref applyLimit
+		cv::Mat _ref;
 
-				//!  stores the last processed calculated error
-			cv::Mat _error;
+		//!  stores the last processed calculated error
+		cv::Mat _error;
 
-				//!  stores the colormap converted version of \ref _error
-			cv::Mat _errormap;
+		//!  stores the colormap converted version of \ref _error
+		cv::Mat _errormap;
 	};
 
 }
