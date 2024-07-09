@@ -8,7 +8,7 @@
 #include <filesystem>
 
  // Code added by Ismayil X
-static cv::Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string imgsecond, double* score);
+static cv::Mat getDifferenceBetweenImageWithSSIM(cv::Mat first, cv::Mat second, double* score);
 
 
 namespace printcheck
@@ -25,13 +25,14 @@ namespace printcheck
 		public:
 		//  Functionality
 				//!  process the given reference image and the scanned version of the same content
-			cv::Mat process( const std::filesystem::path&, const std::filesystem::path&, double &diff);
+			//cv::Mat process( const std::filesystem::path&, const std::filesystem::path&, double *diff);
+			cv::Mat process(const std::filesystem::path& ref, const std::filesystem::path& scan, double* diff);
 
 				//!  update visualization with the new requested limit
 			cv::Mat applyLimit( int);
 
 			// my own tests
-			cv::Mat test(const std::filesystem::path& ref, const std::filesystem::path& scan);
+			//cv::Mat test(const std::filesystem::path& ref, const std::filesystem::path& scan);
 
 		//  Getters
 				//!  returns with a deep copy of the calculated error map
