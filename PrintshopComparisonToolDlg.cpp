@@ -427,9 +427,9 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		CString temp;
 		temp.Format(L"Threshold set to %d", thr);
 		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
-		std::string orig_path = wstring_to_string(sCurPage.GetString());
-		std::string scan_path = wstring_to_string((curPage==2)?m_scanPath2.GetString() : m_scanPath1.GetString());
-		pc.process(orig_path, scan_path,&diff);
+		std::string orig_path = ConvertWideCharToMultiByte(sCurPage.GetString());
+		std::string scan_path = ConvertWideCharToMultiByte((curPage==2)?m_scanPath2.GetString() : m_scanPath1.GetString());
+		pc.process(orig_path, scan_path,diff);
 
 		CString stdDiff;
 		stdDiff.Format(L"Difference between images is  %.1f%%", diff);
@@ -539,7 +539,7 @@ CString SelectFileFromDialog(int type)
 bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages) 
 {
 
-	char *szSrcFilePath = (char *)wstring_to_string(pdfFilePath.GetString()).c_str();
+	char *szSrcFilePath = ConvertWideCharToMultiByte(pdfFilePath);
 	pdf *_pdf = new pdf(szSrcFilePath);
 	if (!_pdf) return false;
 
@@ -630,6 +630,14 @@ void PrintshopComparisonToolDlg::DrawImage(CWnd* pRenderWnd, const CString& strI
 }
 
 
+char *PrintshopComparisonToolDlg::ConvertWideCharToMultiByte(const CString &strWideChar) {
+	int strLen = WideCharToMultiByte(CP_UTF8, 0, strWideChar, -1, NULL, 0, NULL, NULL);
+	char *szString = (char *)malloc(strLen + 1);
+	memset(szString, 0, strLen + 1);
+	WideCharToMultiByte(CP_UTF8, 0, strWideChar, -1, szString, strLen, NULL, NULL);
+
+	return szString;
+}
 
 cv::Mat get_image(const std::string & filename)
 {
@@ -660,8 +668,7 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 	if(!images_loaded) return;
 	CWaitCursor w;
 	auto annotated = pc.applyLimit(Threshold);
-	std::string annotation_filename = wstring_to_string(annotate_path.GetString()).c_str();
-	cv::imwrite(annotation_filename, annotated);
+	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotated);
 
 	if (NoPages == 2 && curPage == 2)
 	{
