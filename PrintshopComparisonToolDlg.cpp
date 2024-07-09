@@ -29,7 +29,7 @@ double g_fDPIRate = 1.0;
 #define BUFFER_SIZE 4096
 
 static vz::ImgCmp image_compare;
-static CString annotate_path("annotation.temp");
+static CString annotate_path("annotation.png");
 
 printcheck::PrintChecker pc;
 bool need_to_update = false;
