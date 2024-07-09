@@ -5,6 +5,8 @@ import printcheck.cv;
 import printcheck.align;
 import printcheck.difference;
 
+static cv::Mat getDifferenceBetweenImageWithSSIM(std::string imgfirst, std::string imgsecond, double* score);
+
 namespace printcheck
 {
 /**************************************************************************************************/
@@ -22,6 +24,11 @@ namespace printcheck
 	 */
 	cv::Mat PrintChecker::process( const std::filesystem::path& ref, const std::filesystem::path& scan, double &diff)
 	{
+		std::string s1(ref.begin(),ref.end());
+		std::string s2(scan.begin(),scan.end());
+		double score;
+		getDifferenceBetweenImageWithSSIM(s1, s2,&score);
+
 		_ref = printcheck::read( ref);
 		auto tst = printcheck::read( scan);
 		if (_ref.empty() || tst.empty())
