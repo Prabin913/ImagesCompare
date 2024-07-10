@@ -82,7 +82,6 @@ export namespace printcheck
 		Mat aligned;
 		warpPerspective( tst, aligned, hom, ref.size());
 		Mat valid( ref.size(), CV_8UC1, Scalar{255} );
-		warpPerspective( tst, aligned, hom, ref.size());
 		warpPerspective( valid, valid, hom, valid.size());
 		return {aligned, valid};
 	}

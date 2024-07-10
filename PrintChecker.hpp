@@ -45,6 +45,9 @@ namespace printcheck
 				//!  stores the loaded last reference image, stored as we need it in \ref applyLimit
 			cv::Mat _ref;
 
+			//!  stores the scanned image
+			cv::Mat _scanned;
+
 				//!  stores the last processed calculated error
 			cv::Mat _error;
 
