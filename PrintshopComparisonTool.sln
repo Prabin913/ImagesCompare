@@ -4,8 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrintshopComparisonTool", "PrintshopComparisonTool.vcxproj", "{04CD545D-D015-415B-9814-B926AC0C5ED2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47} = {C83B7150-8FCE-472F-BF06-C83BB66F3D47}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerUpdate", "ServerUpdate\ServerUpdate.vcxproj", "{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VersionTool", "VersionTool\VersionTool.vcxproj", "{C83B7150-8FCE-472F-BF06-C83BB66F3D47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +36,14 @@ Global
 		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Release|x64.Build.0 = Release|x64
 		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Release|x86.ActiveCfg = Release|Win32
 		{952403E7-1F77-46E2-8E4F-ECBF2A8F1EE0}.Release|x86.Build.0 = Release|Win32
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47}.Debug|x64.ActiveCfg = Debug|x64
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47}.Debug|x64.Build.0 = Debug|x64
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47}.Debug|x86.ActiveCfg = Debug|Win32
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47}.Debug|x86.Build.0 = Debug|Win32
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47}.Release|x64.ActiveCfg = Release|x64
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47}.Release|x64.Build.0 = Release|x64
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47}.Release|x86.ActiveCfg = Release|Win32
+		{C83B7150-8FCE-472F-BF06-C83BB66F3D47}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

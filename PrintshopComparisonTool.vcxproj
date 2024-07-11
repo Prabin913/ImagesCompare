@@ -138,6 +138,9 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)VersionTool.exe</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -167,6 +170,9 @@
     <PostBuildEvent>
       <Command>$(OutDir)ServerUpdate.exe</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)VersionTool.exe</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -202,6 +208,9 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)VersionTool.exe</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -236,6 +245,9 @@
     <PostBuildEvent>
       <Command>$(OutDir)ServerUpdate.exe</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)VersionTool.exe</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\include\mupdf\fitz.h" />
