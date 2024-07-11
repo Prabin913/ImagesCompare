@@ -6,6 +6,92 @@ wchar_t LOGFILENAME[1024]{ L"log.txt" };
 const wchar_t* DATEFORMAT = L"%Y%m%d%H%M%S";
 
 
+CTime GetFileDateTime(LPCWSTR FileName)
+{
+	FILETIME ftCreate, ftAccess, ftWrite;
+	HANDLE hFile;
+	CTime result = NULL;
+	CTime FileTime;
+
+	hFile = CreateFile(FileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		return result;
+	}
+
+	// Retrieve the file times for the file.
+	if (!GetFileTime(hFile, &ftCreate, &ftAccess, &ftWrite))
+		return result;
+	FileTime = ftWrite;
+
+	CloseHandle(hFile);
+	result = (CTime)FileTime;
+	return result;
+}
+
+CTime Time2UTC(CTime original)
+{
+	CString Formatted = original.FormatGmt(DATEFORMAT);
+	int Year, Month, Day, Hour, Minute;
+
+	if (Formatted != L"" && Formatted.GetLength() >= 12)
+	{
+		Year = _wtol(Formatted.Left(4));
+		Month = _wtol(Formatted.Mid(4, 2));
+		Day = _wtol(Formatted.Mid(6, 2));
+		Hour = _wtol(Formatted.Mid(8, 2));
+		Minute = _wtol(Formatted.Mid(10, 2));
+		CTime result(Year, Month, Day, Hour, Minute, 0);
+		return result;
+	}
+	else
+	{
+		return (CTime)NULL;
+	}
+}
+
+#include "res\version.h"
+#pragma comment(lib, "Version.lib")
+
+BOOL SG_GetVersion(LPWSTR ExeFile, SG_Version* ver)
+{
+	BOOL result = FALSE;
+	DWORD dwDummy;
+	DWORD dwFVISize = GetFileVersionInfoSize(ExeFile, &dwDummy);
+	LPBYTE lpVersionInfo = new BYTE[dwFVISize];
+	GetFileVersionInfo(ExeFile, 0, dwFVISize, lpVersionInfo);
+	UINT uLen;
+	VS_FIXEDFILEINFO* lpFfi;
+	VerQueryValue(lpVersionInfo, _T("\\"), (LPVOID*)&lpFfi, &uLen);
+	if (lpFfi && uLen)
+	{
+		DWORD dwFileVersionMS = lpFfi->dwFileVersionMS;
+		DWORD dwFileVersionLS = lpFfi->dwFileVersionLS;
+		delete[] lpVersionInfo;
+		ver->Major = HIWORD(dwFileVersionMS);
+		ver->Minor = LOWORD(dwFileVersionMS);
+		ver->Revision = HIWORD(dwFileVersionLS);
+		ver->SubRevision = LOWORD(dwFileVersionLS);
+		result = TRUE;
+	}
+	return result;
+}
+CTime GetSelfDateTimeGMT(void)
+{
+	WCHAR szExeFileName[MAX_PATH];
+	GetModuleFileName(NULL, szExeFileName, MAX_PATH);
+	return Time2UTC(GetFileDateTime(szExeFileName));
+}
+#define FRIENDLY_DATEFORMAT L"%m-%d-%Y, %H:%M:%S UTC"
+
+CString GetCreationDateTime()
+{
+	CString message{ L"" };
+	message = GetSelfDateTimeGMT().Format(FRIENDLY_DATEFORMAT);
+	return message;
+}
+
+
 // Helper function to convert std::wstring to std::string using Windows API
 std::string wstring_to_string(const std::wstring& wstr)
 {
