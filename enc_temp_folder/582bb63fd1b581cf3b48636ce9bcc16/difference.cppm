@@ -176,8 +176,7 @@ export namespace printcheck
         return true;
     }
 
-    cv::Mat computeEdges(const Mat& image) 
-    {
+    cv::Mat computeEdges(const Mat& image) {
         cv::Mat gray, edges;
         cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
         cv::Canny(gray, edges, 100, 200);
@@ -241,10 +240,8 @@ export namespace printcheck
     //    return edgeMap;
     //}
 
-    Mat applyComparison(Mat& img1, Mat& img2_aligned, int patchSize, int stepSize) 
-    {
-        if (img1.size() != img2_aligned.size() || img1.type() != img2_aligned.type()) 
-        {
+    Mat applyComparison(Mat& img1, Mat& img2_aligned, int patchSize, int stepSize) {
+        if (img1.size() != img2_aligned.size() || img1.type() != img2_aligned.type()) {
             std::cerr << "Images must have the same size and type" << std::endl;
             return Mat();
         }
@@ -263,10 +260,8 @@ export namespace printcheck
         cv::Mat mask = Mat::zeros(rows, cols, CV_8UC1);
 
         int cnt = 0;
-        for (int y = 0; y <= rows - patchSize; y += stepSize) 
-        {
-            for (int x = 0; x <= cols - patchSize; x += stepSize) 
-            {
+        for (int y = 0; y <= rows - patchSize; y += stepSize) {
+            for (int x = 0; x <= cols - patchSize; x += stepSize) {
                 cv::Rect patchRect(x, y, patchSize, patchSize);
                 cv::Mat patch1 = edges1(patchRect);
                 cv::Mat patch2 = edges2(patchRect);
