@@ -1,6 +1,7 @@
 /*! @file PrintChecker.cpp @author Gabor Szijarto */
 #include "PrintChecker.hpp"
 #include "vzTypes.hpp"
+#include <opencv2/dnn.hpp>
 
 
 import printcheck.cv;

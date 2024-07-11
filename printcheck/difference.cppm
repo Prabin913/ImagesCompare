@@ -2,6 +2,8 @@ module;
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/dnn.hpp>
+
 // #include <g3log/g3log.hpp>
 
 #include <iostream>
@@ -91,7 +93,7 @@ export namespace printcheck
         return output;
     }
 
-    std::vector<cv::Rect> findContours(Mat mask, float minArea)
+    std::vector<cv::Rect> findContours(cv::Mat mask, float minArea)
     {
         int rows = mask.rows;
         int cols = mask.cols;
@@ -174,19 +176,82 @@ export namespace printcheck
         return true;
     }
 
+    cv::Mat computeEdges(const Mat& image) {
+        cv::Mat gray, edges;
+        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+        cv::Canny(gray, edges, 100, 200);
+        return edges;
+    }
+
+    //cv::Mat detectEdgesWithHED(cv::dnn::Net net, const Mat& image, int windowSize, int stride) {
+
+    //     if (net.empty()) {
+    //         std::cerr << "Failed to load the HED model!" << std::endl;
+    //         return Mat();
+    //     }
+
+    //    if (image.empty()) {
+    //        std::cerr << "Failed to read the input image!" << std::endl;
+    //        return Mat();
+    //    }
+
+    //    // Create an empty matrix for the final edge map
+    //    cv::Mat edgeMap = cv::Mat::zeros(image.size(), CV_32F);
+
+    //    // Sliding window over the image
+    //    for (int y = 0; y < image.rows; y += stride) {
+    //        for (int x = 0; x < image.cols; x += stride) {
+    //            // Define the region of interest (ROI)
+    //            int x_end = std::min(x + windowSize, image.cols);
+    //            int y_end = std::min(y + windowSize, image.rows);
+    //            int current_width = x_end - x;
+    //            int current_height = y_end - y;
+
+    //            cv::Rect roi(x, y, current_width, current_height);
+
+    //            // Extract the patch from the image
+    //            cv::Mat patch = image(roi);
+
+    //             // Prepare the patch for the network: resize, convert to blob, normalize
+    //             cv::Mat blob = cv::dnn::blobFromImage(patch, 1.0, cv::Size(windowSize, windowSize), cv::Scalar(104.00699, 116.66877, 122.67892), false, false);
+
+    //             // Set the input for the network
+    //             net.setInput(blob);
+
+    //             // Forward pass to get the edges
+    //             cv::Mat output = net.forward();
+
+    //             // Postprocess the output to get the final edge map for the patch
+    //             cv::Mat edges(output.size[2], output.size[3], CV_32F, output.ptr<float>());
+
+    //             // Resize the edges to the size of the patch
+    //             cv::resize(edges, edges, patch.size());
+
+
+    //            // Accumulate the edges to the final edge map
+    //            edgeMap(roi) += edges;
+    //        }
+    //    }
+
+    //    // Normalize the edge map for better visualization
+    //    cv::normalize(edgeMap, edgeMap, 0, 255, cv::NORM_MINMAX);
+    //    edgeMap.convertTo(edgeMap, CV_8U);
+
+    //    return edgeMap;
+    //}
+
     Mat applyComparison(Mat& img1, Mat& img2_aligned, int patchSize, int stepSize) {
         if (img1.size() != img2_aligned.size() || img1.type() != img2_aligned.type()) {
             std::cerr << "Images must have the same size and type" << std::endl;
             return Mat();
         }
 
-        cv::Mat gray1, gray2;
-        cv::cvtColor(img1, gray1, cv::COLOR_BGR2GRAY);
-        cv::cvtColor(img2_aligned, gray2, cv::COLOR_BGR2GRAY);
 
-        cv::Mat edges1, edges2;
-        cv::Canny(gray1, edges1, 50, 150, 3, true); 
-        cv::Canny(gray2, edges2, 50, 150, 3, true);
+        Mat edges1 = computeEdges(img1);
+        Mat edges2 = computeEdges(img2_aligned);
+       /* Mat edges1 = detectEdgesWithHED(model_hed, img1, 500, 500);
+        Mat edges2 = detectEdgesWithHED(model_hed, img2_aligned, 500, 500);*/
+
         cv::imwrite("edges.png", edges1);
         cv::imwrite("scanned_edges.png", edges2);
         int rows = img1.rows;
