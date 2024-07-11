@@ -102,9 +102,11 @@ export namespace printcheck
         std::vector<cv::Vec4i> hierarchy;
         cv::findContours(mask, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
         std::vector<cv::Rect> boxes;
-        for (size_t i = 0; i < contours.size(); i++) {
+        for (size_t i = 0; i < contours.size(); i++) 
+        {
             double area = contourArea(contours[i]);
-            if (area <= minArea) {
+            if (area <= minArea) 
+            {
                 continue;
             }
 
@@ -115,7 +117,8 @@ export namespace printcheck
     }
 
  
-    double computeSSIM(const cv::Mat& img1, const cv::Mat& img2) {
+    double computeSSIM(const cv::Mat& img1, const cv::Mat& img2) 
+    {
         const double C1 = 6.5025, C2 = 58.5225;
 
         cv::Mat I1, I2;
@@ -155,7 +158,8 @@ export namespace printcheck
         return cv::mean(ssim_map)[0];
     }
 
-    bool enlargeRect(cv::Rect& rect, int a, int imgWidth, int imgHeight) {
+    bool enlargeRect(cv::Rect& rect, int a, int imgWidth, int imgHeight) 
+    {
         // Adjust the position and size of the rectangle
         rect.x -= a;
         rect.y -= a;
@@ -169,7 +173,8 @@ export namespace printcheck
         rect.height = std::min(rect.height, imgHeight - rect.y);
 
         // Check if the resulting rectangle is valid
-        if (rect.width <= 0 || rect.height <= 0) {
+        if (rect.width <= 0 || rect.height <= 0) 
+        {
             return false;
         }
 
@@ -184,62 +189,6 @@ export namespace printcheck
         return edges;
     }
 
-    //cv::Mat detectEdgesWithHED(cv::dnn::Net net, const Mat& image, int windowSize, int stride) {
-
-    //     if (net.empty()) {
-    //         std::cerr << "Failed to load the HED model!" << std::endl;
-    //         return Mat();
-    //     }
-
-    //    if (image.empty()) {
-    //        std::cerr << "Failed to read the input image!" << std::endl;
-    //        return Mat();
-    //    }
-
-    //    // Create an empty matrix for the final edge map
-    //    cv::Mat edgeMap = cv::Mat::zeros(image.size(), CV_32F);
-
-    //    // Sliding window over the image
-    //    for (int y = 0; y < image.rows; y += stride) {
-    //        for (int x = 0; x < image.cols; x += stride) {
-    //            // Define the region of interest (ROI)
-    //            int x_end = std::min(x + windowSize, image.cols);
-    //            int y_end = std::min(y + windowSize, image.rows);
-    //            int current_width = x_end - x;
-    //            int current_height = y_end - y;
-
-    //            cv::Rect roi(x, y, current_width, current_height);
-
-    //            // Extract the patch from the image
-    //            cv::Mat patch = image(roi);
-
-    //             // Prepare the patch for the network: resize, convert to blob, normalize
-    //             cv::Mat blob = cv::dnn::blobFromImage(patch, 1.0, cv::Size(windowSize, windowSize), cv::Scalar(104.00699, 116.66877, 122.67892), false, false);
-
-    //             // Set the input for the network
-    //             net.setInput(blob);
-
-    //             // Forward pass to get the edges
-    //             cv::Mat output = net.forward();
-
-    //             // Postprocess the output to get the final edge map for the patch
-    //             cv::Mat edges(output.size[2], output.size[3], CV_32F, output.ptr<float>());
-
-    //             // Resize the edges to the size of the patch
-    //             cv::resize(edges, edges, patch.size());
-
-
-    //            // Accumulate the edges to the final edge map
-    //            edgeMap(roi) += edges;
-    //        }
-    //    }
-
-    //    // Normalize the edge map for better visualization
-    //    cv::normalize(edgeMap, edgeMap, 0, 255, cv::NORM_MINMAX);
-    //    edgeMap.convertTo(edgeMap, CV_8U);
-
-    //    return edgeMap;
-    //}
 
     Mat applyComparison(Mat& img1, Mat& img2_aligned, int patchSize, int stepSize) 
     {

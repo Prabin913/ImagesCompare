@@ -53,7 +53,8 @@ namespace printcheck
 		
 		std::vector<cv::Rect> boxes = findContours(mask, 25);
 		*diff = 0.0;
-		for (cv::Rect bbox : boxes) {
+		for (cv::Rect bbox : boxes) 
+		{
 
 			enlargeRect(bbox, 5, cols, rows);
 
@@ -65,7 +66,8 @@ namespace printcheck
 				//cv::rectangle(_scanned, bbox, cv::Scalar(255, 0, 0), 2, 1);
 				continue;
 			}
-			else {
+			else 
+			{
 				cv::rectangle(_scanned, bbox, cv::Scalar(0, 255, 0), 2, 1);
 			}
 			(*diff)++;
