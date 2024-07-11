@@ -408,7 +408,22 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 	static bool do_once{true};
 	if(do_once)
 	{ 
+		SG_Version ver;
+		WCHAR szExeFileName[MAX_PATH];
+		GetModuleFileName(NULL, szExeFileName, MAX_PATH);
+		SG_GetVersion(szExeFileName, &ver);
 		do_once=false;
+		CString CreationDate = GetCreationDateTime();
+		CString strver;
+		strver.Format(L"Sony Config Tool version %d.%d.%d.%d Created on %s",
+			ver.Major,
+			ver.Minor,
+			ver.Revision,
+			ver.SubRevision,
+			CreationDate);
+		SetWindowText(strver);
+
+
 		NotifyVersionInfo(L"Ready to start", L"Please select an original PDF file");
 
 	}

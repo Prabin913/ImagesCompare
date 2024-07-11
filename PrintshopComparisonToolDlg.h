@@ -8,6 +8,8 @@
 
 using PasswordCheckCallback = std::function<bool(const std::wstring&)>;
 
+
+
 // PrintshopComparisonToolDlg dialog
 class PrintshopComparisonToolDlg : public CDialog
 {
