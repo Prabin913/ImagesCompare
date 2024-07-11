@@ -415,7 +415,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		do_once=false;
 		CString CreationDate = GetCreationDateTime();
 		CString strver;
-		strver.Format(L"Sony Config Tool version %d.%d.%d.%d Created on %s",
+		strver.Format(L"Printshop Master version %d.%d.%d.%d Created on %s",
 			ver.Major,
 			ver.Minor,
 			ver.Revision,
