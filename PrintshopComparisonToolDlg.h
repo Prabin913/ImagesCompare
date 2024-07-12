@@ -50,6 +50,8 @@ private:
 	bool ConvertPDF2IMG(CString &pdfFilePath, int& pages);
 	void UpdatePagesStates();
 	CString GetCurrentPagePath();
+	void UpdateTitle(CString s);
+
 
 
 	void SetTitle();

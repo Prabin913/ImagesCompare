@@ -289,7 +289,7 @@ void PrintshopComparisonToolDlg::SetTitle()
 
 		title.Format(L"Printshop Master (new) - ready to start");
 	}
-	SetWindowText(title);
+	UpdateTitle(title);
 }
 // If you add a minimize button to your dialog, you will need the code below
 //  to draw the icon.  For MFC applications using the document/view model,
@@ -399,6 +399,23 @@ CString PrintshopComparisonToolDlg::GetCurrentPagePath()
 	}
 
 }
+void PrintshopComparisonToolDlg::UpdateTitle(CString s)
+{
+	SG_Version ver;
+	WCHAR szExeFileName[MAX_PATH];
+	GetModuleFileName(NULL, szExeFileName, MAX_PATH);
+	SG_GetVersion(szExeFileName, &ver);
+	CString CreationDate = GetCreationDateTime();
+	CString strver;
+	strver.Format(L"Printshop Master version %d.%d.%d.%d Created on %s - %s",
+		ver.Major,
+		ver.Minor,
+		ver.Revision,
+		ver.SubRevision,
+		CreationDate,s);
+	SetWindowText(strver);
+
+}
 void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 {
 
@@ -408,21 +425,9 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 	static bool do_once{true};
 	if(do_once)
 	{ 
-		SG_Version ver;
-		WCHAR szExeFileName[MAX_PATH];
-		GetModuleFileName(NULL, szExeFileName, MAX_PATH);
-		SG_GetVersion(szExeFileName, &ver);
-		do_once=false;
-		CString CreationDate = GetCreationDateTime();
-		CString strver;
-		strver.Format(L"Printshop Master version %d.%d.%d.%d Created on %s",
-			ver.Major,
-			ver.Minor,
-			ver.Revision,
-			ver.SubRevision,
-			CreationDate);
-		SetWindowText(strver);
+		do_once = false;
 
+		UpdateTitle(L"");
 
 		NotifyVersionInfo(L"Ready to start", L"Please select an original PDF file");
 
