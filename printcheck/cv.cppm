@@ -4,7 +4,6 @@ module;
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include "..\utils.h"
-// #include <g3log/g3log.hpp>
 #include <filesystem>
 #include <tuple>
 #include <string>
