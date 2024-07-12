@@ -594,6 +594,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="res\version.h" />
     <ClInclude Include="SGInputDlg.h" />
     <ClInclude Include="SGPictureControl.h" />
     <ClInclude Include="SG_ButtonFly.h" />

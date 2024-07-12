@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 
+
 #define VER_FILE "res\\version.h"
 
 int main()
@@ -14,8 +15,7 @@ int main()
     int minorVersion = 0;
     int patchVersion = 0;
     int buildNumber = 0;
-
-
+    
     // Read the current version from the file
     std::ifstream versionFileIn(VER_FILE);
     if (versionFileIn.is_open())
@@ -45,7 +45,7 @@ int main()
     }
     else
     {
-        std::cout << "Failed to open version.h for reading." << std::endl;
+        std::cout << "Failed to open " << VER_FILE << " for reading." << std::endl;
         return 1;
     }
 
@@ -66,7 +66,7 @@ int main()
     }
     else
     {
-        std::cout << "Failed to open version.h for writing." << std::endl;
+        std::cout << "Failed to " << VER_FILE << " for writing." << std::endl;
         return 1;
     }
 

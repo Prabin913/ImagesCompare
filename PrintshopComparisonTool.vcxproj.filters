@@ -1069,6 +1069,7 @@
     <ClInclude Include="printcheck\PrintChecker.hpp" />
     <ClInclude Include="SGInputDlg.h" />
     <ClInclude Include="SGPictureControl.h" />
+    <ClInclude Include="res\version.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />
