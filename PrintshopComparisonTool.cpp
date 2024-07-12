@@ -38,29 +38,6 @@ CPrintshopComparisonToolApp theApp;
 
 
 
-bool IsRunningFromArchive()
-{
-	WCHAR path[MAX_PATH];
-	GetModuleFileName(nullptr, path, MAX_PATH);
-
-	// Get the user's local temporary folder path
-	WCHAR tempPath[MAX_PATH];
-	if (GetTempPath(MAX_PATH, tempPath) == 0)
-	{
-		// Handle the error, if any, when getting the temporary folder path
-		// You may choose to return false or show an error message
-		return false;
-	}
-
-	// Check if the executable path contains the temporary folder path
-	if (wcsstr(path, tempPath) != nullptr)
-	{
-		return true;
-	}
-
-	return false;
-}
-
 BOOL CPrintshopComparisonToolApp::InitInstance()
 {
 	// InitCommonControlsEx() is required on Windows XP if an application
@@ -73,12 +50,7 @@ BOOL CPrintshopComparisonToolApp::InitInstance()
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
-	// Check if the program is running from a compressed archive (e.g., .zip)
-	if(IsRunningFromArchive())
-	{
-		ExitInstance();
-		return FALSE;
-	}
+	
 
 
 #ifdef _DEBUG
