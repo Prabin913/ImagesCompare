@@ -5,8 +5,7 @@ module;
 #include <vector>
 #include <ranges>
 #include <iostream>
-
-#define LOG(level) std::clog
+#include "..\utils.h"
 
 export module printcheck.align;
 
@@ -52,7 +51,7 @@ export namespace printcheck
                 cvtColor(img, gray, COLOR_BGR2GRAY);
                 OrbDescriptor od;
                 orb->detectAndCompute(gray, {}, od.Keypoints, od.Descriptors);
-                LOG(INFO) << "ORB successfully found " << od.Keypoints.size() << " descriptors";
+                WriteLogFile(L"ORB successfully found %d descriptors",od.Keypoints.size());
                 return od;
             };
 
@@ -62,8 +61,8 @@ export namespace printcheck
         BFMatcher bfm(NORM_HAMMING, true);
         vector<DMatch> matches;
         bfm.match(ref_orb.Descriptors, tst_orb.Descriptors, matches);
-        LOG(INFO) << "Found #" << matches.size() << " matches";
-
+        WriteLogFile(L"Found #%d matches",matches.size());
+        
         vector<Point2f> srcs, dsts;
         srcs.reserve(matches.size());
         dsts.reserve(matches.size());
@@ -75,7 +74,7 @@ export namespace printcheck
         }
 
         auto hom = findHomography(dsts, srcs, RANSAC);
-        LOG(INFO) << "Homography found: " << hom;
+        WriteLogFile(L"Homography found: %d",hom);
 
         Mat aligned;
         warpPerspective(tst, aligned, hom, ref.size());

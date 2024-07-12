@@ -1,7 +1,9 @@
 module;
+
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
+#include "..\utils.h"
 // #include <g3log/g3log.hpp>
 #include <filesystem>
 #include <tuple>
@@ -9,8 +11,6 @@ module;
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include <Windows.h>
-#define LOG(level) std::clog
 
 export module printcheck.cv;
 
@@ -51,12 +51,12 @@ export namespace printcheck
      */
     Mat read(const path& img_path)
     {
-        LOG(INFO) << "Reading image: " << img_path.string();
+        WriteLogFile(L"Reading image: %S",img_path.string());
         std::wstring wide_path = utf8_to_wide(img_path.string());
         FILE* file = _wfopen(wide_path.c_str(), L"rb");
         if (!file)
         {
-            LOG(WARNING) << "Failed to open file!";
+            WriteLogFile(L"Failed to open file!");
             return {};
         }
         ifstream ifs(file);
@@ -64,20 +64,20 @@ export namespace printcheck
         fclose(file);
         if (data.empty())
         {
-            LOG(WARNING) << "Failed to read image!";
+            WriteLogFile(L"Failed to read image!");
             return {};
         }
         auto img = imdecode(data, IMREAD_COLOR);
         if (img.empty())
         {
-            LOG(WARNING) << "Failed to decode image!";
+            WriteLogFile(L"Failed to decode image!");
         }
         return img;
     }
 
     void write(const path& img_path, const Mat& img)
     {
-        LOG(INFO) << "Writing image: " << img_path;
+        WriteLogFile(L"Writing image: %S",img_path.c_str());
         imwrite(img_path.string(), img);
     }
 
@@ -92,7 +92,7 @@ export namespace printcheck
     void display(const string& name, const Mat& img)
     {
         const float scale = min(1280.0f / img.size().width, 720.0f / img.size().height);
-        LOG(INFO) << "fit to screen scale calculated: " << scale;
+        WriteLogFile(L"fit to screen scale calculated: %f",scale);
         Mat disp;
         resize(img, disp, Size(), scale, scale);
         imshow(name, disp);
@@ -121,7 +121,7 @@ export namespace printcheck
         applyColorMap(err, jet, COLORMAP_INFERNO);
         if (jet.size() != ref.size())
         {
-            LOG(WARNING) << "Error map has different size than reference!";
+            WriteLogFile(L"Error map has different size than reference!");
             resize(jet, jet, ref.size());
         }
         Mat blend = ref.clone();

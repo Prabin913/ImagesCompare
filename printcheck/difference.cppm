@@ -3,11 +3,11 @@ module;
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/dnn.hpp>
+#include "..\utils.h"
 
 // #include <g3log/g3log.hpp>
 
 #include <iostream>
-#define LOG(level) std::clog
 
 export module printcheck.difference;
 
@@ -27,7 +27,7 @@ export namespace printcheck
 	 */
 	Mat mask_error( const Mat& err, int limit)
 	{
-		LOG(INFO) << "calculating error mask with limit: " << limit;
+        WriteLogFile(L"calculating error mask with limit: %d",limit);
 		Mat gray;
 		cvtColor( err, gray, cv::COLOR_BGR2GRAY);
 		return gray >= limit;
@@ -167,10 +167,10 @@ export namespace printcheck
         rect.height += (a * 2);
 
         // Ensure the rectangle stays within the image boundaries
-        rect.x = std::max(0, rect.x);
-        rect.y = std::max(0, rect.y);
-        rect.width = std::min(rect.width, imgWidth - rect.x);
-        rect.height = std::min(rect.height, imgHeight - rect.y);
+        rect.x = max(0, rect.x);
+        rect.y = max(0, rect.y);
+        rect.width = min(rect.width, imgWidth - rect.x);
+        rect.height = min(rect.height, imgHeight - rect.y);
 
         // Check if the resulting rectangle is valid
         if (rect.width <= 0 || rect.height <= 0) 
