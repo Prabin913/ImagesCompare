@@ -63,31 +63,44 @@ export namespace printcheck
         // Process each white pixel
         for (const auto& point : whitePixels)
         {
-            bool foundWhite = false;
+//            bool foundWhite = false;
 
             // Check neighborhood pixel by pixel
-            for (int dy = -halfSize; dy <= halfSize && !foundWhite; ++dy)
+//             for (int dy = -halfSize; dy <= halfSize && !foundWhite; ++dy)
+//             {
+//                 for (int dx = -halfSize; dx <= halfSize && !foundWhite; ++dx)
+//                 {
+//                     for (int ddy = -1; ddy <= 1 && !foundWhite; ++ddy)
+//                     {
+//                         for (int ddx = -1; ddx <= 1 && !foundWhite; ++ddx)
+//                         {
+// 							int nx = point.x + dx + ddx;
+// 							int ny = point.y + dy + ddy;
+// 
+// 							// Check if the neighboring pixel is within bounds
+// 							if (nx >= 0 && nx < refBinary.cols && ny >= 0 && ny < refBinary.rows)
+// 							{
+// 								if (refBinary.at<uchar>(ny, nx) == 255)
+// 								{
+// 									foundWhite = true;
+// 								}
+// 							}
+//                         }
+//                     }
+//                 }
+//             }
+// 
+//             if (foundWhite)
+//             {
+//                 output.at<uchar>(point.y, point.x) = 0;
+//             }
+            if (point.x >= 0 && point.x < refBinary.cols && point.y >= 0 && point.y < refBinary.rows)
             {
-                for (int dx = -halfSize; dx <= halfSize && !foundWhite; ++dx)
-                {
-                    int nx = point.x + dx;
-                    int ny = point.y + dy;
-
-                    // Check if the neighboring pixel is within bounds
-                    if (nx >= 0 && nx < refBinary.cols && ny >= 0 && ny < refBinary.rows)
-                    {
-                        if (refBinary.at<uchar>(ny, nx) == 255)
-                        {
-                            foundWhite = true;
-                        }
-                    }
-                }
-            }
-
-            if (foundWhite)
-            {
-                output.at<uchar>(point.y, point.x) = 0;
-            }
+				if (refBinary.at<uchar>(point.y, point.x) == 255)
+				{
+					output.at<uchar>(point.y, point.x) = 0;
+				}
+            }			
         }
 
         return output;
@@ -208,6 +221,60 @@ export namespace printcheck
         cv::imwrite("scanned_edges.png", edges2);
         int rows = img1.rows;
         int cols = img1.cols;
+
+        //////////////////////////////////////////////////////////////////////////
+        // Get origin offset
+		constexpr auto compute = [](const Mat& src1, const Mat& src2)
+			{
+				cv::Mat diff;
+				cv::absdiff(src1, src2, diff); // Compute absolute difference
+				return cv::mean(diff.mul(diff))[0]; // Mean of squared differences
+			};
+
+		std::vector<cv::Point> whitePixels;
+		cv::findNonZero(edges2, whitePixels);
+
+		char matIdx = 0;
+        double prev_mse = 10000;// std::numeric_limits<double>::max();
+
+        int offsetX = 0, offsetY = 0;
+        const int neighborhoodSize = 30;
+		const auto& white_point = whitePixels[0];
+		for (int dy = -neighborhoodSize; dy <= neighborhoodSize; ++dy)
+		{
+			for (int dx = -neighborhoodSize; dx <= neighborhoodSize; ++dx)
+			{
+				if (white_point.x + dx < 0 || white_point.x + dx >= edges2.cols || white_point.x + dx >= edges1.cols ||
+					white_point.y + dy < 0 || white_point.y + dy >= edges2.rows || white_point.y + dy >= edges1.rows)
+					continue;
+
+				cv::Rect rect1(white_point.x, white_point.y, neighborhoodSize * 2, neighborhoodSize * 2);
+				cv::Rect rect2(white_point.x + dx, white_point.y + dy, neighborhoodSize * 2, neighborhoodSize * 2);
+				double mse1 = compute(edges1(rect1), edges2(rect2));
+				double mse2 = compute(edges1(rect2), edges2(rect1));
+				double mse = min(mse1, mse2); //cv::min(mse1, mse2);
+				if (mse < prev_mse) {
+					prev_mse = mse;
+
+					offsetX = dx; offsetY = dy;
+					if (mse1 > mse2) matIdx = 1;
+				}
+			}
+		}
+
+		cv::Mat trans = Mat::zeros(rows, cols, CV_8UC1);
+        if (matIdx) {
+            edges2(cv::Rect(offsetX, offsetY, cols - offsetX, rows - offsetY)).copyTo(trans(cv::Rect(0, 0, cols - offsetX, rows - offsetY)));
+            edges2 = trans;
+        }
+        else {
+            edges1(cv::Rect(offsetX, offsetY, cols - offsetX, rows - offsetY)).copyTo(trans(cv::Rect(0, 0, cols - offsetX, rows - offsetY)));
+            edges1 = trans;
+        }
+
+		//cv::imwrite("edges_trans.png", edges1);
+		//cv::imwrite("scanned_edges_trans.png", edges2);
+        //////////////////////////////////////////////////////////////////////////
 
         cv::Mat mask = Mat::zeros(rows, cols, CV_8UC1);
 

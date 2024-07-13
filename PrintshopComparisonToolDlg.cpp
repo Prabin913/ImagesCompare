@@ -10,7 +10,7 @@
 #include "PrintshopComparisonToolDlg.h"
 #include "afxdialogex.h"
 #include "mupdf/pdf.hpp"
-#include "PrintChecker.hpp"
+#include "printcheck/PrintChecker.hpp"
 #include "utils.h"
 #include "SGInputDlg.h"
 
@@ -449,47 +449,8 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
 		std::string orig_path = ConvertWideCharToMultiByte(sCurPage.GetString());
 		std::string scan_path = ConvertWideCharToMultiByte((curPage==2)?m_scanPath2.GetString() : m_scanPath1.GetString());
-		pc.process(orig_path, scan_path,&diff);
+		pc.process(orig_path, scan_path, &diff);
 
-		CString stdDiff;
-		stdDiff.Format(L"Difference between images is  %.1f%%", diff);
-		if (diff == 0.0)
-		
-		{ 
-			if (NoPages == 2 && curPage==2)
-			{
-				m_pictureResults2.SetBorderColor(RGB(0, 255, 0));
-				m_pictureResults2.SetBorderThickness(10);
-				NotifyVersionInfo(L"Identical images!", stdDiff);
-
-			}
-			else
-			{
-				m_pictureResults1.SetBorderColor(RGB(0, 255, 0));
-				m_pictureResults1.SetBorderThickness(10);
-				NotifyVersionInfo(L"Identical images!", stdDiff);
-
-			}
-
-		}
-		else
-		{
-			if (NoPages == 2 && curPage == 2)
-			{
-				m_pictureResults2.SetBorderColor(RGB(255, 0, 0));
-				m_pictureResults2.SetBorderThickness(10);
-				NotifyVersionInfo(L"Unidentical images", stdDiff);
-
-			}
-			else
-			{
-				m_pictureResults1.SetBorderColor(RGB(255, 0, 0));
-				m_pictureResults1.SetBorderThickness(10);
-				NotifyVersionInfo(L"Unidentical images", stdDiff);
-
-			}
-
-		}
 		ShowResults(thr);
 
 		need_to_update = false;
@@ -687,7 +648,48 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 {
 	if(!images_loaded) return;
 	CWaitCursor w;
-	auto annotated = pc.applyLimit(Threshold);
+	double diff = 0;
+	auto annotated = pc.applyLimit(Threshold, &diff);
+	CString stdDiff;
+	stdDiff.Format(L"Difference between images is  %.1f%%", diff);
+	if (diff == 0.0)
+
+	{
+		if (NoPages == 2 && curPage == 2)
+		{
+			m_pictureResults2.SetBorderColor(RGB(0, 255, 0));
+			m_pictureResults2.SetBorderThickness(10);
+			NotifyVersionInfo(L"Identical images!", stdDiff);
+
+		}
+		else
+		{
+			m_pictureResults1.SetBorderColor(RGB(0, 255, 0));
+			m_pictureResults1.SetBorderThickness(10);
+			NotifyVersionInfo(L"Identical images!", stdDiff);
+
+		}
+
+	}
+	else
+	{
+		if (NoPages == 2 && curPage == 2)
+		{
+			m_pictureResults2.SetBorderColor(RGB(255, 0, 0));
+			m_pictureResults2.SetBorderThickness(10);
+			NotifyVersionInfo(L"Unidentical images", stdDiff);
+
+		}
+		else
+		{
+			m_pictureResults1.SetBorderColor(RGB(255, 0, 0));
+			m_pictureResults1.SetBorderThickness(10);
+			NotifyVersionInfo(L"Unidentical images", stdDiff);
+
+		}
+
+	}
+
 	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotated);
 
 	if (NoPages == 2 && curPage == 2)
