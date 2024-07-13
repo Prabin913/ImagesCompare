@@ -758,16 +758,34 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 	WriteLogFile(L"User clicked PDF area");
 
 	CString pdfPath = SelectFileFromDialog(1);
-	if(pdfPath == L"") return;
+	if (pdfPath.IsEmpty()) return;
 	WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());
-	if (ConvertPDF2IMG(pdfPath,pages))
-	{
-		CString strPages;
-		strPages.Format(L"File has %d pages",pages);
-		DrawImage(GetDlgItem(IDC_PIC_ORIG1), m_origPath1);
-		DrawImage(GetDlgItem(IDC_PIC_ORIG2),m_origPath2);
-		NotifyVersionInfo(L"Original file loaded and converted. "+strPages, L"Now please select a scanned image");
 
+	// Check if the selected file is already a .png file
+	if (pdfPath.Right(4).CompareNoCase(L".png") == 0)
+	{
+		// If the file is already a .png, use it directly
+		m_origPath1 = pdfPath;
+		m_origPath2 = pdfPath; // Assuming the second path is the same for simplicity
+		pages = 1; // Assume 1 page for .png file
+
+		CString strPages;
+		strPages.Format(L"File has %d page(s)", pages);
+		DrawImage(GetDlgItem(IDC_PIC_ORIG1), m_origPath1);
+		DrawImage(GetDlgItem(IDC_PIC_ORIG2), m_origPath2);
+		NotifyVersionInfo(L"Original PNG file loaded. " + strPages, L"Now please select a scanned image");
+	}
+	else
+	{
+		// If the file is not a .png, proceed with conversion
+		if (ConvertPDF2IMG(pdfPath, pages))
+		{
+			CString strPages;
+			strPages.Format(L"File has %d pages", pages);
+			DrawImage(GetDlgItem(IDC_PIC_ORIG1), m_origPath1);
+			DrawImage(GetDlgItem(IDC_PIC_ORIG2), m_origPath2);
+			NotifyVersionInfo(L"Original file loaded and converted. " + strPages, L"Now please select a scanned image");
+		}
 	}
 }
 
