@@ -50,8 +50,9 @@ export namespace printcheck
      */
     Mat read(const path& img_path)
     {
-        WriteLogFile(L"Reading image: %S",img_path.string().c_str());
         std::wstring wide_path = utf8_to_wide(img_path.string());
+        WriteLogFile(L"Reading image: %S", wide_path.c_str());
+
         FILE* file = _wfopen(wide_path.c_str(), L"rb");
         if (!file)
         {
