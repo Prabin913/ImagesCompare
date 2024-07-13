@@ -253,7 +253,8 @@ export namespace printcheck
 				double mse1 = compute(edges1(rect1), edges2(rect2));
 				double mse2 = compute(edges1(rect2), edges2(rect1));
 				double mse = min(mse1, mse2); //cv::min(mse1, mse2);
-				if (mse < prev_mse) {
+				if (mse < prev_mse) 
+                {
 					prev_mse = mse;
 
 					offsetX = dx; offsetY = dy;
@@ -263,11 +264,13 @@ export namespace printcheck
 		}
 
 		cv::Mat trans = Mat::zeros(rows, cols, CV_8UC1);
-        if (matIdx) {
+        if (matIdx) 
+        {
             edges2(cv::Rect(offsetX, offsetY, cols - offsetX, rows - offsetY)).copyTo(trans(cv::Rect(0, 0, cols - offsetX, rows - offsetY)));
             edges2 = trans;
         }
-        else {
+        else 
+        {
             edges1(cv::Rect(offsetX, offsetY, cols - offsetX, rows - offsetY)).copyTo(trans(cv::Rect(0, 0, cols - offsetX, rows - offsetY)));
             edges1 = trans;
         }
