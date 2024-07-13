@@ -690,14 +690,14 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 	{
 		m_diffPath2 = annotate_path;
 		m_pictureResults2.LoadImageW(annotate_path);
-		DrawImage(GetDlgItem(IDC_PIC_DIFF2), m_diffPath2);
+		//DrawImage(GetDlgItem(IDC_PIC_DIFF2), m_diffPath2);
 
 	}
 	else
 	{
 		m_diffPath1 = annotate_path;
 		m_pictureResults1.LoadImageW(annotate_path);
-		DrawImage(GetDlgItem(IDC_PIC_DIFF1), m_diffPath1);
+		//DrawImage(GetDlgItem(IDC_PIC_DIFF1), m_diffPath1);
 
 	}
 
