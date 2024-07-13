@@ -41,11 +41,6 @@ void SGPictureControl::SetBorderThickness(int thickness)
 
 void SGPictureControl::OnPaint()
 {
-    if (!IsWindowVisible())
-    {
-        return;
-    }
-
     CPaintDC dc(this);
 
     // Draw the image and border
@@ -69,7 +64,7 @@ void SGPictureControl::OnSize(UINT nType, int cx, int cy)
 
 void SGPictureControl::DrawImage(CDC* pDC)
 {
-    if (!IsWindowVisible() || m_image.IsNull())
+    if (m_image.IsNull())
     {
         return;
     }

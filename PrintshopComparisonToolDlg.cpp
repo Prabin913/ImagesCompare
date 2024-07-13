@@ -101,14 +101,8 @@ void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2
 }
 void PrintshopComparisonToolDlg::OnSize(UINT nType, int cx, int cy)
 {
-
 	CDialog::OnSize(nType, cx, cy);
 
-	if (nType == SIZE_RESTORED || nType == SIZE_MAXIMIZED)
-	{
-		GetWindowRect(m_LastRect);
-
-	}
 }
 
 
@@ -695,12 +689,14 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 	if (NoPages == 2 && curPage == 2)
 	{
 		m_diffPath2 = annotate_path;
+		m_pictureResults2.LoadImageW(annotate_path);
 		DrawImage(GetDlgItem(IDC_PIC_DIFF2), m_diffPath2);
 
 	}
 	else
 	{
 		m_diffPath1 = annotate_path;
+		m_pictureResults1.LoadImageW(annotate_path);
 		DrawImage(GetDlgItem(IDC_PIC_DIFF1), m_diffPath1);
 
 	}
