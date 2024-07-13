@@ -1,10 +1,14 @@
 #include "pch.h"
 #include "SGPictureControl.h"
 
+#define ID_CONTEXTMENU_OPENIMAGE 10250
+
 BEGIN_MESSAGE_MAP(SGPictureControl, CStatic)
     ON_WM_PAINT()
     ON_WM_ERASEBKGND()
     ON_WM_SIZE()
+    ON_WM_CONTEXTMENU()
+    ON_COMMAND(ID_CONTEXTMENU_OPENIMAGE, &SGPictureControl::OnOpenImage)
 END_MESSAGE_MAP()
 
 SGPictureControl::SGPictureControl()
@@ -17,12 +21,30 @@ SGPictureControl::~SGPictureControl()
 {
 }
 
+void SGPictureControl::OnContextMenu(CWnd* pWnd, CPoint point)
+{
+    CMenu menu;
+    menu.CreatePopupMenu();
+    menu.AppendMenu(MF_STRING, ID_CONTEXTMENU_OPENIMAGE, _T("Open image"));
+    menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
+}
+void SGPictureControl::OnOpenImage()
+{
+    if (!m_imageFilePath.IsEmpty())
+    {
+        ShellExecute(NULL, _T("OPEN"), m_imageFilePath, NULL, NULL, SW_SHOWNORMAL);
+    }
+}
 void SGPictureControl::LoadImage(const CString& strImageFilePath)
 {
     HRESULT hr = m_image.Load(strImageFilePath);
     if (FAILED(hr))
     {
         AfxMessageBox(_T("Failed to load image"));
+    }
+    else
+    {
+        m_imageFilePath = strImageFilePath;
     }
     Invalidate();
 }
