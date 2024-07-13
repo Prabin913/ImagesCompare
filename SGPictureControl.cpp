@@ -1,13 +1,12 @@
 #include "pch.h"
+#include "resource.h"
 #include "SGPictureControl.h"
-
-#define ID_CONTEXTMENU_OPENIMAGE 10250
 
 BEGIN_MESSAGE_MAP(SGPictureControl, CStatic)
     ON_WM_PAINT()
     ON_WM_ERASEBKGND()
     ON_WM_SIZE()
-    ON_WM_CONTEXTMENU()
+    ON_WM_CONTEXTMENU() // Handle WM_CONTEXTMENU message
     ON_COMMAND(ID_CONTEXTMENU_OPENIMAGE, &SGPictureControl::OnOpenImage)
 END_MESSAGE_MAP()
 
@@ -15,19 +14,21 @@ SGPictureControl::SGPictureControl()
     : m_borderColor(RGB(0, 0, 0))
     , m_borderThickness(10) // Default border thickness
 {
+    m_Menu.CreatePopupMenu(); // Initialize context menu
+    m_Menu.AppendMenu(MF_STRING, ID_CONTEXTMENU_OPENIMAGE, _T("Open image"));
 }
 
 SGPictureControl::~SGPictureControl()
 {
+    if (m_Menu.GetSafeHmenu())
+        m_Menu.DestroyMenu();
 }
 
-void SGPictureControl::OnContextMenu(CWnd* pWnd, CPoint point)
+void SGPictureControl::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 {
-    CMenu menu;
-    menu.CreatePopupMenu();
-    menu.AppendMenu(MF_STRING, ID_CONTEXTMENU_OPENIMAGE, _T("Open image"));
-    menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
+    ShowContextMenu(point);
 }
+
 void SGPictureControl::OnOpenImage()
 {
     if (!m_imageFilePath.IsEmpty())
@@ -35,6 +36,7 @@ void SGPictureControl::OnOpenImage()
         ShellExecute(NULL, _T("OPEN"), m_imageFilePath, NULL, NULL, SW_SHOWNORMAL);
     }
 }
+
 void SGPictureControl::LoadImage(const CString& strImageFilePath)
 {
     HRESULT hr = m_image.Load(strImageFilePath);
@@ -120,4 +122,14 @@ void SGPictureControl::DrawBorder(CDC* pDC)
     pDC->SelectStockObject(NULL_BRUSH); // No brush to fill the rectangle
     pDC->Rectangle(&rc);
     pDC->SelectObject(pOldPen);
+}
+
+// SGPictureControl.cpp
+
+void SGPictureControl::ShowContextMenu(CPoint point)
+{
+    if (m_Menu.GetSafeHmenu() != nullptr)
+    {
+        m_Menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
+    }
 }

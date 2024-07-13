@@ -1630,6 +1630,8 @@
 #define UNICODE_NOCHAR                  0xFFFF
 #define PWR_FAIL                        -1
 #define HTTRANSPARENT                   -1
+#define ID_CONTEXTMENU_OPENIMAGE 10250
+
 
 // Next default values for new objects
 // 

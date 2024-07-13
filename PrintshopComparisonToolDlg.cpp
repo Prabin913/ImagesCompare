@@ -62,6 +62,7 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_WM_HOTKEY()
 	ON_WM_PAINT()
 	ON_WM_CTLCOLOR()
+	ON_WM_CONTEXTMENU()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
 	ON_WM_SIZE()
@@ -106,7 +107,32 @@ void PrintshopComparisonToolDlg::OnSize(UINT nType, int cx, int cy)
 }
 
 
+void PrintshopComparisonToolDlg::OnContextMenu(CWnd* pWnd, CPoint point)
+{
+	return;
+	if (pWnd->GetSafeHwnd())
+	{
+		// Check if pWnd is an SGPictureControl
+//		if (SGPictureControl* pPictureControl = dynamic_cast<SGPictureControl*>(pWnd))
+		{
+			CRect rect;
+			pWnd->GetWindowRect(&rect);
+			ScreenToClient(&rect);
 
+			// Check if the point is within the control's client area
+			if (rect.PtInRect(point))
+			{
+				ClientToScreen(&point); // Convert point to screen coordinates
+				((SGPictureControl*)pWnd)->SendMessage(WM_CONTEXTMENU, (WPARAM)pWnd->GetSafeHwnd(), MAKELPARAM(point.x, point.y));
+
+				return; // Exit after calling the context menu handling
+			}
+		}
+	}
+
+	// Call base class implementation if the point is outside the control's client area
+	CDialog::OnContextMenu(pWnd, point);
+}
 HBRUSH PrintshopComparisonToolDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
@@ -289,6 +315,14 @@ void PrintshopComparisonToolDlg::SetTitle()
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
+#define DRAWIMAGE(ID,path,member) 	DrawImage(GetDlgItem(ID), path);if (PathFileExists(path)) member.LoadImage(path)
+#define SHOWORIG1 DRAWIMAGE(IDC_PIC_ORIG1, m_origPath1,m_pictureOrig1)
+#define SHOWORIG2 DRAWIMAGE(IDC_PIC_ORIG2, m_origPath2, m_pictureOrig2)
+#define SHOWSCAN1 DRAWIMAGE(IDC_PIC_SCAN1, m_scanPath1, m_pictureScan1)
+#define SHOWSCAN2 DRAWIMAGE(IDC_PIC_SCAN2, m_scanPath2, m_pictureScan2)
+#define SHOWRESULT1 DRAWIMAGE(IDC_PIC_DIFF1, m_diffPath1, m_pictureResults1)
+#define SHOWRESULT2 DRAWIMAGE(IDC_PIC_DIFF2, m_diffPath2, m_pictureResults2)
+
 void PrintshopComparisonToolDlg::OnPaint()
 {
 	if (IsIconic())
@@ -312,15 +346,13 @@ void PrintshopComparisonToolDlg::OnPaint()
 	{
 		CDialog::OnPaint();
 
-		DrawImage(GetDlgItem(IDC_PIC_ORIG1), m_origPath1);
-		DrawImage(GetDlgItem(IDC_PIC_ORIG2), m_origPath2);
-		DrawImage(GetDlgItem(IDC_PIC_SCAN1), m_scanPath1);
-		DrawImage(GetDlgItem(IDC_PIC_SCAN2), m_scanPath2);
-
-		DrawImage(GetDlgItem(IDC_PIC_DIFF1), m_diffPath2);
-		DrawImage(GetDlgItem(IDC_PIC_DIFF2), m_diffPath2);
-
-	}
+		SHOWORIG1;
+		SHOWORIG2;
+		SHOWSCAN1;
+		SHOWSCAN2;
+		SHOWRESULT1;
+		SHOWRESULT2;
+	}		
 }
 
 // The system calls this function to obtain the cursor to display while the user drags
@@ -687,15 +719,13 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold)
 	if (NoPages == 2 && curPage == 2)
 	{
 		m_diffPath2 = annotate_path;
-		m_pictureResults2.LoadImageW(annotate_path);
-		//DrawImage(GetDlgItem(IDC_PIC_DIFF2), m_diffPath2);
+		SHOWRESULT2;
 
 	}
 	else
 	{
 		m_diffPath1 = annotate_path;
-		m_pictureResults1.LoadImageW(annotate_path);
-		//DrawImage(GetDlgItem(IDC_PIC_DIFF1), m_diffPath1);
+		SHOWRESULT1;
 
 	}
 
@@ -769,8 +799,9 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 
 		CString strPages;
 		strPages.Format(L"File has %d page(s)", pages);
-		DrawImage(GetDlgItem(IDC_PIC_ORIG1), m_origPath1);
-		DrawImage(GetDlgItem(IDC_PIC_ORIG2), m_origPath2);
+		SHOWORIG1;
+		SHOWORIG2;
+
 		NotifyVersionInfo(L"Original PNG file loaded. " + strPages, L"Now please select a scanned image");
 	}
 	else
@@ -780,8 +811,9 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 		{
 			CString strPages;
 			strPages.Format(L"File has %d pages", pages);
-			DrawImage(GetDlgItem(IDC_PIC_ORIG1), m_origPath1);
-			DrawImage(GetDlgItem(IDC_PIC_ORIG2), m_origPath2);
+			SHOWORIG1;
+			SHOWORIG2;
+
 			NotifyVersionInfo(L"Original file loaded and converted. " + strPages, L"Now please select a scanned image");
 		}
 	}
@@ -804,7 +836,8 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonScan()
 				MessageBox(L"Scanned image can't be a PDF");
 				return;
 			}
-			DrawImage(GetDlgItem(IDC_PIC_SCAN2), m_scanPath2);
+			SHOWSCAN2;
+
 			SetTitle();
 		}
 
@@ -819,7 +852,8 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonScan()
 				MessageBox(L"Scanned image can't be a PDF");
 				return;
 			}
-			DrawImage(GetDlgItem(IDC_PIC_SCAN1), m_scanPath1);
+			SHOWSCAN1;
+
 			SetTitle();
 		}
 
