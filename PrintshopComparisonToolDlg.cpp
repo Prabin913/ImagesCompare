@@ -570,8 +570,6 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages
 	}
 	free(szSrcFilePath);
 
-	SetTitle();
-
 	return true;
 }
 
@@ -787,6 +785,8 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 			NotifyVersionInfo(L"Original file loaded and converted. " + strPages, L"Now please select a scanned image");
 		}
 	}
+	SetTitle();
+
 }
 
 
