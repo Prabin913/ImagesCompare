@@ -1267,12 +1267,13 @@
 #define WM_DDE_FIRST                    0x03E0
 #define IDC_BUTTON_ORIG                 1000
 #define IDC_BUTTON_SCAN                 1001
+#define IDC_COMBO1                      1001
+#define IDC_COMBO_COLORS                1001
 #define IDC_BUTTON_PROC                 1002
 #define IDC_BUTTON_OPENRESULT           1003
 #define IDC_BUTTON_SET_TH               1004
 #define IDC_BUTTON_SIDE_A               1005
 #define IDC_BUTTON_SIDE_B               1006
-
 #define CF_GDIOBJLAST                   0x03FF
 #define _WIN32_WINNT_NT4                0x0400
 #define _WIN32_IE_IE40                  0x0400
@@ -1509,6 +1510,7 @@
 #define TCS_FOCUSONBUTTONDOWN           0x1000
 #define IDC_EDIT_NUMBER                 4393
 #define IDC_STATIC_TEXT                 4394
+#define IDC_STATIC_TEXT2                4395
 #define IDD_INPUT_NUMBER_DIALOG         4422
 #define CS_BYTEALIGNWINDOW              0x2000
 #define TBSTYLE_CUSTOMERASE             0x2000
@@ -1516,6 +1518,7 @@
 #define LVS_NOSCROLL                    0x2000
 #define TVS_NOSCROLL                    0x2000
 #define TCS_OWNERDRAWFIXED              0x2000
+#define ID_CONTEXTMENU_OPENIMAGE        10250
 #define IDC_PIC_ORIG2                   12102
 #define CS_GLOBALCLASS                  0x4000
 #define TBSTYLE_REGISTERDROP            0x4000
@@ -1630,8 +1633,6 @@
 #define UNICODE_NOCHAR                  0xFFFF
 #define PWR_FAIL                        -1
 #define HTTRANSPARENT                   -1
-#define ID_CONTEXTMENU_OPENIMAGE 10250
-
 
 // Next default values for new objects
 // 
@@ -1639,7 +1640,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        101
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

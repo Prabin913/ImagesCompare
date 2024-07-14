@@ -130,7 +130,7 @@ namespace printcheck
 		for (const auto& point : whitePixels)
 		{
 			cv::Vec3b& pixel = annotated.at<cv::Vec3b>(point.y, point.x);
-			pixel[0] = 0;   // Blue
+			pixel[0] = 255;   // Blue
 			pixel[1] = 0;   // Green
 			pixel[2] = 255; // Red
 		}

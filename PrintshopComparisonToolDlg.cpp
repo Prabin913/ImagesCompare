@@ -195,14 +195,14 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	}
 	filter_size_slider.SetRange(0, 10, TRUE);
 	threshold_slider.SetRange(0, 256, TRUE);
-	threshold_slider.SetPos(100);
+	threshold_slider.SetPos(70);
 	m_BtnOpenResult.EnableWindow(FALSE);
 	m_BtnProc.EnableWindow(FALSE);
 	m_BtnScan.EnableWindow(FALSE);
 
 
 	UpdateData(FALSE);
-	thr = 100;
+	m_CurrentThreshold = 70;
 	need_to_update = true;
 
 	UpdateData(FALSE);
@@ -457,7 +457,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		NotifyVersionInfo(L"Ready to start", L"Please select an original PDF file");
 
 	}
-	thr_slider_echo.Format(_T("%d"), thr);
+	thr_slider_echo.Format(_T("%d"), m_CurrentThreshold);
 	filt_slider_echo.Format(_T("%d"), filt_s);
 	GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
 	GetDlgItem(IDC_STATIC_FILT_SIZE)->SetWindowTextW(filt_slider_echo);
@@ -469,13 +469,13 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		CWaitCursor w;
 		double diff;
 		CString temp;
-		temp.Format(L"Threshold set to %d", thr);
+		temp.Format(L"Threshold set to %d", m_CurrentThreshold);
 		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
 		std::string orig_path = ConvertWideCharToMultiByte(sCurPage.GetString());
 		std::string scan_path = ConvertWideCharToMultiByte((curPage==2)?m_scanPath2.GetString() : m_scanPath1.GetString());
 		pc.process(orig_path, scan_path, &diff);
 
-		ShowResults(thr);
+		ShowResults(m_CurrentThreshold);
 
 		need_to_update = false;
 	}
@@ -749,9 +749,9 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 		int current_thr = threshold_slider.GetPos();
 		if (current_thr != last_th)
 		{
-			thr = current_thr;
-			last_th = thr;
-			ShowResults(thr);
+			m_CurrentThreshold = current_thr;
+			last_th = m_CurrentThreshold;
+			ShowResults(m_CurrentThreshold);
 		}
 
 		int current_filt_s = filter_size_slider.GetPos();
@@ -870,16 +870,18 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOpenresult()
 void PrintshopComparisonToolDlg::OnBnClickedButtonSetTH()
 {
 	CInputNumberDialog dlg;
-	dlg.SetUserInput(threshold_slider.GetPos());
+	dlg.SetUserInput(m_CurrentThreshold = threshold_slider.GetPos());
+	dlg.SetColor(2);
 	dlg.DoModal();
 	int userInput = dlg.GetUserInput();
+	m_CurrentColor = dlg.GetSelectedColor();
 	if (userInput >= 1 && userInput <= 256)
 	{
 		// Update the slider position
 		threshold_slider.SetPos(userInput);
 		UpdateData(FALSE);
-		thr = userInput;
-		ShowResults(thr);
+		m_CurrentThreshold = userInput;
+		ShowResults(m_CurrentThreshold);
 		return;
 	}
 

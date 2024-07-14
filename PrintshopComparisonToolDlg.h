@@ -22,7 +22,8 @@ public:
 	enum { IDD = IDD_PRINTSHOPCOMPARISONTOOL_DIALOG};
 #endif
 
-	int thr;
+	int m_CurrentThreshold;
+	int m_CurrentColor;
 	int filt_s;
 	SGPictureControl 
 		m_pictureResults1, m_pictureResults2,

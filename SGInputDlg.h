@@ -13,11 +13,17 @@ protected:
 
 private:
     int m_userInput;
+    int m_selectedColor;
 
 public:
     void SetUserInput(int);
+    void SetColor(int color);
+
     int GetUserInput() const { return m_userInput; }
+    int GetSelectedColor() const {return m_selectedColor; }
     virtual BOOL OnInitDialog();
     virtual void OnOK();
+    CComboBox m_Color;
+    afx_msg void OnCbnSelchangeComboColors();
 };
 
