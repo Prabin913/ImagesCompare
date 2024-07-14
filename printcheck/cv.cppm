@@ -81,6 +81,12 @@ export namespace printcheck
         imwrite(img_path.string(), img);
     }
 
+	void dbg_dump(const path& img_path, const Mat& img)
+	{
+		WriteLogFile(L"Dumping image: %S", img_path.c_str());
+		imwrite(img_path.string(), img);
+	}
+
     /*!
      *  @details
      *    Waits until a key is pressed..

@@ -14,7 +14,7 @@ void CInputNumberDialog::DoDataExchange(CDataExchange* pDX)
 {
     CDialogEx::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_NUMBER, m_userInput);
-    DDV_MinMaxInt(pDX, m_userInput, 1, 128);
+    DDV_MinMaxInt(pDX, m_userInput, 1, 256);
 }
 
 BEGIN_MESSAGE_MAP(CInputNumberDialog, CDialogEx)
@@ -23,16 +23,22 @@ END_MESSAGE_MAP()
 BOOL CInputNumberDialog::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
+    UpdateData(FALSE);
     return TRUE;
 }
 
 void CInputNumberDialog::OnOK()
 {
     UpdateData(TRUE);
-    if (m_userInput < 1 || m_userInput > 128)
+    if (m_userInput < 1 || m_userInput > 256)
     {
-        AfxMessageBox(_T("Please enter a number between 1 and 128."));
+        AfxMessageBox(_T("Please enter a number between 1 and 256."));
         return;
     }
     CDialogEx::OnOK();
+}
+
+void CInputNumberDialog::SetUserInput(int userInput)
+{
+    m_userInput = userInput;    
 }

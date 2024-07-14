@@ -15,6 +15,7 @@ private:
     int m_userInput;
 
 public:
+    void SetUserInput(int);
     int GetUserInput() const { return m_userInput; }
     virtual BOOL OnInitDialog();
     virtual void OnOK();

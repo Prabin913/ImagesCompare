@@ -28,7 +28,6 @@ double g_fDPIRate = 1.0;
 #define DATETIME_BUFFER_SIZE 80
 #define BUFFER_SIZE 4096
 
-static vz::ImgCmp image_compare;
 static CString annotate_path("annotation.png");
 
 printcheck::PrintChecker pc;
@@ -469,7 +468,6 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		UpdatePagesStates();
 		CWaitCursor w;
 		double diff;
-		image_compare.threshold_and_opening(thr, filt_s);
 		CString temp;
 		temp.Format(L"Threshold set to %d", thr);
 		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
@@ -752,8 +750,8 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 		if (current_thr != last_th)
 		{
 			thr = current_thr;
-			need_to_update = true;
 			last_th = thr;
+			ShowResults(thr);
 		}
 
 		int current_filt_s = filter_size_slider.GetPos();
@@ -872,15 +870,16 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOpenresult()
 void PrintshopComparisonToolDlg::OnBnClickedButtonSetTH()
 {
 	CInputNumberDialog dlg;
+	dlg.SetUserInput(threshold_slider.GetPos());
 	dlg.DoModal();
 	int userInput = dlg.GetUserInput();
-	if (userInput >= 1 && userInput <= 128)
+	if (userInput >= 1 && userInput <= 256)
 	{
 		// Update the slider position
 		threshold_slider.SetPos(userInput);
 		UpdateData(FALSE);
 		thr = userInput;
-		need_to_update = true;
+		ShowResults(thr);
 		return;
 	}
 

@@ -39,6 +39,7 @@ void SGPictureControl::OnOpenImage()
 
 void SGPictureControl::LoadImage(const CString& strImageFilePath)
 {
+    if (!m_image.IsNull()) m_image.Destroy();
     HRESULT hr = m_image.Load(strImageFilePath);
     if (FAILED(hr))
     {

@@ -587,7 +587,6 @@
     <ClInclude Include="imagecompare\VzImgCmp.hpp" />
     <ClInclude Include="imagecompare\vzTypes.hpp" />
     <ClInclude Include="mupdf\pdf.hpp" />
-    <ClInclude Include="PrintChecker.hpp" />
     <ClInclude Include="printcheck\PrintChecker.hpp" />
     <ClInclude Include="PrintshopComparisonTool.h" />
     <ClInclude Include="PrintshopComparisonToolDlg.h" />
