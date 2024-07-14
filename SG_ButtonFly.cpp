@@ -2,7 +2,7 @@
 
 Secured Globe, Inc. 
 **** SG_ButtonFly ****
-Based on https://www.codeproject.com/Articles/5344494/Float-like-a-Butterfly-Sting-like-a-ButtonFly
+
 ©2022 Secured Globe, Inc.
 1501 Broadway Ave, STE 1200
 New York 10036, NY
@@ -18,13 +18,10 @@ info@securedglobe.com
 
 #define DPI(xy, dpi) (xy) //MulDiv(xy, dpi, 96)
 
-#define FONT_SIZE	(int)(12 * g_fDPIRate)
-#define DEF_FONT	_T("Arial")
+#define FONT_SIZE	(int)(14 * g_fDPIRate)
+#define DEF_FONT	L"Arial"
 
 extern double g_fDPIRate;
-
-#define CAPTION_HEIGHT		(int)(25 * g_fDPIRate)
-#define	CAPTION_GAP			(int)(5 * g_fDPIRate)
 
 int GetDpi(HWND hWnd)
 {
@@ -52,8 +49,12 @@ SG_ButtonFly::SG_ButtonFly()
 	, m_bMouseTrack(TRUE)
 	, m_pParent(NULL)
 {
-	m_clCaptionNormal = RGB(125, 70, 30);
+	m_clCaptionNormal = RGB(255, 0, 0);
 	m_clCaptionHover = RGB(0, 0, 255);
+
+	m_nCaptionWidth = (int)(100 * g_fDPIRate);
+	m_nCaptionHeight = (int)(15 * g_fDPIRate);
+	m_nCaptionGapHeight = (int)(5 * g_fDPIRate);
 
 	m_bUseCaption = false;
 }
@@ -183,18 +184,15 @@ void SG_ButtonFly::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	auto&& image = m_images[m_state];
 	if (image.IsNull())
 	{
-		pDC->DrawText(_T("No Image"), &lpDrawItemStruct->rcItem, DT_CENTER | DT_VCENTER);
+		pDC->DrawText(L"No Image", &lpDrawItemStruct->rcItem, DT_CENTER | DT_VCENTER);
 		return;
 	}
 
 	const auto nDpi = GetDpi(lpDrawItemStruct->hwndItem);
 	//const auto nWidth = DPI(image.GetWidth(), nDpi);
 	//const auto nHeight = DPI(image.GetHeight(), nDpi);
-	unsigned int nWidth = lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left;
-	unsigned int nHeight = lpDrawItemStruct->rcItem.bottom - lpDrawItemStruct->rcItem.top;
-	unsigned int nIconDrawSize = min(nWidth, nHeight);
-	unsigned int nIconWidth = nIconDrawSize;
-	unsigned int nIconHeight = (unsigned int)(nIconDrawSize * (image.GetHeight() / image.GetWidth()));
+	const auto nWidth = lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left;
+	const auto nHeight = lpDrawItemStruct->rcItem.bottom - lpDrawItemStruct->rcItem.top;
 
 	memDc.CreateCompatibleDC(pDC);
 	bmp.CreateCompatibleBitmap(pDC, nWidth, nHeight);
@@ -205,8 +203,8 @@ void SG_ButtonFly::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		DEFAULT_PITCH & FF_SWISS, DEF_FONT);
 	memDc.SelectObject(&bmp);
 
-	//image.StretchBlt(memDc, 0, 0, nIconWidth, nIconHeight, 0, 0, image.GetWidth(), image.GetHeight(), SRCCOPY);
-	image.Draw(memDc, 0, 0, nIconWidth, nIconHeight, 0, 0, image.GetWidth(), image.GetHeight());
+	//image.StretchBlt(memDc, 0, 0, nWidth, nHeight, 0, 0, image.GetWidth(), image.GetHeight(), SRCCOPY);
+	image.Draw(memDc, 0, 0, nWidth, nHeight, 0, 0, image.GetWidth(), image.GetHeight());
 
 	BLENDFUNCTION bf;
 	bf.AlphaFormat = AC_SRC_ALPHA;
@@ -225,10 +223,7 @@ void SG_ButtonFly::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 			pDC->SetTextColor(m_clCaptionHover);
 		else
 			pDC->SetTextColor(m_clCaptionNormal);
-		pDC->DrawText(m_szCaption, m_szCaption.GetLength(),
-			CRect(nIconWidth + CAPTION_GAP, (nHeight - CAPTION_HEIGHT) / 2,
-				(int)((nWidth - CAPTION_GAP) * g_fDPIRate),
-				CAPTION_HEIGHT), DT_VCENTER);
+		pDC->DrawText(m_szCaption, m_szCaption.GetLength(), CRect(0, nHeight + m_nCaptionGapHeight, m_nCaptionWidth, nHeight + m_nCaptionGapHeight + m_nCaptionHeight), DT_CENTER | DT_VCENTER);
 	}
 }
 
@@ -282,7 +277,7 @@ void SG_ButtonFly::LoadImageFromResource(CImage& img, UINT nId, LPCTSTR lpszReso
 	const auto pStream = SHCreateMemStream(lpMem, dwResourceSize);
 	if (pStream != nullptr)
 	{
-		if (img.Load(pStream) == S_OK && _tcsicmp(lpszResourceType, _T("PNG")) == 0 && img.GetBPP() == 32)
+		if (img.Load(pStream) == S_OK && _tcsicmp(lpszResourceType, L"PNG") == 0 && img.GetBPP() == 32)
 		{
 			for (auto i = 0; i < img.GetWidth(); i++)
 			{
@@ -310,6 +305,10 @@ void SG_ButtonFly::AutoSize(double p_fDPIRate/* = 1.0*/, bool p_bUseCaption/* = 
 	}
 
 	const auto nDpi = GetDpi(m_hWnd);
+
+	m_nCaptionWidth = (int)(image.GetWidth());
+	m_nCaptionHeight = (int)(15 * g_fDPIRate);
+	m_nCaptionGapHeight = (int)(5 * g_fDPIRate);
 
 	if (p_bUseCaption)
 		SetWindowPos(nullptr, -1, -1, DPI(image.GetWidth(), nDpi), DPI(image.GetHeight(), nDpi) + 100, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
@@ -340,6 +339,10 @@ void SG_ButtonFly::SetCaptionColor(COLORREF p_clCaptionNormal, COLORREF p_clCapt
 
 void SG_ButtonFly::SetButtonSize(int p_nWidth, int p_nHeight)
 {
+	m_nCaptionWidth = p_nWidth;
+	m_nCaptionHeight = (int)(15 * g_fDPIRate);
+	m_nCaptionGapHeight = (int)(5 * g_fDPIRate);
+
 	SetWindowPos(nullptr, -1, -1, p_nWidth, p_nHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 

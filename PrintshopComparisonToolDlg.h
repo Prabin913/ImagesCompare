@@ -83,13 +83,12 @@ public:
 	CSliderCtrl filter_size_slider;
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	CStatic m_Status;
-	CButton m_BtnOrig;
-	CButton m_BtnScan;
-	CButton m_BtnProc;
+	SG_ButtonFly m_BtnOrig;
+	SG_ButtonFly m_BtnScan;
+	SG_ButtonFly m_BtnProc;
 	afx_msg void OnBnClickedButtonOrig();
 	afx_msg void OnBnClickedButtonScan();
-	CButton m_BtnOpenResult;
-	CButton m_BtnSetTH;
+	SG_ButtonFly m_BtnSetTH;
 	afx_msg void OnBnClickedButtonOpenresult();
 	afx_msg void OnBnClickedButtonSetTH();
 	afx_msg void OnBnClickedButtonProc();

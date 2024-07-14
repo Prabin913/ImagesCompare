@@ -3,7 +3,7 @@
 
 Secured Globe, Inc. 
 **** SG_ButtonFly ****
-Based on https://www.codeproject.com/Articles/5344494/Float-like-a-Butterfly-Sting-like-a-ButtonFly
+
 ©2022 Secured Globe, Inc.
 1501 Broadway Ave, STE 1200
 New York 10036, NY
@@ -12,7 +12,6 @@ USA
 info@securedglobe.com
 
 */
-
 class SG_ButtonFly : public CButton
 {
 	DECLARE_DYNAMIC(SG_ButtonFly)
@@ -33,7 +32,7 @@ protected:
 	void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) override;
 
 public:
-	void SetImages(UINT nNormalId, UINT nHoverId, UINT nPressId, UINT nDisableId = 0, LPCTSTR lpszResourceType = _T("PNG"));
+	void SetImages(UINT nNormalId, UINT nHoverId, UINT nPressId, UINT nDisableId = 0, LPCTSTR lpszResourceType = L"PNG");
 	void AutoSize(double p_fDPIRate = 1.0, bool p_bUseCaption = false);
 	void SetParent(CWnd* p_pParent);
 	void SetCaptionText(LPCTSTR p_szCaption);
@@ -58,5 +57,8 @@ protected:
 	CString		m_szCaption;
 	COLORREF	m_clCaptionNormal;
 	COLORREF	m_clCaptionHover;
+	int			m_nCaptionWidth;
+	int			m_nCaptionHeight;
+	int			m_nCaptionGapHeight;
 	bool		m_bUseCaption;
 };

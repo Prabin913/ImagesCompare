@@ -1270,8 +1270,7 @@
 #define IDC_COMBO1                      1001
 #define IDC_COMBO_COLORS                1001
 #define IDC_BUTTON_PROC                 1002
-#define IDC_BUTTON_OPENRESULT           1003
-#define IDC_BUTTON_SET_TH               1004
+#define IDC_BUTTON_SETTINGS               1004
 #define IDC_BUTTON_SIDE_A               1005
 #define IDC_BUTTON_SIDE_B               1006
 #define CF_GDIOBJLAST                   0x03FF
@@ -1633,6 +1632,25 @@
 #define UNICODE_NOCHAR                  0xFFFF
 #define PWR_FAIL                        -1
 #define HTTRANSPARENT                   -1
+#define IDB_BN_ORIG						20000
+#define IDB_BN_ORIG_H					20001
+#define IDB_BN_ORIG_P					20002
+#define IDB_BN_ORIG_D					20003
+#define IDB_BN_SCAN						20004
+#define IDB_BN_SCAN_H					20005
+#define IDB_BN_SCAN_P					20006
+#define IDB_BN_SCAN_D					20007
+#define IDB_BN_PROC						20008
+#define IDB_BN_PROC_H					20009
+#define IDB_BN_PROC_P					20010
+#define IDB_BN_PROC_D					20011
+#define IDB_BN_SETTING					20012
+#define IDB_BN_SETTING_H				20013
+#define IDB_BN_SETTING_P				20014
+#define IDB_BN_SETTING_D				20015
+
+
+
 
 // Next default values for new objects
 // 

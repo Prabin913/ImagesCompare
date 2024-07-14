@@ -50,8 +50,7 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_ORIG, m_BtnOrig);
 	DDX_Control(pDX, IDC_BUTTON_SCAN, m_BtnScan);
 	DDX_Control(pDX, IDC_BUTTON_PROC, m_BtnProc);
-	DDX_Control(pDX, IDC_BUTTON_OPENRESULT, m_BtnOpenResult);
-	DDX_Control(pDX, IDC_BUTTON_SET_TH, m_BtnSetTH);
+	DDX_Control(pDX, IDC_BUTTON_SETTINGS, m_BtnSetTH);
 	DDX_Control(pDX, IDC_BUTTON_SIDE_A, m_BtnSideA);
 	DDX_Control(pDX, IDC_BUTTON_SIDE_B, m_BtnSideB);
 
@@ -72,8 +71,7 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_WM_HSCROLL()
 	ON_BN_CLICKED(IDC_BUTTON_ORIG, &PrintshopComparisonToolDlg::OnBnClickedButtonOrig)
 	ON_BN_CLICKED(IDC_BUTTON_SCAN, &PrintshopComparisonToolDlg::OnBnClickedButtonScan)
-	ON_BN_CLICKED(IDC_BUTTON_OPENRESULT, &PrintshopComparisonToolDlg::OnBnClickedButtonOpenresult)
-	ON_BN_CLICKED(IDC_BUTTON_SET_TH,&PrintshopComparisonToolDlg::OnBnClickedButtonSetTH)
+	ON_BN_CLICKED(IDC_BUTTON_SETTINGS,&PrintshopComparisonToolDlg::OnBnClickedButtonSetTH)
 	ON_BN_CLICKED(IDC_BUTTON_PROC, &PrintshopComparisonToolDlg::OnBnClickedButtonProc)
 	ON_BN_CLICKED(IDC_BUTTON_SIDE_A, &PrintshopComparisonToolDlg::OnBnClickedButtonSideA)
 	ON_BN_CLICKED(IDC_BUTTON_SIDE_B, &PrintshopComparisonToolDlg::OnBnClickedButtonSideB)
@@ -166,6 +164,22 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 	
+	m_BtnOrig.SetImages(IDB_BN_ORIG, IDB_BN_ORIG_H, IDB_BN_ORIG_P, IDB_BN_ORIG_D);
+	m_BtnOrig.SetParent(this);
+	m_BtnOrig.SetCaptionText(L"Original");
+
+	m_BtnScan.SetImages(IDB_BN_SCAN, IDB_BN_SCAN_H, IDB_BN_SCAN_P, IDB_BN_SCAN_D);
+	m_BtnScan.SetParent(this);
+	m_BtnScan.SetCaptionText(L"Scan");
+
+	m_BtnProc.SetImages(IDB_BN_PROC, IDB_BN_PROC_H, IDB_BN_PROC_P, IDB_BN_PROC_D);
+	m_BtnProc.SetParent(this);
+	m_BtnProc.SetCaptionText(L"Process");
+
+	m_BtnSetTH.SetImages(IDB_BN_SETTING, IDB_BN_SETTING_H, IDB_BN_SETTING_P, IDB_BN_SETTING_D);
+	m_BtnSetTH.SetParent(this);
+	m_BtnSetTH.SetCaptionText(L"Settings");
+
 	// Subclass the picture control
 	m_pictureResults1.SubclassDlgItem(IDC_PIC_DIFF1, this);
 	m_pictureResults1.SetBorderThickness(10);
@@ -196,7 +210,6 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	filter_size_slider.SetRange(0, 10, TRUE);
 	threshold_slider.SetRange(0, 256, TRUE);
 	threshold_slider.SetPos(70);
-	m_BtnOpenResult.EnableWindow(FALSE);
 	m_BtnProc.EnableWindow(FALSE);
 	m_BtnScan.EnableWindow(FALSE);
 
@@ -252,7 +265,6 @@ void PrintshopComparisonToolDlg::SetTitle()
 	}
 	if (PDF != L"" && PNG != L"")
 	{
-		m_BtnOpenResult.EnableWindow(TRUE);
 		m_BtnProc.EnableWindow(TRUE);
 		m_BtnScan.EnableWindow(TRUE);
 		UpdateData(FALSE);
@@ -262,7 +274,6 @@ void PrintshopComparisonToolDlg::SetTitle()
 	else
 	if (PDF != L"")
 	{
-		m_BtnOpenResult.EnableWindow(FALSE);
 		m_BtnProc.EnableWindow(FALSE);
 		m_BtnScan.EnableWindow(TRUE);
 		UpdateData(FALSE);
@@ -285,7 +296,6 @@ void PrintshopComparisonToolDlg::SetTitle()
 	else
 	{
 
-		m_BtnOpenResult.EnableWindow(FALSE);
 		m_BtnProc.EnableWindow(FALSE);
 		m_BtnScan.EnableWindow(FALSE);
 		UpdateData(FALSE);

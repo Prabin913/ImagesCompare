@@ -1079,6 +1079,10 @@
     <Image Include="res\Splsh24.bmp">
       <Filter>imaging</Filter>
     </Image>
+    <Image Include="res\orig.png" />
+    <Image Include="res\scan.png" />
+    <Image Include="res\proc.png" />
+    <Image Include="res\settings.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\PrintshopComparisonTool.rc2" />

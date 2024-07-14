@@ -734,7 +734,11 @@
     <None Include="res\PrintshopComparisonTool.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\orig.png" />
     <Image Include="res\PrintshopComparisonTool.ico" />
+    <Image Include="res\proc.png" />
+    <Image Include="res\scan.png" />
+    <Image Include="res\settings.png" />
     <Image Include="res\Splsh24.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
