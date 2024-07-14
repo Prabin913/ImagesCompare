@@ -8,7 +8,7 @@
 #include <opencv2/dnn.hpp>
 #include <filesystem>
 #include <iostream>
-
+#include "..\constants.h"
 import printcheck.cv;
 import printcheck.align;
 import printcheck.difference;
@@ -95,7 +95,7 @@ namespace printcheck
      *  @return
      *    Returns a visualization with the applied error threshold.
      */
-    cv::Mat PrintChecker::applyLimit(int limit, double* diff)
+    cv::Mat PrintChecker::applyLimit(int limit, int color, double* diff)
     {
 		// thresholding
         cv::Mat maskBinary;
@@ -130,9 +130,24 @@ namespace printcheck
 		for (const auto& point : whitePixels)
 		{
 			cv::Vec3b& pixel = annotated.at<cv::Vec3b>(point.y, point.x);
-			pixel[0] = 255;   // Blue
-			pixel[1] = 0;   // Green
-			pixel[2] = 255; // Red
+            switch (color)
+            {
+                case COLOR_PURPLE:
+                    pixel[0] = 255;   // Blue
+                    pixel[1] = 0;   // Green
+                    pixel[2] = 255; // Red
+                    break;
+                case COLOR_BLUE:
+                    pixel[0] = 255;   // Blue
+                    pixel[1] = 0;   // Green
+                    pixel[2] = 0; // Red
+                    break;
+                case COLOR_RED:
+                    pixel[0] = 0;   // Blue
+                    pixel[1] = 0;   // Green
+                    pixel[2] = 255; // Red
+                    break;
+            }
 		}
         return annotated;
     }

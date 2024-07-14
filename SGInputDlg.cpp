@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "SGInputDlg.h"
 #include "afxdialogex.h"
+#include "constants.h"
 
 //IMPLEMENT_DYNAMIC(CInputNumberDialog, CDialogEx)
 
@@ -25,9 +26,9 @@ END_MESSAGE_MAP()
 BOOL CInputNumberDialog::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
-    m_Color.InsertString(0,L"Red");
-    m_Color.InsertString(1, L"Purple");
-    m_Color.InsertString(2, L"Blue");
+    m_Color.InsertString(COLOR_PURPLE, COLOR_PURPLE_S);
+    m_Color.InsertString(COLOR_BLUE,COLOR_BLUE_S);
+    m_Color.InsertString(COLOR_RED, COLOR_RED_S);
     m_Color.SetCurSel(m_selectedColor);
 
     UpdateData(FALSE);

@@ -1069,6 +1069,7 @@
     <ClInclude Include="SGInputDlg.h" />
     <ClInclude Include="SGPictureControl.h" />
     <ClInclude Include="res\version.h" />
+    <ClInclude Include="constants.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />

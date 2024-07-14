@@ -13,7 +13,7 @@
 #include "printcheck/PrintChecker.hpp"
 #include "utils.h"
 #include "SGInputDlg.h"
-
+#include "constants.h"
 
 #include <iostream>
 #include <sstream>
@@ -475,7 +475,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		std::string scan_path = ConvertWideCharToMultiByte((curPage==2)?m_scanPath2.GetString() : m_scanPath1.GetString());
 		pc.process(orig_path, scan_path, &diff);
 
-		ShowResults(m_CurrentThreshold);
+		ShowResults(m_CurrentThreshold, m_CurrentColor);
 
 		need_to_update = false;
 	}
@@ -666,12 +666,12 @@ cv::Mat get_image(const std::string & filename)
 }
 
 
-void PrintshopComparisonToolDlg::ShowResults(int Threshold)
+void PrintshopComparisonToolDlg::ShowResults(int Threshold,int color)
 {
 	if(!images_loaded) return;
 	CWaitCursor w;
 	double diff = 0;
-	auto annotated = pc.applyLimit(Threshold, &diff);
+	auto annotated = pc.applyLimit(Threshold, color,&diff);
 	CString stdDiff;
 	stdDiff.Format(L"Difference between images is  %.1f%%", diff);
 	if (diff == 0.0)
@@ -751,7 +751,7 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 		{
 			m_CurrentThreshold = current_thr;
 			last_th = m_CurrentThreshold;
-			ShowResults(m_CurrentThreshold);
+			ShowResults(m_CurrentThreshold, m_CurrentColor);
 		}
 
 		int current_filt_s = filter_size_slider.GetPos();
@@ -881,7 +881,7 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonSetTH()
 		threshold_slider.SetPos(userInput);
 		UpdateData(FALSE);
 		m_CurrentThreshold = userInput;
-		ShowResults(m_CurrentThreshold);
+		ShowResults(m_CurrentThreshold, m_CurrentColor);
 		return;
 	}
 

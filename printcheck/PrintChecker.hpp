@@ -25,7 +25,7 @@ namespace printcheck
 			cv::Mat process(const std::filesystem::path& ref, const std::filesystem::path& scan, double* diff);
 
 				//!  update visualization with the new requested limit
-			cv::Mat applyLimit( int, double*);
+			cv::Mat applyLimit( int, int, double*);
 
 		//  Getters
 				//!  returns with a deep copy of the calculated error map

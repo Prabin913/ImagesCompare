@@ -579,6 +579,7 @@
     <ClInclude Include="3rdparty\include\opencv2\video\legacy\constants_c.h" />
     <ClInclude Include="3rdparty\include\opencv2\video\tracking.hpp" />
     <ClInclude Include="3rdparty\include\opencv2\video\video.hpp" />
+    <ClInclude Include="constants.h" />
     <ClInclude Include="imagecompare\Imagination.hpp" />
     <ClInclude Include="imagecompare\Intervals.hpp" />
     <ClInclude Include="imagecompare\KMeans.hpp" />

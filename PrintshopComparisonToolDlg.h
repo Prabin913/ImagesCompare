@@ -59,7 +59,7 @@ private:
 	void SetTitle();
 
 	void DrawImage(CWnd *pRenderWnd, const CString &strImageFilePath);
-	void ShowResults(int Threshold);
+	void ShowResults(int Threshold, int color);
 
 public:
 	// Add member variable to store the last rect
