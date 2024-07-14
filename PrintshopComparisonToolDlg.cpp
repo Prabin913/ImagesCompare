@@ -871,7 +871,7 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonSetTH()
 {
 	CInputNumberDialog dlg;
 	dlg.SetUserInput(m_CurrentThreshold = threshold_slider.GetPos());
-	dlg.SetColor(2);
+	dlg.SetColor(m_CurrentColor);
 	dlg.DoModal();
 	int userInput = dlg.GetUserInput();
 	m_CurrentColor = dlg.GetSelectedColor();
