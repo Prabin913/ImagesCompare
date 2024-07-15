@@ -79,32 +79,17 @@ BOOL CPrintshopComparisonToolApp::InitInstance()
 	{
 		// Command line parameters provided
 		CString strFileName = cmdInfo.m_strFileName;
-		// You can now use strFileName as the command line argument.
 		
-	}
-
-
-	// Check for batch file command line argument
-	if (cmdInfo.m_strFileName.GetLength() > 0 && cmdInfo.m_strFileName.Left(2) == L"-b")
-	{
-		// Extract batch file path
-		CString strOption = cmdInfo.m_strFileName.Mid(2).Trim();
-		if (!strOption.IsEmpty())
+		// Verify if the file exists
+		if (PathFileExists(strFileName))
 		{
-			// Verify if the file exists
-			if (PathFileExists(strOption))
-			{
-				// Set the batch file path in the dialog
-				dlg.m_batchFile = strOption;
-			}
-			else
-			{
-				// Handle error: Batch file does not exist
-				AfxMessageBox(L"Error: Batch file specified does not exist.");
-				return FALSE; // Exit application or handle as necessary
-			}
+			// Set the batch file path in the dialog
+			dlg.m_batchFile = strFileName;
 		}
+
 	}
+
+
 
 	CWnd* pParentWnd = 0;
 	pParentWnd = CWnd::FromHandle(m_pMainWnd->GetSafeHwnd());
