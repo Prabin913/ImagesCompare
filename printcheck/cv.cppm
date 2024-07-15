@@ -84,7 +84,7 @@ export namespace printcheck
 	void dbg_dump(const path& img_path, const Mat& img)
 	{
 		WriteLogFile(L"Dumping image: %S", img_path.c_str());
-		imwrite(img_path.string(), img);
+		if(img.data) imwrite(img_path.string(), img);
 	}
 
     /*!

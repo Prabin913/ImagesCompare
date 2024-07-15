@@ -97,58 +97,84 @@ namespace printcheck
      */
     cv::Mat PrintChecker::applyLimit(int limit, int color, double* diff)
     {
-		// thresholding
-        cv::Mat maskBinary;
-		cv::threshold(_mask, maskBinary, limit, 255, cv::THRESH_BINARY);
-        dbg_dump("3_mask_filtered.png", maskBinary);
-		
-        std::vector<cv::Point> whitePixels;
-		cv::findNonZero(maskBinary, whitePixels);
-		if (diff)
-			*diff = whitePixels.size() * 1.0 / (maskBinary.cols * maskBinary.rows) * 100.0;
+        try
+        {
+            // Thresholding
+            cv::Mat maskBinary;
+            cv::threshold(_mask, maskBinary, limit, 255, cv::THRESH_BINARY);
+            dbg_dump("3_mask_filtered.png", maskBinary);
 
-		cv::resize(maskBinary, maskBinary, _scanned.size());
-		dbg_dump("3_mask_filtered_expand.png", maskBinary);
-        		
-		// Find contours
-		std::vector<std::vector<cv::Point>> contours;
-		std::vector<cv::Vec4i> hierarchy;
-		cv::findContours(maskBinary, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+            std::vector<cv::Point> whitePixels;
+            cv::findNonZero(maskBinary, whitePixels);
+            if (diff)
+                *diff = whitePixels.size() * 1.0 / (maskBinary.cols * maskBinary.rows) * 100.0;
 
-		// Draw contours
-		cv::Mat contourImg = cv::Mat::zeros(maskBinary.size(), CV_8UC1);
-		for (size_t i = 0; i < contours.size(); i++) {
-			drawContours(contourImg, contours, (int)i, 255, 2, cv::LINE_8, hierarchy, 0);
-		}
+            cv::resize(maskBinary, maskBinary, _scanned.size());
+            dbg_dump("3_mask_filtered_expand.png", maskBinary);
 
-        
-        dbg_dump("3_mask_filtered_contour.png", contourImg);        
+            // Find contours
+            std::vector<std::vector<cv::Point>> contours;
+            std::vector<cv::Vec4i> hierarchy;
+            cv::findContours(maskBinary, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
-        cv::Mat annotated = _scanned.clone();
-        
-        cv::findNonZero(contourImg, whitePixels);
-		for (const auto& point : whitePixels)
-		{
-			cv::Vec3b& pixel = annotated.at<cv::Vec3b>(point.y, point.x);
-            switch (color)
+            // Draw contours
+            cv::Mat contourImg = cv::Mat::zeros(maskBinary.size(), CV_8UC1);
+            for (size_t i = 0; i < contours.size(); i++)
             {
-                case COLOR_PURPLE:
-                    pixel[0] = 255;   // Blue
-                    pixel[1] = 0;   // Green
-                    pixel[2] = 255; // Red
-                    break;
-                case COLOR_BLUE:
-                    pixel[0] = 255;   // Blue
-                    pixel[1] = 0;   // Green
-                    pixel[2] = 0; // Red
-                    break;
-                case COLOR_RED:
-                    pixel[0] = 0;   // Blue
-                    pixel[1] = 0;   // Green
-                    pixel[2] = 255; // Red
-                    break;
+                drawContours(contourImg, contours, (int)i, 255, 2, cv::LINE_8, hierarchy, 0);
             }
-		}
-        return annotated;
+
+            dbg_dump("3_mask_filtered_contour.png", contourImg);
+
+            cv::Mat annotated = _scanned.clone();
+
+            // Apply color to annotated image based on specified color
+            cv::findNonZero(contourImg, whitePixels);
+            for (const auto& point : whitePixels)
+            {
+                cv::Vec3b& pixel = annotated.at<cv::Vec3b>(point.y, point.x);
+                switch (color)
+                {
+                    case COLOR_PURPLE:
+                        pixel[0] = 255;   // Blue
+                        pixel[1] = 0;     // Green
+                        pixel[2] = 255;   // Red
+                        break;
+                    case COLOR_BLUE:
+                        pixel[0] = 255;   // Blue
+                        pixel[1] = 0;     // Green
+                        pixel[2] = 0;     // Red
+                        break;
+                    case COLOR_RED:
+                        pixel[0] = 0;     // Blue
+                        pixel[1] = 0;     // Green
+                        pixel[2] = 255;   // Red
+                        break;
+                }
+            }
+
+            return annotated;
+        }
+        catch (const cv::Exception& ex)
+        {
+            //dbg_dump(L"OpenCV exception in applyLimit: %S", ex.what());
+            // Handle the exception as per your application's requirements
+            // For example, return an empty Mat or rethrow the exception
+            //throw; // Rethrow the exception to propagate it further
+        }
+        catch (const std::exception& ex)
+        {
+            //dbg_dump(L"Standard exception in applyLimit: %S", ex.what());
+            // Handle the exception as per your application's requirements
+            // For example, return an empty Mat or rethrow the exception
+            //throw; // Rethrow the exception to propagate it further
+        }
+        catch (...)
+        {
+            //dbg_dump(L"Unknown exception occurred in applyLimit.");
+            // Handle the exception as per your application's requirements
+            // For example, return an empty Mat or rethrow the exception
+            //throw; // Rethrow the exception to propagate it further
+        }
     }
 }

@@ -695,74 +695,93 @@ cv::Mat get_image(const std::string & filename)
 	return mat;
 }
 
-
-void PrintshopComparisonToolDlg::ShowResults(int Threshold,int color)
+void PrintshopComparisonToolDlg::ShowResults(int Threshold, int color)
 {
-	if(!images_loaded) return;
+	static bool ongoing{ false };
+	if (ongoing) return;
+	if (!images_loaded) return;
+
+	ongoing = true;
 	CWaitCursor w;
-	double diff = 0;
-	auto annotated = pc.applyLimit(Threshold, color,&diff);
-	CString stdDiff;
-	stdDiff.Format(L"Difference between images is  %.1f%%", diff);
-	if (diff == 0.0)
 
+	double diff = 0.0;
+	cv::Mat annotated;
+
+	try
 	{
-		if (NoPages == 2 && curPage == 2)
-		{
-			m_pictureResults2.SetBorderColor(RGB(0, 255, 0));
-			m_pictureResults2.SetBorderThickness(10);
-			NotifyVersionInfo(L"Identical images!", stdDiff);
+		annotated = pc.applyLimit(Threshold, color, &diff);
 
+		CString stdDiff;
+		stdDiff.Format(L"Difference between images is  %.1f%%", diff);
+
+		if (diff == 0.0)
+		{
+			if (NoPages == 2 && curPage == 2)
+			{
+				m_pictureResults2.SetBorderColor(RGB(0, 255, 0));
+				m_pictureResults2.SetBorderThickness(10);
+				NotifyVersionInfo(L"Identical images!", stdDiff);
+			}
+			else
+			{
+				m_pictureResults1.SetBorderColor(RGB(0, 255, 0));
+				m_pictureResults1.SetBorderThickness(10);
+				NotifyVersionInfo(L"Identical images!", stdDiff);
+			}
 		}
 		else
 		{
-			m_pictureResults1.SetBorderColor(RGB(0, 255, 0));
-			m_pictureResults1.SetBorderThickness(10);
-			NotifyVersionInfo(L"Identical images!", stdDiff);
-
+			if (NoPages == 2 && curPage == 2)
+			{
+				m_pictureResults2.SetBorderColor(RGB(255, 0, 0));
+				m_pictureResults2.SetBorderThickness(10);
+				NotifyVersionInfo(L"Unidentical images", stdDiff);
+			}
+			else
+			{
+				m_pictureResults1.SetBorderColor(RGB(255, 0, 0));
+				m_pictureResults1.SetBorderThickness(10);
+				NotifyVersionInfo(L"Unidentical images", stdDiff);
+			}
 		}
 
-	}
-	else
-	{
+		cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotated);
+
 		if (NoPages == 2 && curPage == 2)
 		{
-			m_pictureResults2.SetBorderColor(RGB(255, 0, 0));
-			m_pictureResults2.SetBorderThickness(10);
-			NotifyVersionInfo(L"Unidentical images", stdDiff);
-
+			m_diffPath2 = annotate_path;
+			SHOWRESULT2;
 		}
 		else
 		{
-			m_pictureResults1.SetBorderColor(RGB(255, 0, 0));
-			m_pictureResults1.SetBorderThickness(10);
-			NotifyVersionInfo(L"Unidentical images", stdDiff);
-
+			m_diffPath1 = annotate_path;
+			SHOWRESULT1;
 		}
 
+		UpdateWindow();
 	}
-
-	cv::imwrite(ConvertWideCharToMultiByte(annotate_path), annotated);
-
-	if (NoPages == 2 && curPage == 2)
+	catch (const cv::Exception& ex)
 	{
-		m_diffPath2 = annotate_path;
-		SHOWRESULT2;
-
+		CString errMsg;
+		errMsg.Format(L"OpenCV exception in ShowResults: %S", ex.what());
+		AfxMessageBox(errMsg);
+		WriteLogFile(errMsg);
 	}
-	else
+	catch (const std::exception& ex)
 	{
-		m_diffPath1 = annotate_path;
-		SHOWRESULT1;
-
+		CString errMsg;
+		errMsg.Format(L"Standard exception in ShowResults: %S", ex.what());
+		AfxMessageBox(errMsg);
+		WriteLogFile(errMsg);
+	}
+	catch (...)
+	{
+		AfxMessageBox(L"Unknown exception occurred in ShowResults.");
+		WriteLogFile(L"Unknown exception occurred in ShowResults.");
 	}
 
-
-	UpdateWindow();
-
-
+	ongoing = false;
 }
-
 
 
 
@@ -1015,29 +1034,49 @@ void PrintshopComparisonToolDlg::StopBatchProcessing()
 void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 {
 	std::wifstream batchFile(batchFilePath);
-
+	if (!batchFile.is_open())
+	{
+		WriteLogFile(L"Failed to open batch file: %s", batchFilePath.GetString());
+		return;
+	}
 
 	std::wstring origPath, scanPath;
 
-	while (batchFile >> origPath >> scanPath)
+	try
 	{
-		m_origPath1 = origPath.c_str();
-		m_scanPath1 = scanPath.c_str();
-		if (m_stopBatchThread)
+		while (batchFile >> origPath >> scanPath)
 		{
-			break;
+			// Set the paths
+			m_origPath1 = origPath.c_str();
+			m_scanPath1 = scanPath.c_str();
+
+			if (m_stopBatchThread)
+			{
+				break;
+			}
+
+			// Set the orig file
+			OnBnClickedButtonOrig();
+
+			// Set the scan file
+			OnBnClickedButtonScan();
+
+			// Process the images
+			OnBnClickedButtonProc();
+
+			// Sleep for a short while to simulate user interaction
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
-
-		// Set the orig file
-		OnBnClickedButtonOrig();
-
-		// Set the scan file
-		OnBnClickedButtonScan();
-
-		// Process the images
-		OnBnClickedButtonProc();
-
-		// Sleep for a short while to simulate user interaction
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
+	catch (const std::exception& ex)
+	{
+		WriteLogFile(L"Exception in BatchProcess: %hs", ex.what());
+	}
+	catch (...)
+	{
+		WriteLogFile(L"Unknown exception in BatchProcess");
+	}
+
+	// Ensure the batch mode flag is cleared
+	m_batchMode = false;
 }
