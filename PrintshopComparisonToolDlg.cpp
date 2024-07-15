@@ -34,7 +34,8 @@ printcheck::PrintChecker pc;
 bool need_to_update = false;
 bool images_loaded=false;
 PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent)
+	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent),
+	m_batchMode(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	NoPages=1;
@@ -45,7 +46,6 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SLIDER1, threshold_slider);
-	DDX_Control(pDX, IDC_SLIDER2, filter_size_slider);
 	DDX_Control(pDX, IDC_STATUS, m_Status);
 	DDX_Control(pDX, IDC_BUTTON_ORIG, m_BtnOrig);
 	DDX_Control(pDX, IDC_BUTTON_SCAN, m_BtnScan);
@@ -142,7 +142,6 @@ HBRUSH PrintshopComparisonToolDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlCol
 			return m_tx; // Return a brush with the same color
 			break;
 		case IDC_SLIDER1:
-		case IDC_SLIDER2:
 
 		case IDC_STATIC_THR:
 		case IDC_STATIC_FILT_SIZE:
@@ -207,7 +206,6 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	{
 		AfxMessageBox(L"Failed to register hotkey!");
 	}
-	filter_size_slider.SetRange(0, 10, TRUE);
 	threshold_slider.SetRange(0, 256, TRUE);
 	threshold_slider.SetPos(70);
 	m_BtnProc.EnableWindow(FALSE);
@@ -464,7 +462,6 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 {
 
 	CString thr_slider_echo;
-	CString filt_slider_echo;
 
 	static bool do_once{true};
 	if(do_once)
@@ -477,9 +474,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 	}
 	thr_slider_echo.Format(_T("%d"), m_CurrentThreshold);
-	filt_slider_echo.Format(_T("%d"), filt_s);
 	GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
-	GetDlgItem(IDC_STATIC_FILT_SIZE)->SetWindowTextW(filt_slider_echo);
 
 	if (need_to_update && images_loaded)
 	{
@@ -758,8 +753,7 @@ void PrintshopComparisonToolDlg::ShowResults(int Threshold,int color)
 void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 
-	if (pScrollBar == (CScrollBar*)&threshold_slider ||
-		pScrollBar == (CScrollBar*)&filter_size_slider)
+	if (pScrollBar == (CScrollBar*)&threshold_slider)
 	{
 		static int last_th = -1;
 		static int last_fs = -1;
@@ -773,13 +767,7 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 			ShowResults(m_CurrentThreshold, m_CurrentColor);
 		}
 
-		int current_filt_s = filter_size_slider.GetPos();
-		if (current_filt_s != last_fs)
-		{
-			filt_s = current_filt_s;
-			need_to_update = true;
-			last_fs = filt_s;
-		}
+		
 	}
 	else
 	{
@@ -801,8 +789,15 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 	m_origPath2 = L"";
 
 	WriteLogFile(L"User clicked PDF area");
-
-	CString pdfPath = SelectFileFromDialog(1);
+	CString pdfPath;
+	if (m_batchMode)
+	{
+		pdfPath = m_origPath1;
+	}
+	else
+	{
+		pdfPath = SelectFileFromDialog(1);
+	}
 	if (pdfPath.IsEmpty()) return;
 	WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());
 
@@ -841,11 +836,18 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 
 void PrintshopComparisonToolDlg::OnBnClickedButtonScan()
 {
-	WriteLogFile(L"Using clicked PNG area");
+	WriteLogFile(L"User clicked PNG area");
 
 	if (NoPages == 2 && curPage == 2)
 	{
-		m_scanPath2 = SelectFileFromDialog(0);
+		if (m_batchMode)
+		{
+
+		}
+		else
+		{
+			m_scanPath2 = SelectFileFromDialog(0);
+		}
 		if (!m_scanPath2.IsEmpty())
 		{
 			if (m_scanPath2.Right(3).MakeUpper() == L"PDF")
@@ -861,7 +863,14 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonScan()
 	}
 	else
 	{
-		m_scanPath1 = SelectFileFromDialog(0);
+		if (m_batchMode)
+		{
+
+		}
+		else
+		{
+			m_scanPath1 = SelectFileFromDialog(0);
+		}
 		if (!m_scanPath1.IsEmpty())
 		{
 			if (m_scanPath1.Right(3).MakeUpper() == L"PDF")
@@ -961,5 +970,45 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonSideB()
 	{
 		curPage = 2;
 		UpdatePagesStates();
+	}
+}
+// Batch mode
+void PrintshopComparisonToolDlg::StartBatchProcessing(const CString& batchFilePath)
+{
+	m_batchMode = true;
+	m_stopBatchThread = false;
+	m_batchThread = std::thread(&PrintshopComparisonToolDlg::BatchProcess, this, batchFilePath);
+}
+
+void PrintshopComparisonToolDlg::StopBatchProcessing()
+{
+	m_stopBatchThread = true;
+	if (m_batchThread.joinable())
+	{
+		m_batchThread.join();
+	}
+	m_batchMode = false;
+}
+
+void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
+{
+	std::wifstream batchFile(batchFilePath);
+	std::wstring origPath, scanPath;
+
+	while (batchFile >> origPath >> scanPath)
+	{
+		if (m_stopBatchThread)
+		{
+			break;
+		}
+
+		// Set the orig file
+		OnBnClickedButtonOrig();
+
+		// Process the images
+		OnBnClickedButtonProc();
+
+		// Sleep for a short while to simulate user interaction
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 }

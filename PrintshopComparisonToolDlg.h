@@ -65,6 +65,16 @@ public:
 	// Add member variable to store the last rect
 	CRect m_LastRect;
 
+	// Batch mode
+	bool m_batchMode;
+	std::thread m_batchThread;
+	std::atomic<bool> m_stopBatchThread;
+
+	// Batch processing functions
+	void StartBatchProcessing(const CString& batchFilePath);
+	void StopBatchProcessing();
+	void BatchProcess(const CString& batchFilePath);
+
 // Implementation
 protected:
 	HICON m_hIcon;
@@ -80,7 +90,6 @@ private:
 		m_diffPath1, m_diffPath2;
 public:
 	CSliderCtrl threshold_slider;
-	CSliderCtrl filter_size_slider;
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	CStatic m_Status;
 	SG_ButtonFly m_BtnOrig;
