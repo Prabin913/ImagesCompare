@@ -483,6 +483,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 
 	}
+	if(m_batchMode) return;
 	thr_slider_echo.Format(_T("%d"), m_CurrentThreshold);
 	GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
 
@@ -990,8 +991,22 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonProc()
 	m_pictureResults2.SetBorderColor(RGB(255, 255, 255));
 	m_pictureResults2.SetBorderThickness(10);
 
+	if (m_batchMode)
+	{
+		CString sCurPage = GetCurrentPagePath();
+		UpdatePagesStates();
+		double diff;
+		CString temp;
+		temp.Format(L"Threshold set to %d", m_CurrentThreshold);
+		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
+		std::string orig_path = ConvertWideCharToMultiByte(sCurPage.GetString());
+		std::string scan_path = ConvertWideCharToMultiByte((curPage == 2) ? m_scanPath2.GetString() : m_scanPath1.GetString());
+		pc.process(orig_path, scan_path, &diff);
+		ShowResults(m_CurrentThreshold, m_CurrentColor);
 
-	need_to_update = true;
+	}
+	else
+		need_to_update = true;
 }
 
 
@@ -1049,7 +1064,12 @@ void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 			// Set the paths
 			m_origPath1 = origPath.c_str();
 			m_scanPath1 = scanPath.c_str();
-
+			if (!PathFileExists(m_origPath1) ||
+				!PathFileExistsW(m_scanPath1))
+			{
+				WriteLogFile(L"Missing files in batch file");
+				m_stopBatchThread = true;
+			}
 			if (m_stopBatchThread)
 			{
 				break;
