@@ -802,7 +802,7 @@
 #define IDC_PIC_DIFF1                   104
 #define VK_NUMPAD8                      0x68
 #define LANG_HAUSA                      0x68
-#define IDC_SLIDER1                     105
+#define IDC_SLIDER_THRESHOLD                     105
 #define VK_NUMPAD9                      0x69
 #define IDC_SLIDER2                     106
 #define VK_MULTIPLY                     0x6A

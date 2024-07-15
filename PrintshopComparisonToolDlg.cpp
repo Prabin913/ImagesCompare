@@ -45,7 +45,7 @@ PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_SLIDER1, threshold_slider);
+	DDX_Control(pDX, IDC_SLIDER_THRESHOLD, threshold_slider);
 	DDX_Control(pDX, IDC_STATUS, m_Status);
 	DDX_Control(pDX, IDC_BUTTON_ORIG, m_BtnOrig);
 	DDX_Control(pDX, IDC_BUTTON_SCAN, m_BtnScan);
@@ -141,7 +141,7 @@ HBRUSH PrintshopComparisonToolDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlCol
 			pDC->SetBkColor(BG_COLOR);
 			return m_tx; // Return a brush with the same color
 			break;
-		case IDC_SLIDER1:
+		case IDC_SLIDER_THRESHOLD:
 
 		case IDC_STATIC_THR:
 		case IDC_STATIC_FILT_SIZE:
