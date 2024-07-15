@@ -83,8 +83,7 @@ void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2
 	switch (nHotKeyId)
 	{
 		case 1:
-			StartBatchProcessing(L"batch.txt");
-//			imshow("error", pc.error());
+			imshow("error", pc.error());
 			break;
 		case 2:
 			OnBnClickedButtonSetTH();
@@ -213,7 +212,6 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	m_BtnScan.EnableWindow(FALSE);
 
 
-	UpdateData(FALSE);
 	m_CurrentThreshold = 70;
 	need_to_update = true;
 
@@ -471,7 +469,18 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 		UpdateTitle(L"");
 
-		NotifyVersionInfo(L"Ready to start", L"Please select an original PDF file");
+		if (m_batchFile != L"")
+		{
+			NotifyVersionInfo(L"Batch mode", L"Executing " + m_batchFile);
+
+			StartBatchProcessing(m_batchFile);
+
+		}
+		else
+		{
+			NotifyVersionInfo(L"Ready to start", L"Please select an original PDF file");
+
+		}
 
 	}
 	thr_slider_echo.Format(_T("%d"), m_CurrentThreshold);
@@ -502,6 +511,12 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 void PrintshopComparisonToolDlg::OnClose()
 {
+	// Perform cleanup tasks before closing the dialog
+	StopBatchProcessing(); // Ensure batch processing is stopped or completed
+	// Unregister hotkeys
+	UnregisterHotKey(m_hWnd, 1);
+	UnregisterHotKey(m_hWnd, 2);
+	UnregisterHotKey(m_hWnd, 3);
 	CDialog::OnClose();
 }
 

@@ -67,6 +67,7 @@ public:
 
 	// Batch mode
 	bool m_batchMode;
+	CString m_batchFile;
 	std::thread m_batchThread;
 	std::atomic<bool> m_stopBatchThread;
 
