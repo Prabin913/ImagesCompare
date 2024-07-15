@@ -83,7 +83,8 @@ void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2
 	switch (nHotKeyId)
 	{
 		case 1:
-			imshow("error", pc.error());
+			StartBatchProcessing(L"batch.txt");
+//			imshow("error", pc.error());
 			break;
 		case 2:
 			OnBnClickedButtonSetTH();
@@ -783,10 +784,6 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 {
 	int pages;
-	DeleteFile(m_origPath1);
-	m_origPath1 = L"";
-	DeleteFile(m_origPath2);
-	m_origPath2 = L"";
 
 	WriteLogFile(L"User clicked PDF area");
 	CString pdfPath;
@@ -796,6 +793,10 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 	}
 	else
 	{
+		DeleteFile(m_origPath1);
+		m_origPath1 = L"";
+		DeleteFile(m_origPath2);
+		m_origPath2 = L"";
 		pdfPath = SelectFileFromDialog(1);
 	}
 	if (pdfPath.IsEmpty()) return;
@@ -922,16 +923,22 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonProc()
 	{
 		if (curPage == 1)
 		{
+			if(m_origPath1 == L"" || m_scanPath1 == L"") return;
 			WriteLogFile(L"Starting to compare %s and %s", m_origPath1.GetString(), m_scanPath1.GetString());
 
 		}
 		else
 		{
+			if (m_origPath2 == L"" || m_scanPath2 == L"") return;
+
 			WriteLogFile(L"Starting to compare %s and %s", m_origPath2.GetString(), m_scanPath2.GetString());
 		}
 	}
 	else
+	{ 
+		if (m_origPath1 == L"" || m_scanPath1 == L"") return;
 		WriteLogFile(L"Starting to compare %s and %s", m_origPath1.GetString(), m_scanPath1.GetString());
+	}
 
 	images_loaded = true;
 	m_pictureOrig1.SetBorderColor(RGB(255, 255, 255));
@@ -993,10 +1000,14 @@ void PrintshopComparisonToolDlg::StopBatchProcessing()
 void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 {
 	std::wifstream batchFile(batchFilePath);
+
+
 	std::wstring origPath, scanPath;
 
 	while (batchFile >> origPath >> scanPath)
 	{
+		m_origPath1 = origPath.c_str();
+		m_scanPath1 = scanPath.c_str();
 		if (m_stopBatchThread)
 		{
 			break;
@@ -1004,6 +1015,9 @@ void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 
 		// Set the orig file
 		OnBnClickedButtonOrig();
+
+		// Set the scan file
+		OnBnClickedButtonScan();
 
 		// Process the images
 		OnBnClickedButtonProc();
