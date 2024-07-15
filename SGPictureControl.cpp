@@ -6,15 +6,17 @@ BEGIN_MESSAGE_MAP(SGPictureControl, CStatic)
     ON_WM_PAINT()
     ON_WM_ERASEBKGND()
     ON_WM_SIZE()
-    ON_WM_CONTEXTMENU() // Handle WM_CONTEXTMENU message
+    ON_WM_CONTEXTMENU()
     ON_COMMAND(ID_CONTEXTMENU_OPENIMAGE, &SGPictureControl::OnOpenImage)
+    ON_COMMAND(ID_CONTEXTMENU_SHOWSCAN, &SGPictureControl::OnShowScan) // Map "Show Scan" command
+    // Add more as needed
 END_MESSAGE_MAP()
 
 SGPictureControl::SGPictureControl()
     : m_borderColor(RGB(0, 0, 0))
-    , m_borderThickness(10) // Default border thickness
+    , m_borderThickness(10)
 {
-    m_Menu.CreatePopupMenu(); // Initialize context menu
+    m_Menu.CreatePopupMenu();
     m_Menu.AppendMenu(MF_STRING, ID_CONTEXTMENU_OPENIMAGE, _T("Open image"));
 }
 
@@ -35,6 +37,14 @@ void SGPictureControl::OnOpenImage()
     {
         ShellExecute(NULL, _T("OPEN"), m_imageFilePath, NULL, NULL, SW_SHOWNORMAL);
     }
+}
+
+void SGPictureControl::OnShowScan()
+{
+    LoadImage(L"1_align_scanned.png");
+    m_Menu.EnableMenuItem(ID_CONTEXTMENU_SHOWSCAN, MF_BYCOMMAND | MF_GRAYED);
+    Invalidate();
+    UpdateWindow();
 }
 
 void SGPictureControl::LoadImage(const CString& strImageFilePath)
@@ -64,26 +74,36 @@ void SGPictureControl::SetBorderThickness(int thickness)
     Invalidate();
 }
 
+void SGPictureControl::SetContextMenuItems(const std::vector<std::pair<UINT, CString>>& items)
+{
+    m_contextMenuItems = items;
+
+    if (m_Menu.GetSafeHmenu())
+        m_Menu.DestroyMenu();
+
+    m_Menu.CreatePopupMenu();
+    for (const auto& item : m_contextMenuItems)
+    {
+        m_Menu.AppendMenu(MF_STRING, item.first, item.second);
+    }
+}
+
 void SGPictureControl::OnPaint()
 {
     CPaintDC dc(this);
 
-    // Draw the image and border
     DrawImage(&dc);
     DrawBorder(&dc);
 }
 
 BOOL SGPictureControl::OnEraseBkgnd(CDC* pDC)
 {
-    // Avoid erasing background to reduce flickering
     return TRUE;
 }
 
 void SGPictureControl::OnSize(UINT nType, int cx, int cy)
 {
     CStatic::OnSize(nType, cx, cy);
-
-    // Redraw the control upon resizing
     Invalidate();
 }
 
@@ -96,15 +116,8 @@ void SGPictureControl::DrawImage(CDC* pDC)
 
     CRect rc;
     GetClientRect(&rc);
-
-    // Adjust the client area for the border thickness
     rc.DeflateRect(m_borderThickness, m_borderThickness);
-
-    // Draw the image inside the adjusted client area
-    m_image.StretchBlt(pDC->GetSafeHdc(),
-        rc.left, rc.top,           // Starting position adjusted for border
-        rc.Width(), rc.Height(),   // Size adjusted for border
-        SRCCOPY);
+    m_image.StretchBlt(pDC->GetSafeHdc(), rc.left, rc.top, rc.Width(), rc.Height(), SRCCOPY);
 }
 
 void SGPictureControl::DrawBorder(CDC* pDC)
@@ -117,15 +130,12 @@ void SGPictureControl::DrawBorder(CDC* pDC)
     CRect rc;
     GetClientRect(&rc);
 
-    // Draw the border using specified thickness and color
     CPen pen(PS_SOLID, m_borderThickness, m_borderColor);
     CPen* pOldPen = pDC->SelectObject(&pen);
-    pDC->SelectStockObject(NULL_BRUSH); // No brush to fill the rectangle
+    pDC->SelectStockObject(NULL_BRUSH);
     pDC->Rectangle(&rc);
     pDC->SelectObject(pOldPen);
 }
-
-// SGPictureControl.cpp
 
 void SGPictureControl::ShowContextMenu(CPoint point)
 {

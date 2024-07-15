@@ -1518,6 +1518,7 @@
 #define TVS_NOSCROLL                    0x2000
 #define TCS_OWNERDRAWFIXED              0x2000
 #define ID_CONTEXTMENU_OPENIMAGE        10250
+#define ID_CONTEXTMENU_SHOWSCAN			10251
 #define IDC_PIC_ORIG2                   12102
 #define CS_GLOBALCLASS                  0x4000
 #define TBSTYLE_REGISTERDROP            0x4000

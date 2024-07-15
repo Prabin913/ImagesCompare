@@ -327,8 +327,17 @@ void PrintshopComparisonToolDlg::SetTitle()
 #define DRAWIMAGE(ID,path,member) 	DrawImage(GetDlgItem(ID), path);if (PathFileExists(path)) member.LoadImage(path)
 #define SHOWORIG1 DRAWIMAGE(IDC_PIC_ORIG1, m_origPath1,m_pictureOrig1)
 #define SHOWORIG2 DRAWIMAGE(IDC_PIC_ORIG2, m_origPath2, m_pictureOrig2)
-#define SHOWSCAN1 DRAWIMAGE(IDC_PIC_SCAN1, m_scanPath1, m_pictureScan1)
-#define SHOWSCAN2 DRAWIMAGE(IDC_PIC_SCAN2, m_scanPath2, m_pictureScan2)
+#define SHOWSCAN1 DRAWIMAGE(IDC_PIC_SCAN1, m_scanPath1, m_pictureScan1);\
+	m_pictureScan1.SetContextMenuItems({\
+		{ ID_CONTEXTMENU_OPENIMAGE, _T("Open image") },\
+		{ ID_CONTEXTMENU_SHOWSCAN, _T("Show aligned") }\
+	})
+
+#define SHOWSCAN2 DRAWIMAGE(IDC_PIC_SCAN2, m_scanPath2, m_pictureScan2);\
+	m_pictureScan2.SetContextMenuItems({\
+		{ ID_CONTEXTMENU_OPENIMAGE, _T("Open image") },\
+		{ ID_CONTEXTMENU_SHOWSCAN, _T("Show aligned") }\
+	})
 #define SHOWRESULT1 DRAWIMAGE(IDC_PIC_DIFF1, m_diffPath1, m_pictureResults1)
 #define SHOWRESULT2 DRAWIMAGE(IDC_PIC_DIFF2, m_diffPath2, m_pictureResults2)
 
