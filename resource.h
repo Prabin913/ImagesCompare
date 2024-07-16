@@ -1,9 +1,12 @@
-// resource.h
+//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by YourProjectName.rc
+// Used by PrintshopComparisonTool.rc
+//
+// custom_resource.h
+// Manually managed custom resource header file.
 
-#ifndef RESOURCE_H
-#define RESOURCE_H
+#ifndef CUSTOM_RESOURCE_H
+#define CUSTOM_RESOURCE_H
 
 #ifndef IDC_STATIC
 #define IDC_STATIC              -1
@@ -11,6 +14,7 @@
 
 #define IDD_PRINTSHOPCOMPARISONTOOL_DIALOG  100
 #define IDD_INPUT_NUMBER_DIALOG             101
+#define IDD_BATCHVIEWER                     102
 
 #define IDR_MAINFRAME                       128
 
@@ -36,11 +40,22 @@
 #define IDC_STATIC_TEXT2                    1018
 #define IDC_COMBO_COLORS                    1019
 
-#define IDC_STATIC_FILT_SIZE                1020  // Add this definition
-#define IDC_STATIC_FL                       1021  // Add this definition
+#define IDC_STATIC_FILT_SIZE                1020
+#define IDC_STATIC_FL                       1021
 
-#define ID_CONTEXTMENU_OPENIMAGE            32771 // Add this definition
-#define ID_CONTEXTMENU_SHOWSCAN             32772 // Add this definition
+#define ID_CONTEXTMENU_OPENIMAGE            32771
+#define ID_CONTEXTMENU_SHOWSCAN             32772
+
+#define IDC_LST_BATCHS                      1030
+#define IDC_BATCHRUN                        1031
+#define IDC_BATCHSTOP                       1032
+#define IDC_STA_LANG                        1033
+#define IDC_CMB_LANG                        1034
+#define IDC_BTN_APPLY                       1035
+#define IDC_STA_ORIGFILE                    1038
+#define IDC_STA_SCANFILE                    1039
+#define IDC_ORIGFILE		                1040
+#define IDC_SCANFILE			            1041
 
 #define IDB_BN_ORIG                         2000
 #define IDB_BN_ORIG_H                       2001
@@ -59,4 +74,15 @@
 #define IDB_BN_SETTING_P                    2014
 #define IDB_BN_SETTING_D                    2015
 
-#endif // RESOURCE_H
+#endif // CUSTOM_RESOURCE_H
+
+// Next default values for new objects
+// 
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1000
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
