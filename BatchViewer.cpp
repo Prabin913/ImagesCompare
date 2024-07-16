@@ -240,10 +240,9 @@ LRESULT BatchViewer::OnBatchProcess(WPARAM wParam, LPARAM lParam)
 void BatchViewer::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	/*DDX_Control(pDX, IDC_LST_BATCHS, m_Batchs);
+	DDX_Control(pDX, IDC_LST_BATCHS, m_Batchs);
 	DDX_Control(pDX, IDC_BATCHRUN, m_BtnRun);
 	DDX_Control(pDX, IDC_BATCHSTOP, m_BtnStop);
-	DDX_Control(pDX, IDC_CMB_LANG, m_cmbLang);*/
 }
 
 void BatchViewer::PostNcDestroy()
