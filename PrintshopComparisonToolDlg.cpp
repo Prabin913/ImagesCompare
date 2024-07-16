@@ -248,11 +248,6 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	// Batch Viewer
 	m_pBatchV = new BatchViewer(this);
 	m_pBatchV->Create(IDD_BATCHVIEWER);
-	if (m_batchMode)
-		m_pBatchV->ShowWindow(SW_SHOW);
-	else
-		m_pBatchV->ShowWindow(SW_HIDE);
-
 	// Set Batch Manager
 	//SetTimer(7500, 2000, NULL);
 
@@ -971,14 +966,21 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonSetTH()
 
 void PrintshopComparisonToolDlg::OnBnClickedToggleBatch()
 {
+
+
 	if (m_batchMode)
 	{
 		m_batchMode = false;
+		m_pBatchV->ShowWindow(SW_HIDE);
+
 		StopBatchProcessing();
 	}
 	else
 	{
 		m_batchMode = true;
+		m_pBatchV->PostMessage(WM_USER_BATCH_REFRESH, 0, 0);
+		m_pBatchV->ShowWindow(SW_SHOW);
+
 		NotifyVersionInfo(L"Batch mode", L"Executing " + m_batchFile);
 
 		StartBatchProcessing(m_batchFile);

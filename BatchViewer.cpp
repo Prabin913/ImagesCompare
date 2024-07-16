@@ -13,7 +13,7 @@
 
 // refresh timer
 #define TMR_REFRESH				(0x300)
-
+#define TRANSPARENTCOLOR RGB(100, 100, 100)
 
 IMPLEMENT_DYNAMIC(BatchViewer, CDialogEx)
 
@@ -40,12 +40,12 @@ BOOL BatchViewer::OnEraseBkgnd(CDC *pDC)
 {
 	return CDialogEx::OnEraseBkgnd(pDC);
 
-	//CRect clientRect;
+	CRect clientRect;
 
-	//GetClientRect(&clientRect);
-	//pDC->FillSolidRect(clientRect, TRANSPARENTCOLOR);  // paint background in magenta
+	GetClientRect(&clientRect);
+	pDC->FillSolidRect(clientRect, TRANSPARENTCOLOR);  // paint background in magenta
 
-	//return FALSE;
+	return FALSE;
 }
 BatchViewer::BatchViewer(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_BATCHVIEWER, pParent)
@@ -79,8 +79,8 @@ BOOL BatchViewer::OnInitDialog()
 	// Background color to be used
 //	m_bkBrush.CreateSolidBrush(DEF_COLOR);
 
-//	CMatchPMR_AVBMainDlg* pMainDlg = (CMatchPMR_AVBMainDlg*)AfxGetApp()->GetMainWnd();
-//	pMainDlg->m_pGeneralDlg = this;
+	PrintshopComparisonToolDlg* pMainDlg = (PrintshopComparisonToolDlg*)AfxGetApp()->GetMainWnd();
+	pMainDlg->m_myBatchViewer = this;
 
 /*
 	m_Batchs.SendMessage(LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
@@ -95,14 +95,14 @@ BOOL BatchViewer::OnInitDialog()
 	ReadBatchToUI();
 	*/
 	SetWindowLong(m_hWnd, GWL_EXSTYLE, GetWindowLong(m_hWnd, GWL_EXSTYLE) ^ WS_EX_LAYERED);
-//	SetLayeredWindowAttributes(TRANSPARENTCOLOR, 0, LWA_COLORKEY);
+	SetLayeredWindowAttributes(TRANSPARENTCOLOR, 0, LWA_COLORKEY);
 
 	// initialize batch manager
 //	m_clsBatchManager.InitBatch();
-	//m_clsBatchManager.SetMainWnd(m_pParent);
+//	m_clsBatchManager.SetMainWnd(m_pParent);
 
 	// start refresh timer
-	//SetTimer(TMR_REFRESH, 3000, NULL); // 3s
+	SetTimer(TMR_REFRESH, 3000, NULL); // 3s
 
 	return TRUE;
 }

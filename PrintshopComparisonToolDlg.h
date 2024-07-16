@@ -65,7 +65,7 @@ private:
 public:
 	// Add member variable to store the last rect
 	CRect m_LastRect;
-
+	BatchViewer *m_myBatchViewer;
 	// Batch mode
 	bool m_batchMode;
 	CString m_batchFile;
