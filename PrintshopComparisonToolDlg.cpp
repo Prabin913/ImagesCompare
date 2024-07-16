@@ -14,6 +14,7 @@
 #include "utils.h"
 #include "SGInputDlg.h"
 #include "constants.h"
+#include "BatchViewer.h"
 
 #include <iostream>
 #include <sstream>
@@ -50,6 +51,7 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_ORIG, m_BtnOrig);
 	DDX_Control(pDX, IDC_BUTTON_SCAN, m_BtnScan);
 	DDX_Control(pDX, IDC_BUTTON_PROC, m_BtnProc);
+	DDX_Control(pDX, IDC_BUTTON_BATCHVIEWON, m_BtnBatch);
 	DDX_Control(pDX, IDC_BUTTON_SETTINGS, m_BtnSetTH);
 	DDX_Control(pDX, IDC_BUTTON_SIDE_A, m_BtnSideA);
 	DDX_Control(pDX, IDC_BUTTON_SIDE_B, m_BtnSideB);
@@ -73,6 +75,7 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SCAN, &PrintshopComparisonToolDlg::OnBnClickedButtonScan)
 	ON_BN_CLICKED(IDC_BUTTON_SETTINGS,&PrintshopComparisonToolDlg::OnBnClickedButtonSetTH)
 	ON_BN_CLICKED(IDC_BUTTON_PROC, &PrintshopComparisonToolDlg::OnBnClickedButtonProc)
+	ON_BN_CLICKED(IDC_BUTTON_BATCHVIEWON, &PrintshopComparisonToolDlg::OnBnClickedToggleBatch)
 	ON_BN_CLICKED(IDC_BUTTON_SIDE_A, &PrintshopComparisonToolDlg::OnBnClickedButtonSideA)
 	ON_BN_CLICKED(IDC_BUTTON_SIDE_B, &PrintshopComparisonToolDlg::OnBnClickedButtonSideB)
 END_MESSAGE_MAP()
@@ -175,6 +178,10 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	m_BtnProc.SetParent(this);
 	m_BtnProc.SetCaptionText(L"Process");
 
+	m_BtnBatch.SetImages(IDB_BN_BATCH, IDB_BN_BATCH_H, IDB_BN_BATCH_P, IDB_BN_BATCH_D);
+	m_BtnBatch.SetParent(this);
+	m_BtnBatch.SetCaptionText(L"Batch");
+
 	m_BtnSetTH.SetImages(IDB_BN_SETTING, IDB_BN_SETTING_H, IDB_BN_SETTING_P, IDB_BN_SETTING_D);
 	m_BtnSetTH.SetParent(this);
 	m_BtnSetTH.SetCaptionText(L"Settings");
@@ -238,6 +245,17 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	SetTitle();
+	// Batch Viewer
+	m_pBatchV = new BatchViewer(this);
+	m_pBatchV->Create(IDD_BATCHVIEWER);
+	if (m_batchMode)
+		m_pBatchV->ShowWindow(SW_SHOW);
+	else
+		m_pBatchV->ShowWindow(SW_HIDE);
+
+	// Set Batch Manager
+	//SetTimer(7500, 2000, NULL);
+
 	SetTimer(1000, 500, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -951,7 +969,22 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonSetTH()
 
 }
 
+void PrintshopComparisonToolDlg::OnBnClickedToggleBatch()
+{
+	if (m_batchMode)
+	{
+		m_batchMode = false;
+		StopBatchProcessing();
+	}
+	else
+	{
+		m_batchMode = true;
+		NotifyVersionInfo(L"Batch mode", L"Executing " + m_batchFile);
 
+		StartBatchProcessing(m_batchFile);
+
+	}
+}
 void PrintshopComparisonToolDlg::OnBnClickedButtonProc()
 {
 	if (NoPages == 2)

@@ -6,6 +6,7 @@
 
 #include "SGPictureControl.h"
 
+#include "BatchViewer.h"
 using PasswordCheckCallback = std::function<bool(const std::wstring&)>;
 
 
@@ -96,14 +97,18 @@ public:
 	SG_ButtonFly m_BtnOrig;
 	SG_ButtonFly m_BtnScan;
 	SG_ButtonFly m_BtnProc;
+	SG_ButtonFly m_BtnBatch;
 	afx_msg void OnBnClickedButtonOrig();
 	afx_msg void OnBnClickedButtonScan();
 	SG_ButtonFly m_BtnSetTH;
 	afx_msg void OnBnClickedButtonOpenresult();
 	afx_msg void OnBnClickedButtonSetTH();
 	afx_msg void OnBnClickedButtonProc();
+	afx_msg void OnBnClickedToggleBatch();
 	CButton m_BtnSideA;
 	CButton m_BtnSideB;
 	afx_msg void OnBnClickedButtonSideA();
 	afx_msg void OnBnClickedButtonSideB();
+	BatchViewer* m_pBatchV = NULL;
+
 };

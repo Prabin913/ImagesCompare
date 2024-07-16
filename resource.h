@@ -73,6 +73,19 @@
 #define IDB_BN_SETTING_H                    2013
 #define IDB_BN_SETTING_P                    2014
 #define IDB_BN_SETTING_D                    2015
+#define IDC_BUTTON_BATCHVIEWON				2016
+#define IDB_BN_BATCH						2017
+#define IDB_BN_BATCH_H						2018
+#define IDB_BN_BATCH_P						2019
+#define IDB_BN_BATCH_D 						2020
+#define IDB_BN_START  						2021
+#define IDB_BN_START_H    					2022
+#define IDB_BN_START_P						2023
+#define IDB_BN_START_D						2024
+#define IDB_BN_STOP							2025
+#define IDB_BN_STOP_H						2026 
+#define IDB_BN_STOP_P						2027
+#define IDB_BN_STOP_D						2028
 
 #endif // CUSTOM_RESOURCE_H
 

@@ -34,6 +34,7 @@
     <ClCompile Include="printcheck\PrintChecker.cpp" />
     <ClCompile Include="SGInputDlg.cpp" />
     <ClCompile Include="SGPictureControl.cpp" />
+    <ClCompile Include="BatchViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrintshopComparisonTool.h" />
@@ -1070,6 +1071,7 @@
     <ClInclude Include="SGPictureControl.h" />
     <ClInclude Include="res\version.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="BatchViewer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />
