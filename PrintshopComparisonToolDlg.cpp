@@ -481,9 +481,10 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		do_once = false;
 
 		UpdateTitle(L"");
-		ShowHideBatchViewer();
 		if (m_batchFile != L"")
 		{
+			m_batchMode = true;
+			ShowHideBatchViewer();
 			NotifyVersionInfo(L"Batch mode", L"Executing " + m_batchFile);
 
 			StartBatchProcessing(m_batchFile);
