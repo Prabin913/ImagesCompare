@@ -481,7 +481,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		do_once = false;
 
 		UpdateTitle(L"");
-
+		ShowHideBatchViewer();
 		if (m_batchFile != L"")
 		{
 			NotifyVersionInfo(L"Batch mode", L"Executing " + m_batchFile);
@@ -964,20 +964,16 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonSetTH()
 
 }
 
-void PrintshopComparisonToolDlg::OnBnClickedToggleBatch()
+void PrintshopComparisonToolDlg::ShowHideBatchViewer()
 {
-
-
-	if (m_batchMode)
+	if (!m_batchMode)
 	{
-		m_batchMode = false;
 		m_pBatchV->ShowWindow(SW_HIDE);
 
 		StopBatchProcessing();
 	}
 	else
 	{
-		m_batchMode = true;
 		m_pBatchV->PostMessage(WM_USER_BATCH_REFRESH, 0, 0);
 		m_pBatchV->ShowWindow(SW_SHOW);
 
@@ -986,6 +982,21 @@ void PrintshopComparisonToolDlg::OnBnClickedToggleBatch()
 		StartBatchProcessing(m_batchFile);
 
 	}
+
+}
+void PrintshopComparisonToolDlg::OnBnClickedToggleBatch()
+{
+
+
+	if (m_batchMode)
+	{
+		m_batchMode = false;
+	}
+	else
+	{
+		m_batchMode = true;
+	}
+	ShowHideBatchViewer();
 }
 void PrintshopComparisonToolDlg::OnBnClickedButtonProc()
 {

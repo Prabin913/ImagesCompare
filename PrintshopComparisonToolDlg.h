@@ -105,6 +105,8 @@ public:
 	afx_msg void OnBnClickedButtonSetTH();
 	afx_msg void OnBnClickedButtonProc();
 	afx_msg void OnBnClickedToggleBatch();
+	void ShowHideBatchViewer();
+
 	CButton m_BtnSideA;
 	CButton m_BtnSideB;
 	afx_msg void OnBnClickedButtonSideA();
