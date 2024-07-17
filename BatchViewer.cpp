@@ -69,12 +69,13 @@ BOOL BatchViewer::OnInitDialog()
 //		DEFAULT_PITCH&FF_SWISS, _T(DEF_FONT));
 
 
-	// Init Buttons
-//	m_BtnRun.LoadStdImage(IDB_BATCHRUN, _T("PNG"));
-//	m_BtnRun.SetToolTipText(L"Run Batch");
+	m_BtnRun.SetImages(IDB_BN_START, IDB_BN_START_H, IDB_BN_START_P, IDB_BN_START_D);
+	m_BtnRun.SetParent(this);
+	m_BtnRun.SetCaptionText(L"Run");
 
-//	m_BtnStop.LoadStdImage(IDB_BATCHSTOP, _T("PNG"));
-//	m_BtnStop.SetToolTipText(L"Stop Batch");
+	m_BtnStop.SetImages(IDB_BN_STOP, IDB_BN_STOP_H, IDB_BN_STOP_P, IDB_BN_STOP_D);
+	m_BtnStop.SetParent(this);
+	m_BtnStop.SetCaptionText(L"Stop");
 
 	// Background color to be used
 //	m_bkBrush.CreateSolidBrush(DEF_COLOR);
