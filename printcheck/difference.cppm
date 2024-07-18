@@ -6,7 +6,6 @@ module;
 #include <opencv2/dnn.hpp>
 #include "..\utils.h"
 
-// #include <g3log/g3log.hpp>
 
 #include <iostream>
 
