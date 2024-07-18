@@ -312,7 +312,8 @@ namespace cv
         typedef Vec<channel_type, channels> vec_type;
     };
 
-    namespace traits {
+    namespace traits 
+    {
     template<typename _Tp>
     struct Depth< Affine3<_Tp> > { enum { value = Depth<_Tp>::value }; };
     template<typename _Tp>

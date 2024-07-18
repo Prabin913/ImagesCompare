@@ -35,16 +35,19 @@ namespace printcheck
         _ref = printcheck::read(ref);
         _scanned = printcheck::read(scan);
 
-        if (_ref.empty() || _scanned.empty()) {
+        if (_ref.empty() || _scanned.empty()) 
+        {
             return {};
         }
 
         // resize
 		char matIdx = 0;
-		if (_ref.cols * _ref.rows < _scanned.cols * _scanned.rows) {
+		if (_ref.cols * _ref.rows < _scanned.cols * _scanned.rows) 
+        {
 			cv::resize(_scanned, _scanned, _ref.size());
 		}
-		else {
+		else 
+        {
 			cv::resize(_ref, _ref, _scanned.size());
 		}
 
@@ -70,8 +73,10 @@ namespace printcheck
         auto ssim = computeSSIM(ref_img, scan_img);
         _mask = cv::Mat::zeros(ssim.diff.size(), CV_8UC1);
         int _type = ssim.diff.type();
-        for (int y = 0; y < ssim.diff.rows; y++) {
-			for (int x = 0; x < ssim.diff.cols; x++) {
+        for (int y = 0; y < ssim.diff.rows; y++) 
+        {
+			for (int x = 0; x < ssim.diff.cols; x++) 
+            {
                 _mask.at<uchar>(y, x) = 255 - (uchar)(ssim.diff.at<float>(y, x) * 255);
 			}
         }
