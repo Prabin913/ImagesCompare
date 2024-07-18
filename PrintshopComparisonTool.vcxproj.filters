@@ -1085,6 +1085,9 @@
     <Image Include="res\scan.png" />
     <Image Include="res\proc.png" />
     <Image Include="res\settings.png" />
+    <Image Include="res\batch.png" />
+    <Image Include="res\play.png" />
+    <Image Include="res\stop.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\PrintshopComparisonTool.rc2" />
