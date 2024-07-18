@@ -119,7 +119,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opencv_world4100.lib;libmupdf.lib;libthirdparty.lib;g3log.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4100.lib;opencv_xfeatures2d4100.lib;libmupdf.lib;libthirdparty.lib;g3log.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
@@ -189,7 +189,7 @@
       <SubSystem>Windows</SubSystem>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_world4100d.lib;libmupdfd.lib;libthirdpartyd.lib;g3log.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world4100d.lib;opencv_xfeatures2d4100d.lib;libmupdfd.lib;libthirdpartyd.lib;g3log.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>

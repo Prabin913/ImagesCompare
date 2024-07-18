@@ -2,6 +2,7 @@ module;
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/features2d.hpp>
 #include <opencv2/dnn.hpp>
 #include "..\utils.h"
 
@@ -11,7 +12,7 @@ module;
 
 export module printcheck.difference;
 
-using cv::Mat, cv::absdiff, cv::cvtColor;
+using cv::Mat, cv::absdiff, cv::cvtColor, cv::Rect;
 
 export namespace printcheck
 {
@@ -129,8 +130,13 @@ export namespace printcheck
         return boxes;
     }
 
+	struct SSIMData
+	{
+		double  score;
+        cv::Mat diff;
+	};
  
-    double computeSSIM(const cv::Mat& img1, const cv::Mat& img2) 
+    SSIMData computeSSIM(const cv::Mat& img1, const cv::Mat& img2)
     {
         const double C1 = 6.5025, C2 = 58.5225;
 
@@ -168,7 +174,8 @@ export namespace printcheck
 
         cv::Mat ssim_map;
         cv::divide(t3, t1, ssim_map);
-        return cv::mean(ssim_map)[0];
+
+        return { cv::mean(ssim_map)[0], ssim_map};
     }
 
     bool enlargeRect(cv::Rect& rect, int a, int imgWidth, int imgHeight) 
@@ -303,5 +310,51 @@ export namespace printcheck
         return mask.clone();
     }
 
+	double calculateMSE(const cv::Mat& I1, const cv::Mat& I2) {
+        cv::Mat s1;
+		absdiff(I1, I2, s1);       // |I1 - I2|
+		s1.convertTo(s1, CV_32F);  // Convert to float to avoid overflow
+		s1 = s1.mul(s1);           // (|I1 - I2|)^2
 
+		cv::Scalar s = sum(s1);        // Sum all the elements
+
+		double mse = (s[0] + s[1] + s[2]) / (double)(I1.channels() * I1.total());
+		return mse;
+	}
+
+	void removeShadowNormalize(cv::Mat const& src, cv::Mat& result2_norm_img) {
+		std::vector<cv::Mat> channels;
+		cv::split(src, channels);
+
+		cv::Mat zero = cv::Mat::zeros(src.size(), CV_8UC1);
+
+		cv::Mat kernel;
+		kernel = getStructuringElement(cv::MORPH_OPEN, cv::Size(1, 1));
+		cv::Mat diff_img[3];
+		cv::Mat norm_img[3];
+		for (int i = 0; i < 3; i++) {
+			cv::Mat dilated_img;
+			dilate(channels[i], dilated_img, kernel, cv::Point(-1, -1), 1, cv::BORDER_CONSTANT, cv::morphologyDefaultBorderValue());
+			cv::Mat bg_img;
+			cv::medianBlur(channels[i], bg_img, 21);
+			cv::absdiff(channels[i], bg_img, diff_img[i]);
+			cv::bitwise_not(diff_img[i], diff_img[i]);
+			cv::normalize(diff_img[i], norm_img[i], 0, 255, cv::NORM_MINMAX, CV_8UC1, cv::noArray());
+		}
+
+		std::vector<cv::Mat> R2B1 = { norm_img[0], zero, zero };
+		std::vector<cv::Mat> R2G1 = { zero, norm_img[1], zero };
+		std::vector<cv::Mat> R2R1 = { zero, zero, norm_img[2] };
+
+		cv::Mat result2_B;
+		cv::Mat result2_G;
+		cv::Mat result2_R;
+
+		cv::merge(R2B1, result2_B);
+		cv::merge(R2G1, result2_G);
+		cv::merge(R2R1, result2_R);
+
+		cv::bitwise_or(result2_B, result2_G, result2_G);
+		cv::bitwise_or(result2_G, result2_R, result2_norm_img);
+	}
 }

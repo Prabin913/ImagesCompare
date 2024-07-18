@@ -94,6 +94,7 @@ public:
 	void StartBatchProcessing(const CString& batchFilePath);
 	void StopBatchProcessing();
 	void BatchProcess(const CString& batchFilePath);
+	void SetThreshold(int val);
 
 // Implementation
 protected:
