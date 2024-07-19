@@ -29,7 +29,6 @@ public:
 	LRESULT OnBatchFinish(WPARAM wParam, LPARAM lParam);
 	LRESULT OnBatchProcess(WPARAM wParam, LPARAM lParam);
 
-	void ShowStatus(LPCWSTR lpText, ...);
 	void EnableProcessWindow(BOOL p_bEnable);
 
 	enum { IDD = IDD_BATCHVIEWER };

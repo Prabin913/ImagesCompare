@@ -260,21 +260,6 @@ void BatchViewer::OnContextMenu(CWnd* pWnd, CPoint point)
 	}
 }
 
-void BatchViewer::ShowStatus(LPCWSTR lpText, ...)
-{
-	CString sMsg;
-	va_list ptr;
-
-	va_start(ptr, lpText);
-	sMsg.FormatV(lpText, ptr);
-	va_end(ptr);
-
-//	CMatchPMR_AVBMainDlg* pMainDlg = (CMatchPMR_AVBMainDlg*)AfxGetApp()->GetMainWnd();
-//	if (pMainDlg)
-//		pMainDlg->ShowStatus(sMsg.GetBuffer(), NULL);
-	sMsg.ReleaseBuffer();
-}
-
 void BatchViewer::EnableProcessWindow(BOOL p_bEnable)
 {
 
