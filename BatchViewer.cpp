@@ -8,6 +8,8 @@
 #include "afxdialogex.h"
 #include "utils.h"
 
+extern double g_fDPIRate;
+
 
 // BatchViewer dialog
 
@@ -26,7 +28,6 @@ BEGIN_MESSAGE_MAP(BatchViewer, CDialogEx)
 	ON_WM_CONTEXTMENU()
 //	ON_COMMAND(ID_BATCH_REMOVESELECTEDITEM, &BatchViewer::OnBatchRemoveSelectedItem)
 //	ON_COMMAND(ID_BATCHVIEWER_CLEARBATCH, &BatchViewer::OnBatchviewerClearBatch)
-//	ON_COMMAND(ID_BATCHVIEWER_OPTIMIZELIST, &BatchViewer::OnBatchviewerOptimizelist)
 //	ON_COMMAND(ID_BATCHVIEWER_RESETSTATUSES, &BatchViewer::OnBatchViewerResetBatchStatuses)
 	ON_BN_CLICKED(IDC_BTN_APPLY, &BatchViewer::OnBnClickedBtnApply)
 	ON_NOTIFY(NM_CLICK, IDC_LST_BATCHS, &BatchViewer::OnNMClickLstBatchs)
@@ -83,18 +84,14 @@ BOOL BatchViewer::OnInitDialog()
 	PrintshopComparisonToolDlg* pMainDlg = (PrintshopComparisonToolDlg*)AfxGetApp()->GetMainWnd();
 	pMainDlg->m_myBatchViewer = this;
 
-/*
+
 	m_Batchs.SendMessage(LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
-	m_Batchs.InsertColumn(0, L"ID", LVCFMT_LEFT, (int)(40 * g_fDPIRate));
-	m_Batchs.InsertColumn(1, L"Path", LVCFMT_LEFT, (int)(300 * g_fDPIRate));
-	m_Batchs.InsertColumn(2, L"Clip MOB ID", LVCFMT_LEFT, (int)(120 * g_fDPIRate));
-	m_Batchs.InsertColumn(3, L"Track Mixing", LVCFMT_LEFT, (int)(70 * g_fDPIRate));
-	m_Batchs.InsertColumn(4, L"Language", LVCFMT_LEFT, (int)(120 * g_fDPIRate));
-	m_Batchs.InsertColumn(5, L"Entity Type", LVCFMT_LEFT, (int)(70 * g_fDPIRate));
+	m_Batchs.InsertColumn(1, L"Orig", LVCFMT_LEFT, (int)(300 * g_fDPIRate));
+	m_Batchs.InsertColumn(2, L"Scan", LVCFMT_LEFT, (int)(120 * g_fDPIRate));
 	m_Batchs.InsertColumn(6, L"Status", LVCFMT_LEFT, (int)(100 * g_fDPIRate));
 
-	ReadBatchToUI();
-	*/
+	//ReadBatchToUI();
+	
 	SetWindowLong(m_hWnd, GWL_EXSTYLE, GetWindowLong(m_hWnd, GWL_EXSTYLE) ^ WS_EX_LAYERED);
 	SetLayeredWindowAttributes(TRANSPARENTCOLOR, 0, LWA_COLORKEY);
 
@@ -281,25 +278,18 @@ void BatchViewer::ShowStatus(LPCWSTR lpText, ...)
 void BatchViewer::EnableProcessWindow(BOOL p_bEnable)
 {
 
-//	CMatchPMR_AVBMainDlg *pMain = (CMatchPMR_AVBMainDlg*)AfxGetApp()->GetMainWnd();
-//	BatchViewer* pBatchViewerDlg = pMain->m_pBatchV;
+	BatchViewer* pBatchViewerDlg = this;
 
 	// enable/disable batch viewer
-//	GetDlgItem(IDC_LST_BATCHS)->EnableWindow(p_bEnable); // don't disable that
-	GetDlgItem(IDC_CMB_LANG)->EnableWindow(p_bEnable);
+	GetDlgItem(IDC_LST_BATCHS)->EnableWindow(p_bEnable); // don't disable that
 	GetDlgItem(IDC_BTN_APPLY)->EnableWindow(p_bEnable);
 	GetDlgItem(IDC_BATCHRUN)->EnableWindow(p_bEnable);
 	GetDlgItem(IDC_BATCHSTOP)->EnableWindow(!p_bEnable);
 
-	//pBatchViewerDlg->GetDlgItem(IDC_STA_ORIGFILE)->SetWindowText(L"");
+	pBatchViewerDlg->GetDlgItem(IDC_STA_ORIGFILE)->SetWindowText(L"");
 
-	//pBatchViewerDlg->GetDlgItem(IDC_STA_SCANFILE)->SetWindowText(L"");
+	pBatchViewerDlg->GetDlgItem(IDC_STA_SCANFILE)->SetWindowText(L"");
 
-	// enable/disable main window
-//	((CMatchPMR_AVBMainDlg*)m_pParentWnd)->EnableControls(p_bEnable);
-//	((CMatchPMR_AVBMainDlg*)m_pParentWnd)->m_pGeneralDlg->EnableControls(p_bEnable);
-//	((CMatchPMR_AVBMainDlg*)m_pParentWnd)->m_pTransDlg->EnableControls(p_bEnable);
-//	((CMatchPMR_AVBMainDlg*)m_pParentWnd)->m_pMarkerDlg->EnableControls(p_bEnable);
 }
 
 void BatchViewer::RemoveSelectedItem()
@@ -313,16 +303,16 @@ void BatchViewer::RemoveSelectedItem()
 	{
 		return;
 	}
-	/*
-	wstring w_szAvbPath;
-	wstring w_szMobID;
-	SG_Batch w_stItem = { 0 };
-	w_szAvbPath = m_Batchs.GetItemText(w_nCurIdx, 1);
-	w_szMobID = m_Batchs.GetItemText(w_nCurIdx, 2);
-	wcscpy(w_stItem.file_path, w_szAvbPath.c_str());
-	wcscpy(w_stItem.clip_mob_id, w_szMobID.c_str());
-	m_clsBatchManager.RemoveItem(w_stItem);
-	*/
+	
+	std::wstring w_szOrigPath;
+	std::wstring w_szScanPath;
+//	SG_Batch w_stItem = { 0 };
+	w_szOrigPath = m_Batchs.GetItemText(w_nCurIdx, 1);
+	w_szScanPath = m_Batchs.GetItemText(w_nCurIdx, 2);
+	//wcscpy(w_stItem.file_path, w_szOrigPath.c_str());
+	//wcscpy(w_stItem.clip_mob_id, w_szScanPath.c_str());
+	//m_clsBatchManager.RemoveItem(w_stItem);
+	
 	ShowStatus(L"Current task was removed");
 
 	// update batch viewer

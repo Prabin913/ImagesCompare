@@ -961,9 +961,9 @@ void PrintshopComparisonToolDlg::ShowHideBatchViewer()
 		m_pBatchV->PostMessage(WM_USER_BATCH_REFRESH, 0, 0);
 		m_pBatchV->ShowWindow(SW_SHOW);
 
-		NotifyVersionInfo(L"Batch mode", L"Executing " + m_batchFile);
+		//NotifyVersionInfo(L"Batch mode", L"Executing " + m_batchFile);
 
-		StartBatchProcessing(m_batchFile);
+		//StartBatchProcessing(m_batchFile);
 
 	}
 
