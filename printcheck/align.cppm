@@ -35,7 +35,59 @@ export namespace printcheck
         Mat Matched; 
     };
 
-#define DRAW_MATCH
+	AlignData align_orb(const Mat& ref, const Mat& tst)
+	{
+		constexpr auto compute = [](const Mat& img)
+			{
+				static auto orb = ORB::create();
+				Mat workImg = img;
+				if (workImg.channels() != 1)
+					cvtColor(workImg, workImg, COLOR_BGR2GRAY);
+				OrbDescriptor od;
+				orb->detectAndCompute(workImg, {}, od.Keypoints, od.Descriptors);
+				WriteLogFile(L"ORB successfully found %d descriptors", od.Keypoints.size());
+				return od;
+			};
+
+		const auto ref_orb = compute(ref);
+		const auto tst_orb = compute(tst);
+
+		BFMatcher bfm(NORM_HAMMING, true);
+		vector<DMatch> matches;
+		bfm.match(ref_orb.Descriptors, tst_orb.Descriptors, matches);
+		WriteLogFile(L"Found #%d matches", matches.size());
+
+		vector<Point2f> srcs, dsts;
+		srcs.reserve(matches.size());
+		dsts.reserve(matches.size());
+		rg::sort(matches, {}, &DMatch::distance);
+
+		std::vector<DMatch> good_matches;
+		const float ratio_thresh = 0.7f;
+		for (size_t i = 0; i < matches.size() * ratio_thresh + 1; i++)
+		{
+			good_matches.push_back(matches[i]);
+		}
+
+		// Draw top matches
+#ifdef DRAW_MATCH
+		Mat imMatches;
+		drawMatches(ref, ref_orb.Keypoints, tst, tst_orb.Keypoints, good_matches, imMatches);
+#endif
+
+		for (const auto& match : good_matches)
+		{
+			srcs.emplace_back(ref_orb.Keypoints[match.queryIdx].pt);
+			dsts.emplace_back(tst_orb.Keypoints[match.trainIdx].pt);
+		}
+
+		auto hom = findHomography(dsts, srcs, RANSAC);
+		WriteLogFile(L"Homography found: %d", hom);
+				
+		return { hom, hom };
+	}
+
+//#define DRAW_MATCH
     AlignData align_surf(const Mat& img_object, const Mat& img_scene)
 	{
 		if (img_object.channels() != 1)
@@ -113,7 +165,7 @@ export namespace printcheck
 #ifdef DRAW_MATCH
         return { H, img_matches };
 #else
-		return { aligned, aligned };
+		return { H, H };
 #endif
 	}
 }

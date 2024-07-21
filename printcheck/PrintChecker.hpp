@@ -22,7 +22,7 @@ namespace printcheck
 		//  Functionality
 				//!  process the given reference image and the scanned version of the same content
 			//cv::Mat PrintChecker::process( const std::filesystem::path& ref, const std::filesystem::path& scan, double *diff)
-			double process(const std::filesystem::path& ref, const std::filesystem::path& scan, double* diff);
+			void process(const std::filesystem::path& ref, const std::filesystem::path& scan);
 
 				//!  update visualization with the new requested limit
 			cv::Mat applyLimit( int, int, double*);

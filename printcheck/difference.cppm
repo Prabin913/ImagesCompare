@@ -6,6 +6,7 @@ module;
 #include <opencv2/dnn.hpp>
 #include "..\utils.h"
 
+// #include <g3log/g3log.hpp>
 
 #include <iostream>
 
@@ -328,17 +329,10 @@ export namespace printcheck
 		cv::Mat zero = cv::Mat::zeros(src.size(), CV_8UC1);
 
 		cv::Mat kernel;
-		kernel = getStructuringElement(cv::MORPH_OPEN, cv::Size(1, 1));
 		cv::Mat diff_img[3];
 		cv::Mat norm_img[3];
 		for (int i = 0; i < 3; i++) {
-			cv::Mat dilated_img;
-			dilate(channels[i], dilated_img, kernel, cv::Point(-1, -1), 1, cv::BORDER_CONSTANT, cv::morphologyDefaultBorderValue());
-			cv::Mat bg_img;
-			cv::medianBlur(channels[i], bg_img, 21);
-			cv::absdiff(channels[i], bg_img, diff_img[i]);
-			cv::bitwise_not(diff_img[i], diff_img[i]);
-			cv::normalize(diff_img[i], norm_img[i], 0, 255, cv::NORM_MINMAX, CV_8UC1, cv::noArray());
+            cv::normalize(channels[i], norm_img[i], 0, 255, cv::NORM_MINMAX, CV_8UC1, cv::noArray());
 		}
 
 		std::vector<cv::Mat> R2B1 = { norm_img[0], zero, zero };
