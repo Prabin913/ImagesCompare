@@ -30,6 +30,7 @@ namespace printcheck
 	 */
 	void PrintChecker::process(const std::filesystem::path& ref, const std::filesystem::path& scan)
 	{
+		WriteLogFile(L"process() started");
 		cv::Mat ref_img, scan_img;
 
 		// load
@@ -126,6 +127,7 @@ namespace printcheck
 	 */
 	cv::Mat PrintChecker::applyLimit(int limit, int color, double* diff)
 	{
+		WriteLogFile(L"Called applyLimit (%d %d",limit,color);
 		try
 		{
 			// Thresholding
@@ -182,6 +184,7 @@ namespace printcheck
 					break;
 				}
 			}
+			WriteLogFile(L"applyLimit ended %f", diff);
 
 			return annotated;
 		}
