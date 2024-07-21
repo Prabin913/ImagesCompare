@@ -36,18 +36,15 @@ namespace printcheck
 		_ref = printcheck::read(ref);
 		_scanned = printcheck::read(scan);
 
-		if (_ref.empty() || _scanned.empty()) 
-		{
+		if (_ref.empty() || _scanned.empty()) {
 			return;
 		}
 
 		// resize
-		if (_ref.cols * _ref.rows < _scanned.cols * _scanned.rows) 
-		{
+		if (_ref.cols * _ref.rows < _scanned.cols * _scanned.rows) {
 			cv::resize(_scanned, _scanned, _ref.size());
 		}
-		else 
-		{
+		else {
 			cv::resize(_ref, _ref, _scanned.size());
 		}
 
@@ -56,10 +53,8 @@ namespace printcheck
 		const int BLOCKS_GAP = 20;
 		double ssim_score = 0;
 		_mask = cv::Mat::zeros(_scanned.size(), CV_8UC1);
-		for (int i = 0; i < BLOCKS_DIVIDER; i++) 
-		{
-			for (int j = 0; j < BLOCKS_DIVIDER; j++) 
-			{
+		for (int i = 0; i < BLOCKS_DIVIDER; i++) {
+			for (int j = 0; j < BLOCKS_DIVIDER; j++) {
 				int l = cvFloor(i * _scanned.size().width / 2.0);
 				int t = cvFloor(j * _scanned.size().height / 2.0);
 				int r = cvFloor((i + 1) * _scanned.size().width / 2.0);
@@ -90,10 +85,8 @@ namespace printcheck
 				// compute global value
 				auto ssim = computeSSIM(ref_img, scan_img);
 				cv::Mat mask = cv::Mat::zeros(ssim.diff.size(), CV_8UC1);
-				for (int y = BLOCKS_GAP; y < ssim.diff.rows - BLOCKS_GAP; y++) 
-				{
-					for (int x = BLOCKS_GAP; x < ssim.diff.cols - BLOCKS_GAP; x++) 
-					{
+				for (int y = BLOCKS_GAP; y < ssim.diff.rows - BLOCKS_GAP; y++) {
+					for (int x = BLOCKS_GAP; x < ssim.diff.cols - BLOCKS_GAP; x++) {
 						mask.at<uchar>(y, x) = 255 - (uchar)(ssim.diff.at<float>(y, x) * 255);
 					}
 				}
@@ -144,8 +137,7 @@ namespace printcheck
 			cv::Mat contourImg = cv::Mat::zeros(maskBinary.size(), CV_8UC1);
 			for (size_t i = 0; i < contours.size(); i++)
 			{
-				if (cv::contourArea(contours[i]) < (int)(limit / 3)) 
-				{
+				if (cv::contourArea(contours[i]) < (int)(limit / 3)) {
 					diff_size -= contours[i].size();
 					continue;
 				}
