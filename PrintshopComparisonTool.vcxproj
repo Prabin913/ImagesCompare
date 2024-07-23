@@ -596,6 +596,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="res\version.h" />
+    <ClInclude Include="SGFileBrowse.h" />
     <ClInclude Include="SGInputDlg.h" />
     <ClInclude Include="SGPictureControl.h" />
     <ClInclude Include="SG_ButtonFly.h" />
@@ -724,6 +725,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SGFileBrowse.cpp" />
     <ClCompile Include="SGInputDlg.cpp" />
     <ClCompile Include="SGPictureControl.cpp" />
     <ClCompile Include="SG_ButtonFly.cpp" />

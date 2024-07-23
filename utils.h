@@ -37,3 +37,4 @@ void OpenLogFile();
 void DeleteLogFile();
 std::wstring removeSubstring(const std::wstring& original, const std::wstring& substringToRemove);
 int WriteLogFile(LPCWSTR lpText, ...);
+CString SG_GetBaseFilePath(CString name);

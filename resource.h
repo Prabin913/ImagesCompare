@@ -86,7 +86,12 @@
 #define IDB_BN_STOP_H						2026 
 #define IDB_BN_STOP_P						2027
 #define IDB_BN_STOP_D						2028
-
+#define IDD_BATCHOPTIONS					2029
+#define IDC_STA_BATCHOPTION					2030
+#define IDC_CMB_BATCHOPTION					2031
+#define IDC_STA_CURPATH						2032
+#define IDR_MENU_AVBFILES					2033
+#define ID_ADDFILETOBATCH					2034
 #endif // CUSTOM_RESOURCE_H
 
 // Next default values for new objects

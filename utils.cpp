@@ -262,6 +262,18 @@ std::wstring GetExecutablePath()
 	return executablePath;
 }
 
+CString SG_GetBaseFilePath(CString name)
+{
+	CString result = name;
+	int c = name.ReverseFind(L'\\');
+	if (c > -1)
+	{
+		result = name.Left(c);
+	}
+	return result;
+}
+
+
 int WriteLogFile(LPCWSTR lpText, ...)
 {
 	std::wofstream ofs;

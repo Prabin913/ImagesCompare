@@ -35,6 +35,7 @@
     <ClCompile Include="SGInputDlg.cpp" />
     <ClCompile Include="SGPictureControl.cpp" />
     <ClCompile Include="BatchViewer.cpp" />
+    <ClCompile Include="SGFileBrowse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrintshopComparisonTool.h" />
@@ -1072,6 +1073,7 @@
     <ClInclude Include="res\version.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="BatchViewer.h" />
+    <ClInclude Include="SGFileBrowse.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />
