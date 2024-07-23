@@ -1115,18 +1115,25 @@ void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 			// Sleep for a short while to simulate user interaction
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
+		m_origPath1 = L"";
+		m_origPath2 = L"";
+		m_scanPath1 = L"";
+		m_scanPath2 = L"";
+		images_loaded = false;
+		need_to_update = false;
+		m_batchMode = false;
 	}
 	catch (const std::exception& ex)
 	{
 		WriteLogFile(L"Exception in BatchProcess: %hs", ex.what());
+		return;
 	}
 	catch (...)
 	{
 		WriteLogFile(L"Unknown exception in BatchProcess");
+		return;
 	}
 
-	// Ensure the batch mode flag is cleared
-	m_batchMode = false;
 }
 
 void PrintshopComparisonToolDlg::SetThreshold(int val)
