@@ -15,7 +15,7 @@
 #include "SGInputDlg.h"
 #include "constants.h"
 #include "BatchViewer.h"
-
+#include "GoogleDrive.h"
 #include <iostream>
 #include <sstream>
 #include "VzImgCmp.hpp"
@@ -33,14 +33,14 @@ static CString annotate_path("annotation.png");
 
 printcheck::PrintChecker pc;
 bool need_to_update = false;
-bool images_loaded=false;
+bool images_loaded = false;
 PrintshopComparisonToolDlg::PrintshopComparisonToolDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_PRINTSHOPCOMPARISONTOOL_DIALOG, pParent),
 	m_batchMode(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	NoPages=1;
-	curPage=1;
+	NoPages = 1;
+	curPage = 1;
 }
 
 void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
@@ -73,7 +73,7 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_WM_HSCROLL()
 	ON_BN_CLICKED(IDC_BUTTON_ORIG, &PrintshopComparisonToolDlg::OnBnClickedButtonOrig)
 	ON_BN_CLICKED(IDC_BUTTON_SCAN, &PrintshopComparisonToolDlg::OnBnClickedButtonScan)
-	ON_BN_CLICKED(IDC_BUTTON_SETTINGS,&PrintshopComparisonToolDlg::OnBnClickedButtonSetTH)
+	ON_BN_CLICKED(IDC_BUTTON_SETTINGS, &PrintshopComparisonToolDlg::OnBnClickedButtonSetTH)
 	ON_BN_CLICKED(IDC_BUTTON_PROC, &PrintshopComparisonToolDlg::OnBnClickedButtonProc)
 	ON_BN_CLICKED(IDC_BUTTON_BATCHVIEWON, &PrintshopComparisonToolDlg::OnBnClickedToggleBatch)
 	ON_BN_CLICKED(IDC_BUTTON_SIDE_A, &PrintshopComparisonToolDlg::OnBnClickedButtonSideA)
@@ -85,15 +85,15 @@ void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2
 {
 	switch (nHotKeyId)
 	{
-		case 1:
-			imshow("error", pc.error());
-			break;
-		case 2:
-			OnBnClickedButtonSetTH();
-			break;
-		case 3:
-			imshow("error-map", pc.errormap());
-			break;
+	case 1:
+		imshow("error", pc.error());
+		break;
+	case 2:
+		OnBnClickedButtonSetTH();
+		break;
+	case 3:
+		imshow("error-map", pc.errormap());
+		break;
 
 
 	}
@@ -139,25 +139,25 @@ HBRUSH PrintshopComparisonToolDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlCol
 
 	switch (pWnd->GetDlgCtrlID())
 	{
-		case IDC_STATIC_TH:
-			pDC->SetBkMode(TRANSPARENT);
-			pDC->SetBkColor(BG_COLOR);
-			return m_tx; // Return a brush with the same color
-			break;
-		case IDC_SLIDER_THRESHOLD:
+	case IDC_STATIC_TH:
+		pDC->SetBkMode(TRANSPARENT);
+		pDC->SetBkColor(BG_COLOR);
+		return m_tx; // Return a brush with the same color
+		break;
+	case IDC_SLIDER_THRESHOLD:
 
-		case IDC_STATIC_THR:
-		case IDC_STATIC_FILT_SIZE:
-		case IDC_STATIC_FL:
-			pDC->SetBkMode(OPAQUE);
-			pDC->SetBkColor(BG_COLOR);
-			return m_tx; // Return a brush with the same color
-			break;
-		default:
-			pDC->SetBkMode(TRANSPARENT);
-			pDC->SetBkColor(RGB(0, 0, 0));
-			pDC->SetTextColor(RGB(0, 0, 0));
-			return m_brBack;
+	case IDC_STATIC_THR:
+	case IDC_STATIC_FILT_SIZE:
+	case IDC_STATIC_FL:
+		pDC->SetBkMode(OPAQUE);
+		pDC->SetBkColor(BG_COLOR);
+		return m_tx; // Return a brush with the same color
+		break;
+	default:
+		pDC->SetBkMode(TRANSPARENT);
+		pDC->SetBkColor(RGB(0, 0, 0));
+		pDC->SetTextColor(RGB(0, 0, 0));
+		return m_brBack;
 	}
 
 	return m_tx;
@@ -165,7 +165,7 @@ HBRUSH PrintshopComparisonToolDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlCol
 BOOL PrintshopComparisonToolDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	
+
 	m_BtnOrig.SetImages(IDB_BN_ORIG, IDB_BN_ORIG_H, IDB_BN_ORIG_P, IDB_BN_ORIG_D);
 	m_BtnOrig.SetParent(this);
 	m_BtnOrig.SetCaptionText(L"Original");
@@ -192,13 +192,13 @@ BOOL PrintshopComparisonToolDlg::OnInitDialog()
 	m_pictureResults2.SubclassDlgItem(IDC_PIC_DIFF2, this);
 	m_pictureResults2.SetBorderThickness(10);
 
-	m_pictureOrig1.SubclassDlgItem(IDC_PIC_ORIG1,this);
+	m_pictureOrig1.SubclassDlgItem(IDC_PIC_ORIG1, this);
 	m_pictureOrig1.SetBorderThickness(10);
 	m_pictureOrig2.SubclassDlgItem(IDC_PIC_ORIG2, this);
 	m_pictureOrig2.SetBorderThickness(10);
 
 
-	m_pictureScan1.SubclassDlgItem(IDC_PIC_SCAN1,this);
+	m_pictureScan1.SubclassDlgItem(IDC_PIC_SCAN1, this);
 	m_pictureScan2.SubclassDlgItem(IDC_PIC_SCAN2, this);
 
 	if (!RegisterHotKey(m_hWnd, 1, MOD_CONTROL | MOD_SHIFT, 'E'))
@@ -282,52 +282,52 @@ void PrintshopComparisonToolDlg::SetTitle()
 
 	}
 	else
-	if (PDF != L"")
-	{
-		m_BtnProc.EnableWindow(FALSE);
-		m_BtnScan.EnableWindow(TRUE);
-		UpdateData(FALSE);
+		if (PDF != L"")
+		{
+			m_BtnProc.EnableWindow(FALSE);
+			m_BtnScan.EnableWindow(TRUE);
+			UpdateData(FALSE);
 
-		title.Format(L"Printshop Master PDF selected :'%s' PNG not selected yet", PDF);
-		m_pictureOrig1.SetBorderColor(RGB(255, 255, 255));
-		m_pictureOrig1.SetBorderThickness(7);
-		m_pictureOrig2.SetBorderColor(RGB(255, 255, 255));
-		m_pictureOrig2.SetBorderThickness(7);
-		m_pictureScan1.SetBorderColor(RGB(255, 0, 255));
-		m_pictureScan1.SetBorderThickness(10);
-		m_pictureScan2.SetBorderColor(RGB(255, 0, 255));
-		m_pictureScan2.SetBorderThickness(10);
-		m_pictureResults1.SetBorderColor(RGB(255, 255, 255));
-		m_pictureResults1.SetBorderThickness(7);
-		m_pictureResults2.SetBorderColor(RGB(255, 255, 255));
-		m_pictureResults2.SetBorderThickness(7);
+			title.Format(L"Printshop Master PDF selected :'%s' PNG not selected yet", PDF);
+			m_pictureOrig1.SetBorderColor(RGB(255, 255, 255));
+			m_pictureOrig1.SetBorderThickness(7);
+			m_pictureOrig2.SetBorderColor(RGB(255, 255, 255));
+			m_pictureOrig2.SetBorderThickness(7);
+			m_pictureScan1.SetBorderColor(RGB(255, 0, 255));
+			m_pictureScan1.SetBorderThickness(10);
+			m_pictureScan2.SetBorderColor(RGB(255, 0, 255));
+			m_pictureScan2.SetBorderThickness(10);
+			m_pictureResults1.SetBorderColor(RGB(255, 255, 255));
+			m_pictureResults1.SetBorderThickness(7);
+			m_pictureResults2.SetBorderColor(RGB(255, 255, 255));
+			m_pictureResults2.SetBorderThickness(7);
 
-	}
-	else
-	{
+		}
+		else
+		{
 
-		m_BtnProc.EnableWindow(FALSE);
-		m_BtnScan.EnableWindow(FALSE);
-		UpdateData(FALSE);
-		title.Format(L"Printshop Master PDF selected :'%s' PNG selected:'%s'", PDF, PNG);
+			m_BtnProc.EnableWindow(FALSE);
+			m_BtnScan.EnableWindow(FALSE);
+			UpdateData(FALSE);
+			title.Format(L"Printshop Master PDF selected :'%s' PNG selected:'%s'", PDF, PNG);
 
-		m_pictureOrig1.SetBorderColor(RGB(255,0,255));
-		m_pictureOrig1.SetBorderThickness(10);
-		m_pictureOrig2.SetBorderColor(RGB(255, 0, 255));
-		m_pictureOrig2.SetBorderThickness(10);
+			m_pictureOrig1.SetBorderColor(RGB(255, 0, 255));
+			m_pictureOrig1.SetBorderThickness(10);
+			m_pictureOrig2.SetBorderColor(RGB(255, 0, 255));
+			m_pictureOrig2.SetBorderThickness(10);
 
-		m_pictureScan1.SetBorderColor(RGB(255, 255, 255));
-		m_pictureScan1.SetBorderThickness(7);
-		m_pictureScan2.SetBorderColor(RGB(255, 255, 255));
-		m_pictureScan2.SetBorderThickness(7);
+			m_pictureScan1.SetBorderColor(RGB(255, 255, 255));
+			m_pictureScan1.SetBorderThickness(7);
+			m_pictureScan2.SetBorderColor(RGB(255, 255, 255));
+			m_pictureScan2.SetBorderThickness(7);
 
-		m_pictureResults1.SetBorderColor(RGB(255, 255, 255));
-		m_pictureResults1.SetBorderThickness(7);
-		m_pictureResults2.SetBorderColor(RGB(255, 255, 255));
-		m_pictureResults2.SetBorderThickness(7);
+			m_pictureResults1.SetBorderColor(RGB(255, 255, 255));
+			m_pictureResults1.SetBorderThickness(7);
+			m_pictureResults2.SetBorderColor(RGB(255, 255, 255));
+			m_pictureResults2.SetBorderThickness(7);
 
-		title.Format(L"Printshop Master (new) - ready to start");
-	}
+			title.Format(L"Printshop Master (new) - ready to start");
+		}
 	UpdateTitle(title);
 }
 // If you add a minimize button to your dialog, you will need the code below
@@ -364,7 +364,7 @@ void PrintshopComparisonToolDlg::OnPaint()
 		SHOWSCAN2;
 		SHOWRESULT1;
 		SHOWRESULT2;
-	}		
+	}
 }
 
 // The system calls this function to obtain the cursor to display while the user drags
@@ -432,7 +432,7 @@ CString PrintshopComparisonToolDlg::GetCurrentPagePath()
 	}
 	else
 	{
-		return m_origPath1 ;
+		return m_origPath1;
 
 	}
 
@@ -450,7 +450,7 @@ void PrintshopComparisonToolDlg::UpdateTitle(CString s)
 		ver.Minor,
 		ver.Revision,
 		ver.SubRevision,
-		CreationDate,s);
+		CreationDate, s);
 	SetWindowText(strver);
 
 }
@@ -459,9 +459,9 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 
 	CString thr_slider_echo;
 
-	static bool do_once{true};
-	if(do_once)
-	{ 
+	static bool do_once{ true };
+	if (do_once)
+	{
 		do_once = false;
 
 		UpdateTitle(L"");
@@ -481,7 +481,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 
 	}
-	if(m_batchMode) return;
+	if (m_batchMode) return;
 	thr_slider_echo.Format(_T("%d"), m_CurrentThreshold);
 	GetDlgItem(IDC_STATIC_THR)->SetWindowTextW(thr_slider_echo);
 
@@ -494,7 +494,7 @@ void PrintshopComparisonToolDlg::OnTimer(UINT_PTR nIDEvent)
 		temp.Format(L"Threshold set to %d", m_CurrentThreshold);
 		NotifyVersionInfo(temp, L"Results will show....\nPress CTLR+SHIFT+E to see error\nPress CTRL + SHIFT + M to see error map\nPress CTRL + SHIFT + B to set Threshold");
 		std::string orig_path = ConvertWideCharToMultiByte(sCurPage.GetString());
-		std::string scan_path = ConvertWideCharToMultiByte((curPage==2)?m_scanPath2.GetString() : m_scanPath1.GetString());
+		std::string scan_path = ConvertWideCharToMultiByte((curPage == 2) ? m_scanPath2.GetString() : m_scanPath1.GetString());
 		pc.process(orig_path, scan_path);
 		ShowResults(m_CurrentThreshold, m_CurrentColor);
 
@@ -568,16 +568,16 @@ CString SelectFileFromDialog(int type)
 	}
 }
 
-bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages) 
+bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString& pdfFilePath, int& pages)
 {
 
-	char *szSrcFilePath = ConvertWideCharToMultiByte(pdfFilePath);
-	pdf *_pdf = new pdf(szSrcFilePath);
+	char* szSrcFilePath = ConvertWideCharToMultiByte(pdfFilePath);
+	pdf* _pdf = new pdf(szSrcFilePath);
 	if (!_pdf) return false;
 
 	int count = 1;
-	const char *password;
-	if (_pdf->needs_password()) 
+	const char* password;
+	if (_pdf->needs_password())
 	{
 		CString strErr;
 		strErr.Format(_T("%s was protected by password"), pdfFilePath);
@@ -586,7 +586,7 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages
 	}
 
 	int zoom = 200;
-	if (_pdf->good() && _pdf->size() != 0) 
+	if (_pdf->good() && _pdf->size() != 0)
 	{
 		pages = _pdf->size();
 	}
@@ -611,8 +611,8 @@ bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString &pdfFilePath, int &pages
 			return false;
 		}
 		m_origPath2 = pdfFilePath + _T(".2.png");
-		curPage=1;
-		NoPages=2;
+		curPage = 1;
+		NoPages = 2;
 		GetDlgItem(IDC_BUTTON_SIDE_A)->EnableWindow(TRUE);
 		GetDlgItem(IDC_BUTTON_SIDE_B)->EnableWindow(TRUE);
 
@@ -647,33 +647,33 @@ void PrintshopComparisonToolDlg::DrawImage(CWnd* pRenderWnd, const CString& strI
 	if (FAILED(hr)) return;
 
 	// Clear the background
-	rc.left=11;
-	rc.top=11;
-	rc.right=rc.right-11;
-	rc.bottom=rc.bottom-11;
+	rc.left = 11;
+	rc.top = 11;
+	rc.right = rc.right - 11;
+	rc.bottom = rc.bottom - 11;
 	pDC->FillSolidRect(&rc, RGB(255, 255, 255));
 
 	// Draw the image
-	pngImage.StretchBlt(pDC->GetSafeHdc(), 11, 11, rc.Width()-22, rc.Height()-22, SRCCOPY);
+	pngImage.StretchBlt(pDC->GetSafeHdc(), 11, 11, rc.Width() - 22, rc.Height() - 22, SRCCOPY);
 
 	pRenderWnd->ReleaseDC(pDC);
 }
 
 
-char *PrintshopComparisonToolDlg::ConvertWideCharToMultiByte(const CString &strWideChar) {
+char* PrintshopComparisonToolDlg::ConvertWideCharToMultiByte(const CString& strWideChar) {
 	int strLen = WideCharToMultiByte(CP_UTF8, 0, strWideChar, -1, NULL, 0, NULL, NULL);
-	char *szString = (char *)malloc(strLen + 1);
+	char* szString = (char*)malloc(strLen + 1);
 	memset(szString, 0, strLen + 1);
 	WideCharToMultiByte(CP_UTF8, 0, strWideChar, -1, szString, strLen, NULL, NULL);
 
 	return szString;
 }
 
-cv::Mat get_image(const std::string & filename)
+cv::Mat get_image(const std::string& filename)
 {
 	CWaitCursor w;
-	WriteLogFile(L"reading file: %S",filename.c_str());
-	
+	WriteLogFile(L"reading file: %S", filename.c_str());
+
 	if (filename.empty())
 	{
 		WriteLogFile(L"failed to empty file name %S", filename.c_str());
@@ -685,9 +685,9 @@ cv::Mat get_image(const std::string & filename)
 		mat.cols < 10 ||
 		mat.rows < 10)
 	{
-		WriteLogFile(L"failed to read image %S",filename.c_str());
+		WriteLogFile(L"failed to read image %S", filename.c_str());
 	}
-	WriteLogFile(L"%d x %d",mat.cols,mat.rows);
+	WriteLogFile(L"%d x %d", mat.cols, mat.rows);
 
 	return mat;
 }
@@ -799,7 +799,7 @@ void PrintshopComparisonToolDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 			ShowResults(m_CurrentThreshold, m_CurrentColor);
 		}
 
-		
+
 	}
 	else
 	{
@@ -922,7 +922,7 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonScan()
 
 void PrintshopComparisonToolDlg::OnBnClickedButtonOpenresult()
 {
-	if(NoPages ==2 && curPage ==2)
+	if (NoPages == 2 && curPage == 2)
 		ShellExecute(NULL, L"OPEN", m_diffPath2.GetString(), NULL, L"", TRUE);
 	else
 		ShellExecute(NULL, L"OPEN", m_diffPath1.GetString(), NULL, L"", TRUE);
@@ -987,7 +987,7 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonProc()
 	{
 		if (curPage == 1)
 		{
-			if(m_origPath1 == L"" || m_scanPath1 == L"") return;
+			if (m_origPath1 == L"" || m_scanPath1 == L"") return;
 			WriteLogFile(L"Starting to compare %s and %s", m_origPath1.GetString(), m_scanPath1.GetString());
 
 		}
@@ -999,7 +999,7 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonProc()
 		}
 	}
 	else
-	{ 
+	{
 		if (m_origPath1 == L"" || m_scanPath1 == L"") return;
 		WriteLogFile(L"Starting to compare %s and %s", m_origPath1.GetString(), m_scanPath1.GetString());
 	}
@@ -1042,7 +1042,7 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonSideA()
 {
 	if (NoPages != 1)
 	{
-		curPage=1;
+		curPage = 1;
 		UpdatePagesStates();
 	}
 }
@@ -1074,6 +1074,11 @@ void PrintshopComparisonToolDlg::StopBatchProcessing()
 	m_batchMode = false;
 }
 
+
+
+
+
+
 void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 {
 	std::wifstream batchFile(batchFilePath);
@@ -1095,8 +1100,26 @@ void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 			if (!PathFileExists(m_origPath1) ||
 				!PathFileExistsW(m_scanPath1))
 			{
-				WriteLogFile(L"Missing files in batch file");
-				m_stopBatchThread = true;
+				WriteLogFile(L"Missing files in batch file. Checking in Google Drive.");
+				CString g_c_origPath = processGoogleDrive(m_origPath1);
+				if (g_c_origPath.IsEmpty()) 
+				{
+					m_stopBatchThread = true;
+				}
+				else 
+				{
+					m_origPath1 = g_c_origPath;
+				}
+				CString g_c_scanPath1 = processGoogleDrive(m_scanPath1);
+				if (g_c_scanPath1.IsEmpty()) 
+				{
+					m_stopBatchThread = true;
+				}
+				else 
+				{
+					m_scanPath1 = g_c_scanPath1;
+				}
+				//m_stopBatchThread = true;
 			}
 			if (m_stopBatchThread)
 			{
@@ -1115,25 +1138,18 @@ void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 			// Sleep for a short while to simulate user interaction
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
-		m_origPath1 = L"";
-		m_origPath2 = L"";
-		m_scanPath1 = L"";
-		m_scanPath2 = L"";
-		images_loaded = false;
-		need_to_update = false;
-		m_batchMode = false;
 	}
 	catch (const std::exception& ex)
 	{
 		WriteLogFile(L"Exception in BatchProcess: %hs", ex.what());
-		return;
 	}
 	catch (...)
 	{
 		WriteLogFile(L"Unknown exception in BatchProcess");
-		return;
 	}
 
+	// Ensure the batch mode flag is cleared
+	m_batchMode = false;
 }
 
 void PrintshopComparisonToolDlg::SetThreshold(int val)

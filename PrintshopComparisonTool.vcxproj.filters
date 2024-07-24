@@ -36,6 +36,7 @@
     <ClCompile Include="SGPictureControl.cpp" />
     <ClCompile Include="BatchViewer.cpp" />
     <ClCompile Include="SGFileBrowse.cpp" />
+    <ClCompile Include="GoogleDrive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PrintshopComparisonTool.h" />
@@ -1074,6 +1075,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="BatchViewer.h" />
     <ClInclude Include="SGFileBrowse.h" />
+    <ClInclude Include="GoogleDrive.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PrintshopComparisonTool.rc" />
