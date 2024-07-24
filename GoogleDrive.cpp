@@ -1,8 +1,10 @@
 #include "pch.h"
 #include "utils.h"
+#include <curl\curl.h>
 
 #include "GoogleDrive.h"
 
+#pragma comment(lib, "libcurl_a.lib")
 
 int isValidGoogleDriveOrDocsURL(const std::string& url)
 {
@@ -27,21 +29,21 @@ std::string convertToDownloadableURL(const std::string& url)
 	if (std::regex_match(url, match, driveRegex) && match.size() == 2)
 	{
 		std::string fileId = match[1].str();
-		printf("+ URL is regular drive url : https://drive.google.com/uc?export=download&id=%s\n", fileId.c_str());
+		WriteLogFile(L"+ URL is regular drive url : https://drive.google.com/uc?export=download&id=%s\n", fileId.c_str());
 		return "https://drive.google.com/uc?export=download&id=" + fileId;
 	}
 
 	if (std::regex_match(url, match, userContentRegex) && match.size() == 2)
 	{
 		std::string fileId = match[1].str();
-		printf("+ URL is usercontent url : https://drive.usercontent.google.com/download?id=%s\n", fileId.c_str());
+		WriteLogFile(L"+ URL is usercontent url : https://drive.usercontent.google.com/download?id=%s\n", fileId.c_str());
 		return "https://drive.usercontent.google.com/download?id=" + fileId;
 	}
 
 	if (std::regex_match(url, match, docsRegex) && match.size() == 2)
 	{
 		std::string fileId = match[1].str();
-		printf("+ URL is Google Docs url : https://docs.google.com/uc?export=download&confirm=1&id=%s\n", fileId.c_str());
+		WriteLogFile(L"+ URL is Google Docs url : https://docs.google.com/uc?export=download&confirm=1&id=%s\n", fileId.c_str());
 		return "https://docs.google.com/uc?export=download&confirm=1&id=" + fileId;
 	}
 
@@ -56,7 +58,7 @@ std::string getFinalURL(const std::string& url)
 	curl = curl_easy_init();
 	if (!curl)
 	{
-		std::cerr << "- curl_easy_init() failed" << std::endl;
+		WriteLogFile(L"- curl_easy_init() failed");
 		return "";
 	}
 
@@ -73,7 +75,7 @@ std::string getFinalURL(const std::string& url)
 
 	if (res != CURLE_OK)
 	{
-		std::cerr << "- curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+		WriteLogFile(L"- curl_easy_perform() failed: %S",curl_easy_strerror(res));
 		curl_easy_cleanup(curl);
 		return "";
 	}
@@ -83,14 +85,14 @@ std::string getFinalURL(const std::string& url)
 	{
 		if (responseCode != 200)
 		{
-			std::cerr << "- Response Code is Wrong : " << responseCode << std::endl;
+			WriteLogFile(L"- Response Code is Wrong : %d",responseCode);
 			return "";
 		}
 
 	}
 	else
 	{
-		std::cerr << "- curl_easy_getinfo() failed to get response code: " << curl_easy_strerror(res) << std::endl;
+		WriteLogFile(L"- curl_easy_getinfo() failed to get response code: %S",curl_easy_strerror(res));
 		return "";
 	}
 	char* tmpUrl;
@@ -99,12 +101,11 @@ std::string getFinalURL(const std::string& url)
 	if ((res == CURLE_OK) && tmpUrl)
 	{
 		effectiveUrl = tmpUrl;
-		std::cout << "+ Next Stage URL : " << effectiveUrl << std::endl;
+		WriteLogFile(L"+ Next Stage URL : %S",effectiveUrl);
 	}
-
 	else
 	{
-		std::cerr << "- curl_easy_getinfo() failed: " << curl_easy_strerror(res) << std::endl << "- The effectiveUrl : " << effectiveUrl << std::endl << "- The Res : " << res << std::endl;
+		WriteLogFile(L"- curl_easy_getinfo() failed: %S",curl_easy_strerror(res));
 		curl_easy_cleanup(curl);
 		return "";
 	}

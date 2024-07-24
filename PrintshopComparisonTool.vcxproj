@@ -76,7 +76,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);&lt;winresrc.h&gt;</IncludePath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)temp\$(Configuration)\</IntDir>
@@ -103,26 +103,30 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CURL_STATICLIB;CURL_STATICLIB;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;VZIC_VERSION="1.0.0"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CURL_STATICLIB;_CRT_NONSTDC;WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;VZIC_VERSION="1.0.0"</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>3rdparty/include;3rdparty/include/mupdf;imagecompare;C:\Users\elston_sa\Downloads\opencv4.10.0\opencv\build\include;C:\Users\elston_sa\Downloads\mupdf-1.24.3\include</AdditionalIncludeDirectories>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>3rdparty/include;3rdparty/include/mupdf;imagecompare;</AdditionalIncludeDirectories>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Crypt32.lib; Normaliz.lib; Wldap32.lib; Ws2_32.lib;libcurl_a.lib;opencv_world4100.lib;opencv_xfeatures2d4100.lib;libmupdf.lib;libthirdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <AdditionalDependencies>libcurl_a.lib;Crypt32.lib; Normaliz.lib; Wldap32.lib; Ws2_32.lib;opencv_world4100.lib;opencv_xfeatures2d4100.lib;libmupdf.lib;libthirdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration />
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
