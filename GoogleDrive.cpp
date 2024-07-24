@@ -389,7 +389,7 @@ CString GetFullPath(const std::string& relativePath)
 	if (GetFullPathNameW(wideRelativePath.c_str(), MAX_PATH, fullPath, NULL) == 0)
 	{
 		// Handle the error, GetLastError() can be used to get more error details
-		std::wcerr << L"- Error getting full path: " << GetLastError() << std::endl;
+		WriteLogFile(L"- Error getting full path: %d",GetLastError());
 		return L"";
 	}
 	return CString(fullPath);
@@ -402,13 +402,13 @@ CString processGoogleDrive(CString& url)
 	int urlType = isValidGoogleDriveOrDocsURL(s_url);
 	if (urlType == 0)
 	{
-		std::cerr << "- The URL is not a valid Google Drive, or user content URL." << std::endl;
+		WriteLogFile(L"- The URL is not a valid Google Drive, or user content URL.");
 		return CString();
 	}
 	std::string downloadUrl = convertToDownloadableURL(s_url);
 	if (downloadUrl.empty())
 	{
-		std::cerr << "- The URL is not a valid Google Drive file URL." << std::endl;
+		WriteLogFile(L"- The URL is not a valid Google Drive file URL.");
 		return CString();
 	}
 
@@ -421,12 +421,12 @@ CString processGoogleDrive(CString& url)
 	else
 	{
 		std::string finalUrl = getFinalURL(downloadUrl);
-		std::cout << "+ the finalURL : " << finalUrl << std::endl;
-
+		WriteLogFile(L"+ the finalURL : %S",finalUrl.c_str());
+		
 
 		if (finalUrl.empty())
 		{
-			std::cerr << "- Failed to get the final URL." << std::endl;
+			WriteLogFile(L"- Failed to get the final URL.");
 			return CString();
 		}
 
@@ -435,7 +435,7 @@ CString processGoogleDrive(CString& url)
 		{
 			if (!handleHTMLFile(finalUrl, finalDownloadUrl))
 			{
-				std::cerr << "- Failed to construct final download URL from HTML content." << std::endl;
+				WriteLogFile(L"- Failed to construct final download URL from HTML content.");
 				return CString();
 			}
 		}
@@ -463,23 +463,23 @@ CString processGoogleDrive(CString& url)
 	if (downloadFile(finalDownloadUrl, localPath))
 	{
 
-		std::cout << "+ The file has been downloaded successfully to " << localPath << "." << std::endl;
-	}
+		WriteLogFile(L"+ The file has been downloaded successfully to %S",localPath.c_str());
+	}	
 	else
 	{
-		std::cerr << "- Failed to download the file." << std::endl;
+		WriteLogFile(L"- Failed to download the file.");
 		return CString();
 	}
 	CString fullPath = GetFullPath(localPath);
 	if (!fullPath.IsEmpty())
 	{
-		std::wcout << L"- Full path : " << fullPath.GetString() << std::endl;
+		WriteLogFile(L"- Full path : %s",fullPath.GetString());
 		return fullPath;
 
 	}
 	else
 	{
-		std::wcout << L"- Failed to get full path." << std::endl;
+		WriteLogFile(L"- Failed to get full path.");
 		return CString();
 	}
 
