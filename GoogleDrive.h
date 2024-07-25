@@ -13,6 +13,8 @@
 #include <sstream>
 #pragma comment(lib, "wininet.lib")
 #pragma comment(lib, "urlmon.lib")
+#pragma comment(lib, "libcurl_a.lib")
+
 #include <curl/curl.h>
 #include <fstream>
 #include <unordered_map>

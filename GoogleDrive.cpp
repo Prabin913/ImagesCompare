@@ -4,7 +4,6 @@
 
 #include "GoogleDrive.h"
 
-#pragma comment(lib, "libcurl_a.lib")
 
 int isValidGoogleDriveOrDocsURL(const std::string& url)
 {

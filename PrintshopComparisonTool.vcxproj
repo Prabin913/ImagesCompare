@@ -106,7 +106,7 @@
       <FunctionLevelLinking>
       </FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>CURL_STATICLIB;_CRT_NONSTDC;WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;VZIC_VERSION="1.0.0"</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -122,11 +122,12 @@
       </EnableCOMDATFolding>
       <OptimizeReferences>
       </OptimizeReferences>
-      <AdditionalDependencies>libcurl_a.lib;Crypt32.lib; Normaliz.lib; Wldap32.lib; Ws2_32.lib;opencv_world4100.lib;opencv_xfeatures2d4100.lib;libmupdf.lib;libthirdparty.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libeay32.lib;ssleay32.lib;libcurl_a.lib; ws2_32.lib; wldap32.lib; advapi32.lib; Crypt32.lib; Normaliz.lib; Wldap32.lib; Ws2_32.lib; opencv_world4100.lib; opencv_xfeatures2d4100.lib; libmupdf.lib; libthirdparty.lib; %(AdditionalDependencies)</AdditionalDependencies>
       <UACExecutionLevel>AsInvoker</UACExecutionLevel>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>3rdparty/lib64</AdditionalLibraryDirectories>
-      <LinkTimeCodeGeneration />
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalOptions> /LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
