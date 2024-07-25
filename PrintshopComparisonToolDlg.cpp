@@ -830,6 +830,11 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 		m_origPath2 = L"";
 		pdfPath = SelectFileFromDialog(1);
 	}
+	if (!PathFileExists(pdfPath))
+	{
+		CString g_c_origPath = processGoogleDrive(pdfPath);
+	}
+
 	if (pdfPath.IsEmpty()) return;
 	WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());
 
