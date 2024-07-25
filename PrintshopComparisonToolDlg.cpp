@@ -524,48 +524,12 @@ void PrintshopComparisonToolDlg::OnQuit()
 	_exit(0);
 }
 
-
+#include "SGFileBrowse.h"
 CString SelectFileFromDialog(int type)
 {
-	OPENFILENAME  ofn;
-	wchar_t* FilterSpec;
-	if (type == 1)
-		FilterSpec = { (wchar_t*)L"PDF Files(*.pdf)\0*.pdf\0PNG Files(*.png)\0*.png\0Tif Files(*.tif)\0*.tif\0All Files(*.*)\0*.*\0" };
-	else
-		FilterSpec = { (wchar_t*)L"PNG Files(*.png)\0*.png\0JPG Files(*.jpg)\0*.jpg\0All Files(*.*)\0*.*\0" };
-	wchar_t* Title{ (wchar_t*)L"Open...." };
-	wchar_t szFileName[MAX_PATH];
-	wchar_t szFileTitle[MAX_PATH];
-	int             Result;
-
-	*szFileName = 0;
-	*szFileTitle = 0;
-
-	/* fill in non-variant fields of OPENFILENAME struct. */
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = GetFocus();
-	ofn.lpstrFilter = FilterSpec;
-	ofn.lpstrCustomFilter = NULL;
-	ofn.nMaxCustFilter = 0;
-	ofn.nFilterIndex = 0;
-	ofn.lpstrFile = szFileName;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrInitialDir = L"."; // Initial directory.
-	ofn.lpstrFileTitle = szFileTitle;
-	ofn.nMaxFileTitle = MAX_PATH;
-	ofn.lpstrTitle = Title;
-	ofn.lpstrDefExt = L".xlsx";
-
-	ofn.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-
-	if (!GetOpenFileName((LPOPENFILENAME)&ofn))
-	{
-		return L""; // Failed or cancelled
-	}
-	else
-	{
-		return(szFileName);
-	}
+	SGAvbFileBrowse ab;
+	CString szFileName= ab.GetInputFile();
+	return(szFileName);
 }
 
 bool PrintshopComparisonToolDlg::ConvertPDF2IMG(CString& pdfFilePath, int& pages)

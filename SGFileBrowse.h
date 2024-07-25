@@ -7,7 +7,7 @@ private:
 	OPENFILENAME ofn;
 
 public:
-	CString GetAVBFile();
+	CString GetInputFile();
 
 };
 

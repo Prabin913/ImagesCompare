@@ -19,13 +19,12 @@ void AddFileOrFolderToBatch(LPWSTR FileName, BOOL AddFolder)
 		//SG_MessageBox(L"Invalid path " + (CString)FileName, L"Batch Manager", MB_OK);
 		return;
 	}
-	// Check if the path is an avb / avp file or a folder
+	// Check if the path is an PDF / PNG file or a folder
 	CString ext = ((CString)(FileName)).Right(3).MakeUpper();
-	FolderMode = (ext == L"AVB" || ext == L"AVP") ? FALSE : TRUE;
+	FolderMode = (ext == L"PDF" || ext == L"PNG") ? FALSE : TRUE;
 
 	if (FolderMode == TRUE && AddFolder == FALSE)	// Selecting a folder and asking to add a file
 	{
-		//SG_MessageBox(L"No AVB / AVP file was selected");
 		return;
 	}
 	if (FolderMode == FALSE && AddFolder == TRUE)	// Selecting a file and asking to add a folder
@@ -37,7 +36,7 @@ void AddFileOrFolderToBatch(LPWSTR FileName, BOOL AddFolder)
 	}
 
 	ext = ((CString)(FileName)).Right(3).MakeUpper();
-	FolderMode = (ext == L"AVB" || ext == L"AVP") ? FALSE : TRUE;
+	FolderMode = (ext == L"PDF" || ext == L"PNG") ? FALSE : TRUE;
 	if ((FileName[2] == L'\\') && (wcslen(FileName) == 3))
 		FileName[2] = L'\0';
 
@@ -83,7 +82,7 @@ UINT CALLBACK OfnHookProc(HWND hDlg, UINT uMsg, UINT wParam, LONG lParam)
 			SendMessage((HWND)pCombo, CB_ADDSTRING, 0, (LPARAM)L"Add file to Batch");
 			SendMessage((HWND)pCombo, CB_ADDSTRING, 0, (LPARAM)L"Add folder to Batch");
 			SendMessage((HWND)pCombo, CB_SETCURSEL, 0, (LPARAM)0);
-
+			break;
 			// CB_SETCURSEL
 		case WM_COMMAND:
 		{
@@ -103,7 +102,6 @@ UINT CALLBACK OfnHookProc(HWND hDlg, UINT uMsg, UINT wParam, LONG lParam)
 					{
 						if (wcscmp(szPathName, L"") == NULL)
 						{
-							//SG_MessageBox(L"Please select an AVB file first");
 							return (TRUE);
 						}
 						AddFileOrFolderToBatch(szPathName,FALSE);
@@ -114,7 +112,6 @@ UINT CALLBACK OfnHookProc(HWND hDlg, UINT uMsg, UINT wParam, LONG lParam)
 					{
 						if (wcscmp(szPathName, L"") == NULL)
 						{
-							//SG_MessageBox(L"Please select an AVB file first");
 							return (TRUE);
 						}
 
@@ -125,25 +122,26 @@ UINT CALLBACK OfnHookProc(HWND hDlg, UINT uMsg, UINT wParam, LONG lParam)
 				}
 				return (TRUE);
 			}
-
+			break;
 		}
+		/*
 		case WM_NOTIFY:
 			pofNotify = (OFNOTIFY*)lParam;
 			switch (pofNotify->hdr.code)
 			{
 				case CBN_SELCHANGE:
 					return (TRUE);
-			  /* Init open dialog */
+			  
 				case CDN_INITDONE:
 					return (TRUE);
-				  /* File selection changed */
+				 
 				case CDN_SELCHANGE:
 					hTrueDlg = GetParent(hDlg);
 					SendMessage(hTrueDlg, CDM_GETFILEPATH, _MAX_PATH, (LONG)szPathName);
 					SetDlgItemText(hDlg, IDC_STA_CURPATH, szPathName);
 					wcscpy(szPathBuffer, szPathName);
 					return (TRUE);
-				  /* Folder selection changed */
+				  
 				case CDN_FOLDERCHANGE:
 					hTrueDlg = GetParent(hDlg);
 					SendMessage(hTrueDlg, CDM_GETFOLDERPATH, _MAX_PATH, (LONG)szPathName);
@@ -151,17 +149,18 @@ UINT CALLBACK OfnHookProc(HWND hDlg, UINT uMsg, UINT wParam, LONG lParam)
 					wcscpy(szPathBuffer, szPathName);
 
 					return (TRUE);
-				  /* User selected open */
+				 
 				case CDN_FILEOK:
 					return TRUE;
 				default:
 					return FALSE;
 			}
+			*/
 		default:
 			return (FALSE);
 	}
 }
-CString SGAvbFileBrowse::GetAVBFile()
+CString SGAvbFileBrowse::GetInputFile()
 {
 	CMenu m_ContextMenu;
 	//LoadSettings(MySettings);
@@ -181,7 +180,7 @@ CString SGAvbFileBrowse::GetAVBFile()
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = NULL;
+	ofn.hwndOwner = AfxGetApp()->GetMainWnd()->GetSafeHwnd();
 	ofn.lpstrFile = szFile;
 	ofn.lpTemplateName = MAKEINTRESOURCE(IDD_BATCHOPTIONS);
 	ofn.hInstance = AfxGetInstanceHandle();
@@ -189,7 +188,7 @@ CString SGAvbFileBrowse::GetAVBFile()
 	ofn.nMaxFile = 260;
 	ofn.lpstrFile[0] = '\0';
 	ofn.nMaxFile = sizeof(szFile);
-	ofn.lpstrFilter = L"All\0*.*\0AVB\0*.avb\0";
+	ofn.lpstrFilter = L"All\0*.*\0PDF\0*.pdf\0";
 	ofn.nFilterIndex = 2;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
