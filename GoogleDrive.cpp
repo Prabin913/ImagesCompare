@@ -61,14 +61,11 @@ std::string getFinalURL(const std::string& url)
 		return "";
 	}
 
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Follow redirects
-
 	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 10L); // Maximum number of redirects to follow
-
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L); // Set timeout duration to one minute
-
 	curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
 	res = curl_easy_perform(curl);
 
@@ -122,7 +119,7 @@ std::string fetchHTMLContent(const std::string& url)
 	HINTERNET hInternet = InternetOpen(L"MyUserAgent", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 	if (!hInternet)
 	{
-		std::cerr << "- InternetOpen() failed, error: " << GetLastError() << std::endl;
+		WriteLogFile(L"- InternetOpen() failed, error: %d",GetLastError());
 		return "";
 	}
 	//std::cout << "+ hInternet Created." << std::endl;
@@ -130,7 +127,7 @@ std::string fetchHTMLContent(const std::string& url)
 	HINTERNET hUrl = InternetOpenUrlW(hInternet, std::wstring(url.begin(), url.end()).c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
 	if (!hUrl)
 	{
-		std::cerr << "- InternetOpenUrl() failed, error: " << GetLastError() << std::endl;
+		WriteLogFile(L"- InternetOpenUrl() failed, error: %d",GetLastError());
 		InternetCloseHandle(hInternet);
 		return "";
 	}
@@ -165,18 +162,18 @@ std::string constructFinalURL(const std::string& htmlContent, const std::string&
 	if (std::regex_search(htmlContent, match, idRegex) && match.size() == 3)
 	{
 		id = match[2].str();
-		printf("+ Extracted file ID : %s\n", id.c_str());
+		WriteLogFile(L"+ Extracted file ID : %S\n", id.c_str());
 	}
 	if (std::regex_search(htmlContent, match, confirmRegex) && match.size() == 3)
 	{
 		confirm = match[2].str();
-		printf("+ Confirm Method : %s\n", confirm.c_str());
+		WriteLogFile(L"+ Confirm Method : %S\n", confirm.c_str());
 
 	}
 	if (std::regex_search(htmlContent, match, uuidRegex) && match.size() == 3)
 	{
 		uuid = match[2].str();
-		printf("+ UUID : %s\n", uuid.c_str());
+		WriteLogFile(L"+ UUID : %S\n", uuid.c_str());
 	}
 
 	if (!id.empty() && !confirm.empty() && !uuid.empty())
@@ -213,7 +210,7 @@ bool isHTMLContent(const std::string& url)
 
 	if (!curl)
 	{
-		std::cerr << "- curl_easy_init() failed" << std::endl;
+		WriteLogFile(L"- curl_easy_init() failed");
 		return false;
 	}
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -225,7 +222,7 @@ bool isHTMLContent(const std::string& url)
 	res = curl_easy_perform(curl);
 	if (res != CURLE_OK)
 	{
-		std::cerr << "- curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+		WriteLogFile(L"- curl_easy_perform() failed: %S",curl_easy_strerror(res));
 		curl_easy_cleanup(curl);
 		curl_global_cleanup();
 		return false;
@@ -234,7 +231,7 @@ bool isHTMLContent(const std::string& url)
 	res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
 	if (res != CURLE_OK || !contentType)
 	{
-		std::cerr << "- curl_easy_getinfo() failed: " << curl_easy_strerror(res) << std::endl;
+		WriteLogFile(L"- curl_easy_getinfo() failed: %S",curl_easy_strerror(res));
 		curl_easy_cleanup(curl);
 		curl_global_cleanup();
 		return false;
@@ -260,7 +257,7 @@ int ProgressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownlo
 	if (totalToDownload != 0)
 	{
 		int percentage = static_cast<int>((nowDownloaded * 100) / totalToDownload);
-		std::cout << "\rDownload Progress: " << percentage << "% (" << nowDownloaded << " / " << totalToDownload << " bytes)" << std::flush;
+//		WriteLogFile(L"\rDownload Progress: " << percentage << "% (" << nowDownloaded << " / " << totalToDownload << " bytes)" << std::flush;
 	}
 	return 0; // Return 0 to continue the download
 }
@@ -344,6 +341,7 @@ std::string getFileName(const std::string& url)
 	curl = curl_easy_init();
 	if (curl)
 	{
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callbacker);
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &file_name);
