@@ -216,7 +216,7 @@ bool isHTMLContent(const std::string& url)
 		std::cerr << "- curl_easy_init() failed" << std::endl;
 		return false;
 	}
-
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_NOBODY, 1L); // We only want the headers
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Follow redirects
@@ -267,7 +267,7 @@ int ProgressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownlo
 bool downloadFile(const std::string& url, const std::string& localPath)
 {
 
-	printf("+ Downloading URL : %s \n + The Location : %s\n", url.c_str(), localPath.c_str());
+	WriteLogFile(L"+ Downloading URL : %S \n + The Location : %S\n", url.c_str(), localPath.c_str());
 
 
 	CURL* curl;
@@ -277,7 +277,7 @@ bool downloadFile(const std::string& url, const std::string& localPath)
 
 	if (!outFile.is_open())
 	{
-		std::cerr << "- Failed to open file: " << localPath << std::endl;
+		WriteLogFile(L"- Failed to open file: %S",localPath.c_str());
 		return false;
 	}
 
@@ -286,10 +286,10 @@ bool downloadFile(const std::string& url, const std::string& localPath)
 
 	if (!curl)
 	{
-		std::cerr << "- curl_easy_init() failed" << std::endl;
+		WriteLogFile(L"- curl_easy_init() failed");
 		return false;
 	}
-
+	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outFile);
@@ -301,7 +301,7 @@ bool downloadFile(const std::string& url, const std::string& localPath)
 	res = curl_easy_perform(curl);
 	if (res != CURLE_OK)
 	{
-		std::cerr << "- curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+		WriteLogFile(L"- curl_easy_perform() failed: %S",curl_easy_strerror(res));
 		curl_easy_cleanup(curl);
 		curl_global_cleanup();
 		return false;
@@ -312,7 +312,7 @@ bool downloadFile(const std::string& url, const std::string& localPath)
 	outFile.close();
 
 
-	std::cout << "\n+ Download completed!" << std::endl;
+	WriteLogFile(L"\n+ Download completed!");
 	return true;
 }
 
