@@ -28,21 +28,21 @@ std::string convertToDownloadableURL(const std::string& url)
 	if (std::regex_match(url, match, driveRegex) && match.size() == 2)
 	{
 		std::string fileId = match[1].str();
-		WriteLogFile(L"+ URL is regular drive url : https://drive.google.com/uc?export=download&id=%s\n", fileId.c_str());
+		WriteLogFile(L"+ URL is regular drive url : https://drive.google.com/uc?export=download&id=%S\n", fileId.c_str());
 		return "https://drive.google.com/uc?export=download&id=" + fileId;
 	}
 
 	if (std::regex_match(url, match, userContentRegex) && match.size() == 2)
 	{
 		std::string fileId = match[1].str();
-		WriteLogFile(L"+ URL is usercontent url : https://drive.usercontent.google.com/download?id=%s\n", fileId.c_str());
+		WriteLogFile(L"+ URL is usercontent url : https://drive.usercontent.google.com/download?id=%S\n", fileId.c_str());
 		return "https://drive.usercontent.google.com/download?id=" + fileId;
 	}
 
 	if (std::regex_match(url, match, docsRegex) && match.size() == 2)
 	{
 		std::string fileId = match[1].str();
-		WriteLogFile(L"+ URL is Google Docs url : https://docs.google.com/uc?export=download&confirm=1&id=%s\n", fileId.c_str());
+		WriteLogFile(L"+ URL is Google Docs url : https://docs.google.com/uc?export=download&confirm=1&id=%S\n", fileId.c_str());
 		return "https://docs.google.com/uc?export=download&confirm=1&id=" + fileId;
 	}
 
