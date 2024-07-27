@@ -528,7 +528,7 @@ void PrintshopComparisonToolDlg::OnQuit()
 CString SelectFileFromDialog(int type)
 {
 	SGAvbFileBrowse ab;
-	CString szFileName= ab.GetInputFile();
+	CString szFileName = ab.GetInputFile();
 	return(szFileName);
 }
 
@@ -796,7 +796,12 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 	}
 	if (!PathFileExists(pdfPath))
 	{
-		CString g_c_origPath = processGoogleDrive(pdfPath);
+		//CString g_c_origPath = processGoogleDrive(pdfPath);
+		std::wstring w_pth(pdfPath);
+		std::wstring w_c_origPath = processGoogleDrive(w_pth);
+		//CString g_c_origPath = processGoogleDrive(pdfPath);
+		CString g_c_origPath = w_c_origPath.c_str();
+
 	}
 
 	if (pdfPath.IsEmpty()) return;
@@ -1070,23 +1075,28 @@ void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 				!PathFileExistsW(m_scanPath1))
 			{
 				WriteLogFile(L"Missing files in batch file. Checking in Google Drive.");
-				CString g_c_origPath = processGoogleDrive(m_origPath1);
-				if (g_c_origPath.IsEmpty()) 
+				std::wstring g_c_origPath = processGoogleDrive(origPath);
+				if (g_c_origPath.empty())
 				{
 					m_stopBatchThread = true;
+					break;
 				}
-				else 
+				else
 				{
-					m_origPath1 = g_c_origPath;
+					origPath = g_c_origPath;
+					m_origPath1 = g_c_origPath.c_str();
+
 				}
-				CString g_c_scanPath1 = processGoogleDrive(m_scanPath1);
-				if (g_c_scanPath1.IsEmpty()) 
+				std::wstring g_c_scanPath1 = processGoogleDrive(scanPath);
+				if (g_c_scanPath1.empty())
 				{
 					m_stopBatchThread = true;
+					break;
 				}
-				else 
+				else
 				{
-					m_scanPath1 = g_c_scanPath1;
+					scanPath = g_c_scanPath1;
+					m_scanPath1 = g_c_scanPath1.c_str();
 				}
 				//m_stopBatchThread = true;
 			}
@@ -1120,7 +1130,6 @@ void PrintshopComparisonToolDlg::BatchProcess(const CString& batchFilePath)
 	// Ensure the batch mode flag is cleared
 	m_batchMode = false;
 }
-
 void PrintshopComparisonToolDlg::SetThreshold(int val)
 {
 	if (val < 0 || val > 256) return;

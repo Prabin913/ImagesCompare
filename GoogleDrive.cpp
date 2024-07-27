@@ -1,484 +1,578 @@
+
 #include "pch.h"
 #include "utils.h"
 #include <curl\curl.h>
 
 #include "GoogleDrive.h"
 
+// std::wostringstream conv;
 
-int isValidGoogleDriveOrDocsURL(const std::string& url)
+
+int isValidGoogleDriveOrDocsURL(const std::wstring& url)
 {
-	std::regex driveRegex(R"(https://drive\.google\.com/.*)");
-	std::regex userContentRegex(R"(https://drive\.usercontent\.google\.com/.*)");
-	std::regex docsRegex(R"(https://docs\.google\.com/document/d/([a-zA-Z0-9_-]+)/.*)");
+    std::wregex driveRegex(LR"(https://drive\.google\.com/.*)");
+    std::wregex userContentRegex(LR"(https://drive\.usercontent\.google\.com/.*)");
+    std::wregex docsRegex(LR"(https://docs\.google\.com/document/d/([a-zA-Z0-9_-]+)/.*)");
 
-	if (std::regex_match(url, userContentRegex)) return 1; // User content URL
-	if (std::regex_match(url, driveRegex)) return 2; // Google Drive URL
-	if (std::regex_match(url, docsRegex)) return 3; // Google Docs URL
+    if (std::regex_match(url, userContentRegex)) return 1; // User content URL
+    if (std::regex_match(url, driveRegex)) return 2; // Google Drive URL
+    if (std::regex_match(url, docsRegex)) return 3; // Google Docs URL
 
-	return 0; // Invalid URL
+    return 0; // Invalid URL
 }
 
-std::string convertToDownloadableURL(const std::string& url)
+
+std::wstring convertToDownloadableURL(const std::wstring& url)
 {
-	std::regex driveRegex(R"(https://drive\.google\.com/file/d/([a-zA-Z0-9_-]+)/view.*)");
-	std::regex userContentRegex(R"(https://drive\.usercontent\.google\.com/download\?id=([a-zA-Z0-9_-]+)&.*)");
-	std::regex docsRegex(R"(https://docs\.google\.com/document/d/([a-zA-Z0-9_-]+)/.*)");
-	std::smatch match;
+    std::wregex driveRegex(LR"(https://drive\.google\.com/file/d/([a-zA-Z0-9_-]+)/view.*)");
+    std::wregex userContentRegex(LR"(https://drive\.usercontent\.google\.com/download\?id=([a-zA-Z0-9_-]+)&.*)");
+    std::wregex docsRegex(LR"(https://docs\.google\.com/document/d/([a-zA-Z0-9_-]+)/.*)");
+    std::wsmatch match;
 
-	if (std::regex_match(url, match, driveRegex) && match.size() == 2)
-	{
-		std::string fileId = match[1].str();
-		WriteLogFile(L"+ URL is regular drive url : https://drive.google.com/uc?export=download&id=%S\n", fileId.c_str());
-		return "https://drive.google.com/uc?export=download&id=" + fileId;
-	}
+    if (std::regex_match(url, match, driveRegex) && match.size() == 2)
+    {
+        std::wstring fileId = match[1].str();
+        WriteLogFile(L"+ URL is regular drive url : https://drive.google.com/uc?export=download&id=%s", fileId.c_str());
+        return L"https://drive.google.com/uc?export=download&id=" + fileId;
+    }
 
-	if (std::regex_match(url, match, userContentRegex) && match.size() == 2)
-	{
-		std::string fileId = match[1].str();
-		WriteLogFile(L"+ URL is usercontent url : https://drive.usercontent.google.com/download?id=%S\n", fileId.c_str());
-		return "https://drive.usercontent.google.com/download?id=" + fileId;
-	}
+    if (std::regex_match(url, match, userContentRegex) && match.size() == 2)
+    {
+        std::wstring fileId = match[1].str();
+        WriteLogFile(L"+ URL is usercontent url : https://drive.usercontent.google.com/download?id=%s", fileId.c_str());
+        return L"https://drive.usercontent.google.com/download?id=" + fileId;
+    }
 
-	if (std::regex_match(url, match, docsRegex) && match.size() == 2)
-	{
-		std::string fileId = match[1].str();
-		WriteLogFile(L"+ URL is Google Docs url : https://docs.google.com/uc?export=download&confirm=1&id=%S\n", fileId.c_str());
-		return "https://docs.google.com/uc?export=download&confirm=1&id=" + fileId;
-	}
+    if (std::regex_match(url, match, docsRegex) && match.size() == 2)
+    {
+        std::wstring fileId = match[1].str();
+        WriteLogFile(L"+ URL is Google Docs url : https://docs.google.com/uc?export=download&confirm=1&id=%s", fileId.c_str());
+        return L"https://docs.google.com/uc?export=download&confirm=1&id=" + fileId;
+    }
 
-	return "";
+    return L"";
+}
+std::wstring stringToWString(const std::string& str)
+{
+    // size_t len = mbstowcs(nullptr, str.c_str(), 0);
+    // std::wstring wstr(len, L'\0');
+    // mbstowcs(&wstr[0], str.c_str(), len);
+    // conv << str.c_str();
+    // std::wstring wstr(conv.str());
+    std::wstring wstr(str.begin(), str.end());
+    return wstr;
 }
 
-std::string getFinalURL(const std::string& url)
+// Convert std::wstring to std::string
+std::string wstringToString(const std::wstring& wstr)
 {
-	CURLcode res;
-	char* effectiveUrl = nullptr;
-	CURL* curl;
-	curl = curl_easy_init();
-	if (!curl)
-	{
-		WriteLogFile(L"- curl_easy_init() failed");
-		return "";
-	}
+    /*size_t len = wcstombs(nullptr, wstr.c_str(), 0);
+    std::string str(len, '\0');
+    wcstombs(&str[0], wstr.c_str(), len);*/
+    std::string str(wstr.begin(), wstr.end());
+    return str;
+}
+std::wstring getFinalURL(const std::wstring& url)
+{
+    CURLcode res;
+    //wchar_t* effectiveUrl = nullptr;
+    std::string effectiveUrl;
+    CURL* curl = curl_easy_init();
 
-	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Follow redirects
-	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 10L); // Maximum number of redirects to follow
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L); // Set timeout duration to one minute
-	curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
-	res = curl_easy_perform(curl);
+    if (!curl)
+    {
+        WriteLogFile(L"- curl_easy_init() failed in getFinalURL");
+        return L"";
+    }
 
-	if (res != CURLE_OK)
-	{
-		WriteLogFile(L"- curl_easy_perform() failed: %S",curl_easy_strerror(res));
-		curl_easy_cleanup(curl);
-		return "";
-	}
-	long responseCode;
-	res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
-	if (res == CURLE_OK)
-	{
-		if (responseCode != 200)
-		{
-			WriteLogFile(L"- Response Code is Wrong : %d",responseCode);
-			return "";
-		}
+    // Convert std::wstring to std::string
+    //std::string url_str(url.begin(), url.end());
+    std::string url_str = wstringToString(url);
 
-	}
-	else
-	{
-		WriteLogFile(L"- curl_easy_getinfo() failed to get response code: %S",curl_easy_strerror(res));
-		return "";
-	}
-	char* tmpUrl;
+    curl_easy_setopt(curl, CURLOPT_URL, url_str.c_str());
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Follow redirects
+    curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 10L); // Maximum number of redirects to follow
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L); // Set timeout duration to one minute
+    curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
 
-	res = curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &tmpUrl);
-	if ((res == CURLE_OK) && tmpUrl)
-	{
-		effectiveUrl = tmpUrl;
-		WriteLogFile(L"+ Next Stage URL : %S",effectiveUrl);
-	}
-	else
-	{
-		WriteLogFile(L"- curl_easy_getinfo() failed: %S",curl_easy_strerror(res));
-		curl_easy_cleanup(curl);
-		return "";
-	}
+    res = curl_easy_perform(curl);
 
-	//curl_easy_cleanup(curl);
+    if (res != CURLE_OK)
+    {
+        WriteLogFile(L"- curl_easy_perform() failed: %s", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+        return L"";
+    }
 
 
-	return effectiveUrl;
+    long responseCode;
+    res = curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
+
+
+    if (res == CURLE_OK)
+    {
+        if (responseCode != 200)
+        {
+            WriteLogFile(L"- Response Code is Wrong: %ld", +responseCode);
+            curl_easy_cleanup(curl);
+            return L"";
+        }
+    }
+    else
+    {
+        WriteLogFile(L"- curl_easy_getinfo() failed to get response code: %s", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+        return L"";
+    }
+
+    char* tmpUrl;
+    res = curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &tmpUrl);
+
+
+    if ((res == CURLE_OK) && tmpUrl)
+    {
+        //std::string tmpUrl_str(tmpUrl);
+        /*std::wstring tmpUrl_wstr(tmpUrl_str.begin(), tmpUrl_str.end());
+        effectiveUrl = new wchar_t[tmpUrl_wstr.length() + 1];*/
+        //std::wcscpy(effectiveUrl, tmpUrl_wstr.c_str());
+        std::string effectiveUrl(tmpUrl);
+
+        std::wstring finalUrl = stringToWString(effectiveUrl);
+        WriteLogFile(L"+ Next Stage URL: %s", finalUrl.c_str());
+
+        curl_easy_cleanup(curl);
+
+        return finalUrl;
+
+    }
+    else
+    {
+        WriteLogFile(L"- curl_easy_getinfo() failed: %s", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+        return L"";
+    }
+    // _setmode(_fileno(stdout), _O_WTEXT);
+
+
+    //std::wstring finalUrl(effectiveUrl);
+    //delete[] effectiveUrl;
 }
 
-std::string fetchHTMLContent(const std::string& url)
+
+std::wstring fetchHTMLContent(const std::wstring& url)
 {
-	//std::cout << "+ fetchHTMLContent is called." << std::endl;
+    //WriteLogFile(L"+ fetchHTMLContent is called.");
 
-	HINTERNET hInternet = InternetOpen(L"MyUserAgent", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
-	if (!hInternet)
-	{
-		WriteLogFile(L"- InternetOpen() failed, error: %d",GetLastError());
-		return "";
-	}
-	//std::cout << "+ hInternet Created." << std::endl;
+    HINTERNET hInternet = InternetOpen(L"MyUserAgent", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+    if (!hInternet)
+    {
+        WriteLogFile(L"- InternetOpen() failed, error: %s", GetLastError());
+        return L"";
+    }
+    //WriteLogFile(L"+ hInternet Created.");
 
-	HINTERNET hUrl = InternetOpenUrlW(hInternet, std::wstring(url.begin(), url.end()).c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
-	if (!hUrl)
-	{
-		WriteLogFile(L"- InternetOpenUrl() failed, error: %d",GetLastError());
-		InternetCloseHandle(hInternet);
-		return "";
-	}
-	//std::cout << "+ hUrl created" << std::endl;
+    HINTERNET hUrl = InternetOpenUrlW(hInternet, url.c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
+    if (!hUrl)
+    {
+        WriteLogFile(L"- InternetOpenUrl() failed, error: %s", GetLastError());
+        InternetCloseHandle(hInternet);
+        return L"";
+    }
+    //WriteLogFile(L"+ hUrl created");
 
-	std::stringstream ss;
-	char buffer[2048];
-	DWORD bytesRead;
-	while (InternetReadFile(hUrl, buffer, sizeof(buffer), &bytesRead) && bytesRead > 0)
-	{
-		ss.write(buffer, bytesRead);
-	}
-	//std::cout << "+ The content of code : "<<ss.str() << std::endl;
+    std::wstringstream ss;
+    wchar_t buffer[2048];
+    DWORD bytesRead;
+    while (InternetReadFile(hUrl, buffer, sizeof(buffer), &bytesRead) && bytesRead > 0)
+    {
+        ss.write(buffer, bytesRead / sizeof(wchar_t)); // Adjust for wide character size
+    }
+    WriteLogFile(L"+ The content of the fetched HTML: %s", ss.str());
 
-	InternetCloseHandle(hUrl);
-	InternetCloseHandle(hInternet);
+    InternetCloseHandle(hUrl);
+    InternetCloseHandle(hInternet);
 
-	return ss.str();
+    return ss.str();
 }
 
-std::string constructFinalURL(const std::string& htmlContent, const std::string& baseUrl)
+std::wstring constructFinalURL(const std::wstring& htmlContent, const std::wstring& baseUrl)
 {
-	//std::cout << "constructFinalURL called" << std::endl;
+    //WriteLogFile(L"constructFinalURL called");
 
-	std::regex idRegex("(<input type=\"hidden\" name=\"id\" value=\"([^\"]+)\">)");
-	std::regex confirmRegex("(<input type=\"hidden\" name=\"confirm\" value=\"([^\"]+)\">)");
-	std::regex uuidRegex("(<input type=\"hidden\" name=\"uuid\" value=\"([^\"]+)\">)");
+    std::wregex idRegex(L"(<input type=\"hidden\" name=\"id\" value=\"([^\"]+)\" > )");
+    std::wregex confirmRegex(L"(<input type=\"hidden\" name=\"confirm\" value=\"([^\"]+)\" > )");
+    std::wregex uuidRegex(L"(<input type=\"hidden\" name=\"uuid\" value=\"([^\"]+)\" > )");
 
-	std::smatch match;
-	std::string id, confirm, uuid;
+    std::wsmatch match;
+    std::wstring id, confirm, uuid;
 
-	if (std::regex_search(htmlContent, match, idRegex) && match.size() == 3)
-	{
-		id = match[2].str();
-		WriteLogFile(L"+ Extracted file ID : %S\n", id.c_str());
-	}
-	if (std::regex_search(htmlContent, match, confirmRegex) && match.size() == 3)
-	{
-		confirm = match[2].str();
-		WriteLogFile(L"+ Confirm Method : %S\n", confirm.c_str());
+    if (std::regex_search(htmlContent, match, idRegex) && match.size() == 2)
+    {
+        id = match[1].str();
+        WriteLogFile(L"+ Extracted file ID: %s", id.c_str());
+    }
+    if (std::regex_search(htmlContent, match, confirmRegex) && match.size() == 2)
+    {
+        confirm = match[1].str();
+        WriteLogFile(L"+ Confirm Method: %s", confirm.c_str());
+    }
+    if (std::regex_search(htmlContent, match, uuidRegex) && match.size() == 2)
+    {
+        uuid = match[1].str();
+        WriteLogFile(L"+ UUID: %s", uuid.c_str());
+    }
 
-	}
-	if (std::regex_search(htmlContent, match, uuidRegex) && match.size() == 3)
-	{
-		uuid = match[2].str();
-		WriteLogFile(L"+ UUID : %S\n", uuid.c_str());
-	}
+    if (!id.empty() && !confirm.empty() && !uuid.empty())
+    {
+        std::wstring finalUrl = baseUrl + L"?id=" + id + L"&confirm=" + confirm + L"&uuid=" + uuid;
+        WriteLogFile(L"+ Next Stage URL: %s", finalUrl.c_str());
+        return finalUrl;
+    }
 
-	if (!id.empty() && !confirm.empty() && !uuid.empty())
-	{
-		printf("+ Next Stage URL : %s\n", (baseUrl + "?id=" + id + "&confirm=" + confirm + "&uuid=" + uuid).c_str());
-		return baseUrl + "?id=" + id + "&confirm=" + confirm + "&uuid=" + uuid;
-	}
-
-	return "";
+    return L"";
 }
 
-bool handleHTMLFile(const std::string& url, std::string& finalDownloadUrl)
+bool handleHTMLFile(const std::wstring& url, std::wstring& finalDownloadUrl)
 {
-	std::string htmlContent = fetchHTMLContent(url);
-	if (htmlContent.find("id=\"uc-download-link\"") != std::string::npos)
-	{
-		//printf("+ Found HTML content in the URL\n");
-		finalDownloadUrl = constructFinalURL(htmlContent, "https://drive.usercontent.google.com/download");
-		return !finalDownloadUrl.empty();
-	}
-	return false;
+    std::wstring htmlContent = fetchHTMLContent(url);
+    if (htmlContent.find(L"id=\"uc-download-link\"") != std::wstring::npos)
+    {
+        WriteLogFile(L"+ Found HTML content in the URL");
+        finalDownloadUrl = constructFinalURL(htmlContent, L"https://drive.usercontent.google.com/download");
+        return !finalDownloadUrl.empty();
+    }
+    return false;
 }
 
-bool isHTMLContent(const std::string& url)
+bool isHTMLContent(const std::wstring& url)
 {
-	//std::cout << "+ isHTMLContent Called." << std::endl;
+    //WriteLogFile(L"+ isHTMLContent Called.");
 
-	CURL* curl;
-	CURLcode res;
-	char* contentType = nullptr;
+    CURL* curl;
+    CURLcode res;
+    char* contentType = nullptr;
 
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-	curl = curl_easy_init();
+    //curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
 
-	if (!curl)
-	{
-		WriteLogFile(L"- curl_easy_init() failed");
-		return false;
-	}
-	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(curl, CURLOPT_NOBODY, 1L); // We only want the headers
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Follow redirects
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L); // Set timeout duration to one minute
+    if (!curl)
+    {
+        WriteLogFile(L"- curl_easy_init() failed in isHTMLContent");
+        return false;
+    }
 
-	res = curl_easy_perform(curl);
-	if (res != CURLE_OK)
-	{
-		WriteLogFile(L"- curl_easy_perform() failed: %S",curl_easy_strerror(res));
-		curl_easy_cleanup(curl);
-		curl_global_cleanup();
-		return false;
-	}
+    std::string url_str(url.begin(), url.end()); // Convert std::wstring to std::string
+    //WriteLogFile(L"+ The url_str : %s\n + Cstr Variant : %s",url_str,url_str.c_str());
+    //std::cout<<"+ The url_str :" << url_str << typeid(url_str).name() << "\nCstr Variant : "<< url_str.c_str()<< typeid(url_str.c_str() ).name() <<"\n";
 
-	res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
-	if (res != CURLE_OK || !contentType)
-	{
-		WriteLogFile(L"- curl_easy_getinfo() failed: %S",curl_easy_strerror(res));
-		curl_easy_cleanup(curl);
-		curl_global_cleanup();
-		return false;
-	}
+    curl_easy_setopt(curl, CURLOPT_URL, url_str.c_str());
+    curl_easy_setopt(curl, CURLOPT_NOBODY, 1L); // We only want the headers
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Follow redirects
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L); // Set timeout duration to one minute
 
-	std::string contentTypeStr(contentType);
-	//std::cout << "+ The contentType is : " << contentTypeStr << std::endl;
+    res = curl_easy_perform(curl);
+    if (res != CURLE_OK)
+    {
+        WriteLogFile(L"- curl_easy_perform() failed: %s", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+        //curl_global_cleanup();
+        return false;
+    }
 
-	curl_easy_cleanup(curl);
-	curl_global_cleanup();
+    res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
+    if (res != CURLE_OK || !contentType)
+    {
+        WriteLogFile(L"- curl_easy_getinfo() failed: %s", +curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+        //curl_global_cleanup();
+        return false;
+    }
 
-	return contentTypeStr.find("html") != std::string::npos;
+    std::string contentTypeStr(contentType);
+    std::wstring contentTypeWstr = stringToWString(contentTypeStr);
+    WriteLogFile(L"+ The contentType is: %s", contentTypeWstr.c_str());
+    //std::cout<<"+ The contentType is: %ls" << contentTypeStr<<"\n";
+    //std::cout << "+ The contentType is: %ls" << contentType << "\n";
+
+
+
+    curl_easy_cleanup(curl);
+    //curl_global_cleanup();
+
+    return contentTypeStr.find("html") != std::string::npos;
 }
 
+//size_t header_callbacker(wchar_t* buffer, size_t size, size_t nitems, std::wstring* userdata)
+//{
+//    std::wstring header(buffer, size * nitems);
+//    std::wcout << L"The Header : " << header << L"\n";
+//
+//    const std::wstring filename_header = L"Content-Disposition: attachment; filename=";
+//    if (header.find(filename_header) != std::wstring::npos)
+//    {
+//        size_t pos = header.find(filename_header) + filename_header.size();
+//        size_t end_pos = header.find(L"\r\n", pos);
+//        *userdata = header.substr(pos, end_pos - pos);
+//
+//        // Remove quotes from the filename
+//        userdata->erase(std::remove(userdata->begin(), userdata->end(), L'\"'), userdata->end());
+//        std::wcout<<L"The UserData : " << userdata << L"\n";
+//    }
+//    return nitems * size;
+//}
+size_t header_callbacker(char* buffer, size_t size, size_t nitems, std::string* userdata)
+{
+    std::string header(buffer, size * nitems);
+    const std::string filename_header = "Content-Disposition: attachment; filename=";
+    if (header.find(filename_header) != std::string::npos) {
+        size_t pos = header.find(filename_header) + filename_header.size();
+        size_t end_pos = header.find("\r\n", pos);
+        *userdata = header.substr(pos, end_pos - pos);
+
+        // Remove quotes from the filename
+        userdata->erase(std::remove(userdata->begin(), userdata->end(), '\"'), userdata->end());
+    }
+    return nitems * size;
+}
+std::wstring getFileName(const std::wstring& url)
+{
+
+    CURL* curl = curl_easy_init();
+    CURLcode res;
+    std::string fName;
+
+    //curl_global_init(CURL_GLOBAL_DEFAULT);
+    if (curl)
+    {
+        //std::string url_str(url.begin(), url.end()); // Convert std::wstring to std::string
+        std::string url_str = wstringToString(url);
+        curl_easy_setopt(curl, CURLOPT_URL, url_str.c_str());
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callbacker);
+        curl_easy_setopt(curl, CURLOPT_HEADERDATA, &fName);
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+        res = curl_easy_perform(curl);
+        if (res != CURLE_OK)
+        {
+            WriteLogFile(L"- curl_easy_perform() failed in getFileName : %s", curl_easy_strerror(res));
+            curl_easy_cleanup(curl);
+            //curl_global_cleanup();
+            return L"";
+        }
+
+    }
+    else
+    {
+        WriteLogFile(L"- curl_easy_init() failed in getFileName");
+
+    }
+
+    if (!fName.empty())
+    {
+        std::wstring theFile = stringToWString(fName);
+        WriteLogFile(L"+ The file Name : %s", theFile.c_str());
+        return theFile;
+
+    }
+    else
+    {
+        WriteLogFile(L"- Failed Get FileName");
+
+
+    }
+    //return file_name;
+    return L"";
+}
+
+std::wstring gen_random(const int len)
+{
+    static const wchar_t alphanum[] =
+        L"0123456789"
+        L"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        L"abcdefghijklmnopqrstuvwxyz";
+    std::wstring tmp_s;
+    tmp_s.reserve(len);
+
+    for (int i = 0; i < len; ++i)
+    {
+        tmp_s += alphanum[rand() % (sizeof(alphanum) / sizeof(wchar_t) - 1)];
+    }
+
+    return tmp_s;
+}
+
+std::wstring GetFullPath(const std::wstring& relativePath)
+{
+
+    wchar_t fullPath[MAX_PATH];
+    if (GetFullPathNameW(relativePath.c_str(), MAX_PATH, fullPath, NULL) == 0)
+    {
+        // Handle the error, GetLastError() can be used to get more error details
+        WriteLogFile(L"- Error getting full path : %s", GetLastError());
+        return L"";
+    }
+    return std::wstring(fullPath);
+}
 size_t WriteCallback(void* ptr, size_t size, size_t nmemb, void* stream)
 {
-	std::ofstream* out = (std::ofstream*)stream;
-	out->write((const char*)ptr, size * nmemb);
-	return size * nmemb;
+    std::ofstream* out = (std::ofstream*)stream;
+    out->write((const char*)ptr, size * nmemb);
+    return size * nmemb;
 }
 int ProgressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded)
 {
-	if (totalToDownload != 0)
-	{
-		int percentage = static_cast<int>((nowDownloaded * 100) / totalToDownload);
-//		WriteLogFile(L"\rDownload Progress: " << percentage << "% (" << nowDownloaded << " / " << totalToDownload << " bytes)" << std::flush;
-	}
-	return 0; // Return 0 to continue the download
+    if (totalToDownload != 0)
+    {
+        int percentage = static_cast<int>((nowDownloaded * 100) / totalToDownload);
+        std::wcout << L"\rDownload Progress: " << percentage << "% (" << nowDownloaded << " / " << totalToDownload << " bytes)" << std::flush;
+    }
+    return 0; // Return 0 to continue the download
 }
-bool downloadFile(const std::string& url, const std::string& localPath)
+bool downloadFile(const std::wstring& url, const std::wstring& localPath) {
+    WriteLogFile(L"+ Downloading URL : %ls \n + The Location : %ls\n", url.c_str(), localPath.c_str());
+
+    CURL* curl;
+    CURLcode res;
+    std::ofstream outFile(localPath, std::ios::binary);
+
+    if (!outFile.is_open()) {
+        WriteLogFile(L"- Failed to open file: %s", localPath.c_str());
+        return false;
+    }
+
+    //curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+
+    if (!curl)
+    {
+        WriteLogFile(L"- curl_easy_init() failed in downloadFile");
+        return false;
+    }
+
+    std::string url_str(url.begin(), url.end()); // Convert std::wstring to std::string
+    curl_easy_setopt(curl, CURLOPT_URL, url_str.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outFile);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Follow redirects
+    // curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L); // Set timeout duration to one minute
+    curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, ProgressCallback); // Set progress callback function
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L); // Enable progress meter
+
+    res = curl_easy_perform(curl);
+    if (res != CURLE_OK) {
+        WriteLogFile(L"- curl_easy_perform() failed: %s", curl_easy_strerror(res));
+        curl_easy_cleanup(curl);
+        //curl_global_cleanup();
+        return false;
+    }
+
+    curl_easy_cleanup(curl);
+    //curl_global_cleanup();
+    outFile.close();
+
+    WriteLogFile(L"\n+ Download completed!");
+    return true;
+}
+std::wstring processGoogleDrive(std::wstring& url)
 {
 
-	WriteLogFile(L"+ Downloading URL : %S \n + The Location : %S\n", url.c_str(), localPath.c_str());
+    int urlType = isValidGoogleDriveOrDocsURL(url);
+    if (urlType == 0)
+    {
+        WriteLogFile(L"- The URL is not a valid Google Drive, user content URL or Google Docs url : %s",url.c_str());
+        return std::wstring();
+    }
+
+    std::wstring downloadUrl = convertToDownloadableURL(url);
+    if (downloadUrl.empty())
+    {
+        WriteLogFile(L"- The URL is not a valid Google Drive file URL : %s", url.c_str());
+
+        return std::wstring();
+    }
+
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+
+    std::wstring finalDownloadUrl;
+    if (urlType == 1)
+    {
+        std::wstring htmlContent = fetchHTMLContent(downloadUrl);
+        finalDownloadUrl = constructFinalURL(htmlContent, L"https://drive.usercontent.google.com/download");
+    }
+    else
+    {
+        std::wstring finalUrl = getFinalURL(downloadUrl);
+        WriteLogFile(L"+ the finalURL : %s", finalUrl.c_str());
 
 
-	CURL* curl;
-	CURLcode res;
-	std::ofstream outFile(localPath, std::ios::binary);
+        if (finalUrl.empty())
+        {
+            WriteLogFile(L"- Failed to get the final URL.");
+            curl_global_cleanup();
+
+            return std::wstring();
+        }
 
 
-	if (!outFile.is_open())
-	{
-		WriteLogFile(L"- Failed to open file: %S",localPath.c_str());
-		return false;
-	}
+        if (isHTMLContent(finalUrl))
+        {
+            if (!handleHTMLFile(finalUrl, finalDownloadUrl))
+            {
+                WriteLogFile(L"- Failed to construct final download URL from HTML content.");
+                curl_global_cleanup();
 
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-	curl = curl_easy_init();
-
-	if (!curl)
-	{
-		WriteLogFile(L"- curl_easy_init() failed");
-		return false;
-	}
-	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outFile);
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L); // Follow redirects
-	//curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L); // Set timeout duration to one minute
-	curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, ProgressCallback); // Set progress callback function
-	curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L); // Enable progress meter
-
-	res = curl_easy_perform(curl);
-	if (res != CURLE_OK)
-	{
-		WriteLogFile(L"- curl_easy_perform() failed: %S",curl_easy_strerror(res));
-		curl_easy_cleanup(curl);
-		curl_global_cleanup();
-		return false;
-	}
-
-	curl_easy_cleanup(curl);
-	curl_global_cleanup();
-	outFile.close();
+                return std::wstring();
+            }
+        }
+        else
+        {
+            finalDownloadUrl = finalUrl;
 
 
-	WriteLogFile(L"\n+ Download completed!");
-	return true;
-}
+        }
+    }
 
+    std::wstring localPath;
 
-size_t header_callbacker(char* buffer, size_t size, size_t nitems, std::string* userdata)
-{
-	std::string header(buffer, size * nitems);
-	const std::string filename_header = "Content-Disposition: attachment; filename=";
-	if (header.find(filename_header) != std::string::npos)
-	{
-		size_t pos = header.find(filename_header) + filename_header.size();
-		size_t end_pos = header.find("\r\n", pos);
-		*userdata = header.substr(pos, end_pos - pos);
-
-		// Remove quotes from the filename
-		userdata->erase(std::remove(userdata->begin(), userdata->end(), '\"'), userdata->end());
-	}
-	return nitems * size;
-}
-
-
-std::string getFileName(const std::string& url)
-{
-	CURL* curl;
-	CURLcode res;
-	std::string file_name;
-
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-	curl = curl_easy_init();
-	if (curl)
-	{
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callbacker);
-		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &file_name);
-		curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
-		res = curl_easy_perform(curl);
-		if (res != CURLE_OK)
-		{
-			fprintf(stderr, "- curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-			curl_easy_cleanup(curl);
-			curl_global_cleanup();
-			return "";
-		}
-	}
-	return file_name;
-
-}
-
-std::string gen_random(const int len)
-{
-	static const char alphanum[] =
-		"0123456789"
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		"abcdefghijklmnopqrstuvwxyz";
-	std::string tmp_s;
-	tmp_s.reserve(len);
-
-	for (int i = 0; i < len; ++i)
-	{
-		tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
-	}
-
-	return tmp_s;
-}
-
-CString GetFullPath(const std::string& relativePath)
-{
-	// Convert std::string to std::wstring
-	int wideCharSize = MultiByteToWideChar(CP_ACP, 0, relativePath.c_str(), -1, NULL, 0);
-	std::wstring wideRelativePath(wideCharSize, 0);
-	MultiByteToWideChar(CP_ACP, 0, relativePath.c_str(), -1, &wideRelativePath[0], wideCharSize);
-
-	wchar_t fullPath[MAX_PATH];
-	if (GetFullPathNameW(wideRelativePath.c_str(), MAX_PATH, fullPath, NULL) == 0)
-	{
-		// Handle the error, GetLastError() can be used to get more error details
-		WriteLogFile(L"- Error getting full path: %d",GetLastError());
-		return L"";
-	}
-	return CString(fullPath);
-}
-
-CString processGoogleDrive(CString& url)
-{
-	CT2A c_url(url);
-	std::string s_url(c_url);
-	int urlType = isValidGoogleDriveOrDocsURL(s_url);
-	if (urlType == 0)
-	{
-		WriteLogFile(L"- The URL is not a valid Google Drive, or user content URL.");
-		return CString();
-	}
-	std::string downloadUrl = convertToDownloadableURL(s_url);
-	if (downloadUrl.empty())
-	{
-		WriteLogFile(L"- The URL is not a valid Google Drive file URL.");
-		return CString();
-	}
-
-	std::string finalDownloadUrl;
-	if (urlType == 1)
-	{
-		std::string htmlContent = fetchHTMLContent(downloadUrl);
-		finalDownloadUrl = constructFinalURL(htmlContent, "https://drive.usercontent.google.com/download");
-	}
-	else
-	{
-		std::string finalUrl = getFinalURL(downloadUrl);
-		WriteLogFile(L"+ the finalURL : %S",finalUrl.c_str());
-		
-
-		if (finalUrl.empty())
-		{
-			WriteLogFile(L"- Failed to get the final URL.");
-			return CString();
-		}
-
-
-		if (isHTMLContent(finalUrl))
-		{
-			if (!handleHTMLFile(finalUrl, finalDownloadUrl))
-			{
-				WriteLogFile(L"- Failed to construct final download URL from HTML content.");
-				return CString();
-			}
-		}
-		else
-		{
-			finalDownloadUrl = finalUrl;
-
-
-		}
-	}
-
-	std::string localPath;
-	std::string filename = getFileName(finalDownloadUrl);
-	if (!filename.empty())
-	{
-		localPath = filename;
-	}
-	else
-	{
-		localPath = gen_random(7) + ".bin";
-	}
+    std::wstring filename = getFileName(finalDownloadUrl);
+    if (!filename.empty())
+    {
+        localPath = filename;
+    }
+    else
+    {
+        localPath = gen_random(7) + L".bin";
+    }
 
 
 
-	if (downloadFile(finalDownloadUrl, localPath))
-	{
+    if (downloadFile(finalDownloadUrl, localPath))
+    {
 
-		WriteLogFile(L"+ The file has been downloaded successfully to %S",localPath.c_str());
-	}	
-	else
-	{
-		WriteLogFile(L"- Failed to download the file.");
-		return CString();
-	}
-	CString fullPath = GetFullPath(localPath);
-	if (!fullPath.IsEmpty())
-	{
-		WriteLogFile(L"- Full path : %s",fullPath.GetString());
-		return fullPath;
+        WriteLogFile(L"+ The file has been downloaded successfully to %s", localPath.c_str());
+    }
+    else
+    {
+        WriteLogFile(L"- Failed to download the file.");
+        curl_global_cleanup();
 
-	}
-	else
-	{
-		WriteLogFile(L"- Failed to get full path.");
-		return CString();
-	}
+        return std::wstring();
+
+    }
+    std::wstring fullPath = GetFullPath(localPath);
+    if (!fullPath.empty())
+    {
+        WriteLogFile(L"- Full path : %s", fullPath.c_str());
+        curl_global_cleanup();
+
+        return fullPath;
+
+    }
+    else
+    {
+        WriteLogFile(L"- Failed to get full path.");
+        curl_global_cleanup();
+
+        return std::wstring();
+    }
 
 }

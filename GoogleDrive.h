@@ -21,21 +21,26 @@
 #include <cstdio>
 #include <typeinfo>
 #include <stdlib.h>
+#include <codecvt>
+#include <fcntl.h>
+#include <io.h>
 
 
 
-int isValidGoogleDriveOrDocsURL(const std::string& url);
-std::string convertToDownloadableURL(const std::string& url);
-std::string getFinalURL(const std::string& url);
-std::string fetchHTMLContent(const std::string& url);
-std::string constructFinalURL(const std::string& htmlContent, const std::string& baseUrl);
-bool handleHTMLFile(const std::string& url, std::string& finalDownloadUrl);
-bool isHTMLContent(const std::string& url);
+
+int isValidGoogleDriveOrDocsURL(const std::wstring& url);
+std::wstring convertToDownloadableURL(const std::wstring& url);
+std::wstring getFinalURL(const std::wstring& url);
+std::wstring fetchHTMLContent(const std::wstring& url);
+std::wstring constructFinalURL(const std::wstring& htmlContent, const std::wstring& baseUrl);
+bool handleHTMLFile(const std::wstring& url, std::wstring& finalDownloadUrl);
+bool isHTMLContent(const std::wstring& url);
 size_t WriteCallback(void* ptr, size_t size, size_t nmemb, void* stream);
 int ProgressCallback(void* ptr, curl_off_t totalToDownload, curl_off_t nowDownloaded, curl_off_t totalToUpload, curl_off_t nowUploaded);
-bool downloadFile(const std::string& url, const std::string& localPath);
+bool downloadFile(const std::wstring& url, const std::wstring& localPath);
+//size_t header_callbacker(wchar_t* buffer, size_t size, size_t nitems, std::wstring* userdata);
 size_t header_callbacker(char* buffer, size_t size, size_t nitems, std::string* userdata);
-std::string getFileName(const std::string& url);
-std::string gen_random(const int len);
-CString GetFullPath(const std::string& relativePath);
-CString processGoogleDrive(CString& url);
+std::wstring getFileName(const std::wstring& url);
+std::wstring gen_random(const int len);
+std::wstring GetFullPath(const std::wstring& relativePath);
+std::wstring processGoogleDrive(std::wstring& url);
