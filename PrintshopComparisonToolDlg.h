@@ -62,6 +62,9 @@ protected:
 	afx_msg void OnClose();
 	afx_msg void OnQuit();
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	afx_msg void OnEnChangeEditOrig();
+	afx_msg void OnEnChangeEditScan();
+
 	DECLARE_MESSAGE_MAP()
 
 private:

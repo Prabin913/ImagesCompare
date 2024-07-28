@@ -80,7 +80,30 @@ BEGIN_MESSAGE_MAP(PrintshopComparisonToolDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_BATCHVIEWON, &PrintshopComparisonToolDlg::OnBnClickedToggleBatch)
 	ON_BN_CLICKED(IDC_BUTTON_SIDE_A, &PrintshopComparisonToolDlg::OnBnClickedButtonSideA)
 	ON_BN_CLICKED(IDC_BUTTON_SIDE_B, &PrintshopComparisonToolDlg::OnBnClickedButtonSideB)
+	ON_EN_CHANGE(IDC_EDIT_ORIG, &PrintshopComparisonToolDlg::OnEnChangeEditOrig)
+	ON_EN_CHANGE(IDC_EDIT_SCAN, &PrintshopComparisonToolDlg::OnEnChangeEditScan)
 END_MESSAGE_MAP()
+
+
+void PrintshopComparisonToolDlg::OnEnChangeEditOrig()
+{
+	CString temp,temp3;
+	GetDlgItem(IDC_EDIT_ORIG)->GetWindowText(temp);
+	std::wstring temp2(temp.GetString());
+	temp2 = processGoogleDrive(temp2);
+	temp3 = temp2.c_str();
+	if (temp3.IsEmpty()) return;
+	m_origPath1=temp3;
+	UpdateData(FALSE);
+	
+}
+
+void PrintshopComparisonToolDlg::OnEnChangeEditScan()
+{
+	// Code to handle changes in the IDC_EDIT_SCAN control
+	// For example, updating some internal state or triggering a reprocessing
+	AfxMessageBox(L"IDC_EDIT_SCAN content changed");
+}
 
 // PrintshopComparisonToolDlg class implementation
 void PrintshopComparisonToolDlg::OnHotKey(UINT nHotKeyId, UINT nKey1, UINT nKey2)
