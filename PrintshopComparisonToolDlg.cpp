@@ -50,9 +50,9 @@ void PrintshopComparisonToolDlg::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_SLIDER_THRESHOLD, threshold_slider);
 	DDX_Control(pDX, IDC_STATUS, m_Status);
-	//DDX_Control(pDX, IDC_BUTTON_ORIG, m_BtnOrig);
-	//DDX_Control(pDX, IDC_BUTTON_SCAN, m_BtnScan);
-	//DDX_Control(pDX, IDC_BUTTON_PROC, m_BtnProc);
+	DDX_Control(pDX, IDC_BUTTON_ORIG, m_BtnOrig);
+	DDX_Control(pDX, IDC_BUTTON_SCAN, m_BtnScan);
+	DDX_Control(pDX, IDC_BUTTON_PROC, m_BtnProc);
 	DDX_Control(pDX, IDC_BUTTON_BATCHVIEWON, m_BtnBatch);
 	DDX_Control(pDX, IDC_BUTTON_SETTINGS, m_BtnSetTH);
 	DDX_Control(pDX, IDC_BUTTON_SIDE_A, m_BtnSideA);
