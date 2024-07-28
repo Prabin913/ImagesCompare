@@ -89,7 +89,7 @@ void PrintshopComparisonToolDlg::OnEnChangeEditOrig()
 {
 	CString temp,temp3;
 	GetDlgItem(IDC_EDIT_ORIG)->GetWindowText(temp);
-	std::wstring temp2(temp.GetString());
+	std::wstring temp2 = temp.GetString();
 	temp2 = processGoogleDrive(temp2);
 	temp3 = temp2.c_str();
 	if (temp3.IsEmpty()) return;
