@@ -561,10 +561,10 @@ std::wstring processGoogleDrive(std::wstring& url)
     std::wstring fullPath = GetFullPath(localPath);
     if (!fullPath.empty())
     {
-        WriteLogFile(L"- Full path : %s", fullPath.c_str());
+        WriteLogFile(L"+ Full path : %s", fullPath.c_str());
         curl_global_cleanup();
 
-        return fullPath;
+        return L'\''+ fullPath+ L'\'';
 
     }
     else

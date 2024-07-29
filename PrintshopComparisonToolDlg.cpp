@@ -92,8 +92,12 @@ void PrintshopComparisonToolDlg::OnEnChangeEditOrig()
 	std::wstring temp2 = temp.GetString();
 	temp2 = processGoogleDrive(temp2);
 	temp3 = temp2.c_str();
+	WriteLogFile(L"+ The temp : %s", temp3);
+
 	if (temp3.IsEmpty()) return;
 	m_origPath1=temp3;
+	WriteLogFile(L"+ The m_origPath1 : %s", m_origPath1);
+
 	UpdateData(FALSE);
 	
 }
