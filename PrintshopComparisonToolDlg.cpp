@@ -88,6 +88,8 @@ END_MESSAGE_MAP()
 void PrintshopComparisonToolDlg::OnEnChangeEditOrig()
 {
 	CString temp,temp3;
+	CString pdfPath;
+	int pages=0;
 	GetDlgItem(IDC_EDIT_ORIG)->GetWindowText(temp);
 	std::wstring temp2 = temp.GetString();
 	temp2 = processGoogleDrive(temp2);
@@ -95,18 +97,92 @@ void PrintshopComparisonToolDlg::OnEnChangeEditOrig()
 	WriteLogFile(L"+ The temp : %s", temp3);
 
 	if (temp3.IsEmpty()) return;
-	m_origPath1=temp3;
-	WriteLogFile(L"+ The m_origPath1 : %s", m_origPath1);
-
+	pdfPath =temp3;
+	WriteLogFile(L"+ The m_origPath1 : %s", pdfPath);
+	GetDlgItem(IDC_EDIT_ORIG)->SetWindowTextW(pdfPath);
 	UpdateData(FALSE);
+
+	// Check if the selected file is already a .png file
+	if (pdfPath.Right(4).CompareNoCase(L".png") == 0)
+	{
+		// If the file is already a .png, use it directly
+		pdfPath = pdfPath;
+		pdfPath = pdfPath; // Assuming the second path is the same for simplicity
+		pages = 1; // Assume 1 page for .png file
+
+		CString strPages;
+		strPages.Format(L"File has %d page(s)", pages);
+		SHOWORIG1;
+		SHOWORIG2;
+
+		NotifyVersionInfo(L"Original PNG file loaded. " + strPages, L"Now please select a scanned image");
+	}
+	else
+	{
+		// If the file is not a .png, proceed with conversion
+		if (ConvertPDF2IMG(pdfPath, pages))
+		{
+			CString strPages;
+			strPages.Format(L"File has %d pages", pages);
+			SHOWORIG1;
+			SHOWORIG2;
+
+			NotifyVersionInfo(L"Original file loaded and converted. " + strPages, L"Now please select a scanned image");
+		}
+	}
+	SetTitle();
+
+
 	
 }
 
 void PrintshopComparisonToolDlg::OnEnChangeEditScan()
 {
-	// Code to handle changes in the IDC_EDIT_SCAN control
-	// For example, updating some internal state or triggering a reprocessing
-	AfxMessageBox(L"IDC_EDIT_SCAN content changed");
+	CString temp, temp3;
+	GetDlgItem(IDC_EDIT_SCAN)->GetWindowText(temp);
+	std::wstring temp2 = temp.GetString();
+	temp2 = processGoogleDrive(temp2);
+	temp3 = temp2.c_str();
+	WriteLogFile(L"+ The temp : %s", temp3);
+
+	if (temp3.IsEmpty()) return;
+	m_scanPath1 = temp3;
+	WriteLogFile(L"+ The m_scanPath1 : %s", m_scanPath1);
+	GetDlgItem(IDC_EDIT_SCAN)->SetWindowTextW(m_scanPath1);
+	UpdateData(FALSE);
+	if (NoPages == 2 && curPage == 2)
+	{
+		m_scanPath2 = temp3;
+		if (!m_scanPath2.IsEmpty())
+		{
+			if (m_scanPath2.Right(3).MakeUpper() == L"PDF")
+			{
+				MessageBox(L"Scanned image can't be a PDF");
+				return;
+			}
+			SHOWSCAN2;
+
+			SetTitle();
+		}
+
+	}
+	else
+	{
+		m_scanPath1 = temp3;
+		if (!m_scanPath1.IsEmpty())
+		{
+			if (m_scanPath1.Right(3).MakeUpper() == L"PDF")
+			{
+				MessageBox(L"Scanned image can't be a PDF");
+				return;
+			}
+			SHOWSCAN1;
+
+			SetTitle();
+		}
+
+	}
+
 }
 
 // PrintshopComparisonToolDlg class implementation
@@ -822,15 +898,7 @@ void PrintshopComparisonToolDlg::OnBnClickedButtonOrig()
 		m_origPath2 = L"";
 		pdfPath = SelectFileFromDialog(1);
 	}
-	if (!PathFileExists(pdfPath))
-	{
-		//CString g_c_origPath = processGoogleDrive(pdfPath);
-		std::wstring w_pth(pdfPath);
-		std::wstring w_c_origPath = processGoogleDrive(w_pth);
-		//CString g_c_origPath = processGoogleDrive(pdfPath);
-		CString g_c_origPath = w_c_origPath.c_str();
-
-	}
+	
 
 	if (pdfPath.IsEmpty()) return;
 	WriteLogFile(L"Selected pdf file: '%s'", pdfPath.GetString());

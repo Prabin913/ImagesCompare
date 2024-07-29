@@ -564,7 +564,7 @@ std::wstring processGoogleDrive(std::wstring& url)
         WriteLogFile(L"+ Full path : %s", fullPath.c_str());
         curl_global_cleanup();
 
-        return L'\''+ fullPath+ L'\'';
+        return fullPath;
 
     }
     else
